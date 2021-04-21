@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.1" fx:controller="Controller.Controller">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <AnchorPane prefHeight="574.0" prefWidth="683.0">
+         <children>
+            <Button layoutX="255.0" layoutY="92.0" mnemonicParsing="false" onAction="#showMe" prefHeight="25.0" prefWidth="174.0" text="Display Country Data">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Button>
+            <TableView fx:id="dataTable" layoutX="64.0" layoutY="130.0" prefHeight="265.0" prefWidth="581.0">
+              <columns>
+                <TableColumn fx:id="idCol" prefWidth="292.0" text="CountryID" />
+                <TableColumn fx:id="NameCol" prefWidth="288.0" text="CountryName" />
+              </columns>
+            </TableView>
+         </children>
+      </AnchorPane>
+   </children>
+</GridPane>

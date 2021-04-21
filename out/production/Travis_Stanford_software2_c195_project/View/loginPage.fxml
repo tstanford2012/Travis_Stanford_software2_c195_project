@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.LoginPageController">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <AnchorPane prefHeight="574.0" prefWidth="911.0">
+         <children>
+            <Label layoutX="328.0" layoutY="68.0" prefHeight="50.0" prefWidth="257.0" text="FakeCompany">
+               <font>
+                  <Font name="Arial Rounded MT Bold" size="36.0" />
+               </font>
+            </Label>
+            <PasswordField fx:id="passwordTextField" layoutX="381.0" layoutY="287.0" promptText="Enter Password" />
+            <TextField fx:id="usernameTextField" layoutX="381.0" layoutY="219.0" promptText="Enter Username" />
+            <Label fx:id="usernameLabel" alignment="CENTER" layoutX="370.0" layoutY="191.0" prefHeight="20.0" prefWidth="174.0" text="Username">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="passwordLabel" alignment="CENTER" layoutX="378.0" layoutY="257.0" prefHeight="20.0" prefWidth="159.0" text="Password">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="userLocationLabel" layoutX="741.0" layoutY="506.0" text="ZoneID" />
+            <Button fx:id="loginButton" layoutX="408.0" layoutY="338.0" mnemonicParsing="false" onAction="#loginButtonHandler" prefHeight="30.0" prefWidth="97.0" text="Login">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Label fx:id="loginFailLabel" alignment="CENTER" layoutX="174.0" layoutY="400.0" prefHeight="20.0" prefWidth="567.0" textFill="#f50909">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+</GridPane>
