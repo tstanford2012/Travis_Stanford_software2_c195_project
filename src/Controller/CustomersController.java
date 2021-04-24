@@ -86,27 +86,6 @@ public class CustomersController implements Initializable {
                         break;
                     }
                 }
-                /*
-                switch (divisionID) {
-                    case 1: stateProvince = "Alabama"; break; case 2: stateProvince = "Arizona"; break; case 3: stateProvince = "Arkansas"; break;
-                    case 4: stateProvince = "California"; break; case 5: stateProvince = "Colorado"; break; case 6: stateProvince = "Connecticut"; break;
-                    case 7: stateProvince = "Delaware"; break; case 8: stateProvince = "District of Columbia"; break; case 9: stateProvince = "Florida"; break;
-                    case 10: stateProvince = "Georgia"; break; case 11: stateProvince = "Idaho"; break; case 12: stateProvince = "Illinois"; break;
-                    case 13: stateProvince = "Indiana"; break; case 14: stateProvince = "Iowa"; break; case 15: stateProvince = "Kansas"; break;
-                    case 16: stateProvince = "Kentucky"; break; case 17: stateProvince = "Louisiana"; break; case 18: stateProvince = "Maine"; break;
-                    case 19: stateProvince = "Maryland"; break; case 20: stateProvince = "Massachusetts"; break; case 21: stateProvince = "Michigan"; break;
-                    case 22: stateProvince = "Minnesota"; break; case 23: stateProvince = "Mississippi"; break; case 24: stateProvince = "Missouri"; break;
-                    case 25: stateProvince = "Montana"; break; case 26: stateProvince = "Nebraska"; break; case 27: stateProvince = "Nevada"; break;
-                    case 28: stateProvince = "New Hampshire"; break; case 29: stateProvince = "New Jersey"; break; case 30: stateProvince = "New Mexico"; break;
-                    case 31: stateProvince = "New York"; break; case 32: stateProvince = "North Carolina"; break; case 33: stateProvince = "North Dakota"; break;
-                    case 34: stateProvince = "Ohio"; break; case 35: stateProvince = "Oklahoma"; break; case 36: stateProvince = "Oregon"; break;
-                    case 37: stateProvince = "Pennsylvania"; break; case 38: stateProvince = "Rhode Island"; break; case 39: stateProvince = "South Carolina"; break;
-                    case 40: stateProvince = "South Dakota"; break; case 41: stateProvince = "Tennessee"; break; case 42: stateProvince = "Texas"; break;
-                    case 43: stateProvince = "Utah"; break; case 44: stateProvince = "Vermont"; break; case 45: stateProvince = "Virginia"; break;
-                    case 46: stateProvince = "Washington"; break; case 47: stateProvince = "West Virginia"; break; case 48: stateProvince = "Wisconsin"; break;
-                    case 49: stateProvince = "Wyoming"; break; case 50: stateProvince = ""; break; case 51: stateProvince = ""; break;
-                    case 52: stateProvince = "Hawaii"; break; case 53: stateProvince = ""; break; case 54: stateProvince = "Alaska"; break;
-                }*/
             }
             else if(setOneDivisionID > 54 && setOneDivisionID < 73) {
                 country = "Canada";
@@ -117,13 +96,6 @@ public class CustomersController implements Initializable {
                         break;
                     }
                 }
-                /*switch (divisionID) {
-                    case 60: stateProvince = "Northwest Territories"; break; case 61: stateProvince = "Alberta"; break; case 62: stateProvince = "British Columbia"; break;
-                    case 63: stateProvince = "Manitoba"; break; case 64: stateProvince = "New Brunswick"; break; case 65: stateProvince = "Nova Scotia"; break;
-                    case 66: stateProvince = "Prince Edward Island"; break; case 67: stateProvince = "Ontario"; break; case 68: stateProvince = "Quebec"; break;
-                    case 69: stateProvince = "Saskatchewan"; break; case 70: stateProvince = "Nunavut"; break; case 71: stateProvince = "Yukon"; break;
-                    case 72: stateProvince = "Newfoundland and Labrador"; break;
-                }*/
             }
             else if (setOneDivisionID > 100 && setOneDivisionID < 105) {
                 country = "United Kingdom";
@@ -134,12 +106,6 @@ public class CustomersController implements Initializable {
                         break;
                     }
                 }
-                /*switch (divisionID) {
-                    case 101: stateProvince = "England"; break;
-                    case 102: stateProvince = "Wales"; break;
-                    case 103: stateProvince = "Scotland"; break;
-                    case 104: stateProvince = "Northern Ireland"; break;
-                }*/
             }
             customerList.add(new Customer(resultSet.getInt("Customer_ID"), resultSet.getString("Customer_Name"),
                     resultSet.getString("Address"), stateProvince, country, resultSet.getString("Postal_Code"),
@@ -205,15 +171,30 @@ public class CustomersController implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
 
             if(result.get() == ButtonType.OK) {
-
                 Connection connection = DBConnection.getConnection();
-                String deleteStatement = "DELETE from customers where Customer_ID = ?";
-
+                ResultSet appointmentResultSet = connection.createStatement().executeQuery("SELECT Customer_ID from appointments");
                 int deleteID = customer.getCustomerID();
 
 
+                String deleteCustomerStatement = "DELETE from customers where Customer_ID = ?";
+                String deleteAppointmentStatement = "DELETE from appointments where Customer_ID = ?";
+
+                while(appointmentResultSet.next()) {
+                    int appointmentResultID = appointmentResultSet.getInt("Customer_ID");
+
+
+                        if(appointmentResultID == deleteID) {
+                            DBQuery.setPreparedStatement(connection, deleteAppointmentStatement);
+                            PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+                            preparedStatement.setInt(1, deleteID);
+
+                            preparedStatement.execute();
+                        }
+                }
+
+
                 //SQL delete statement
-                DBQuery.setPreparedStatement(connection, deleteStatement); //Create prepared statement object
+                DBQuery.setPreparedStatement(connection, deleteCustomerStatement); //Create prepared statement object
                 PreparedStatement preparedDeleteStatement = DBQuery.getPreparedStatement();
                 preparedDeleteStatement.setInt(1, deleteID);
 
@@ -221,6 +202,10 @@ public class CustomersController implements Initializable {
 
                 if(preparedDeleteStatement.getUpdateCount() > 0) {
                     System.out.println("Number of rows affected: " + preparedDeleteStatement.getUpdateCount());
+                    Alert deleteAlert = new Alert(Alert.AlertType.INFORMATION);
+                    deleteAlert.setHeaderText("Delete successful");
+                    deleteAlert.setContentText("Deleting of customer " + customer.getCustomerName() + " was successful!");
+                    deleteAlert.showAndWait();
                 }
                 else {
                     System.out.println("Values not deleted");

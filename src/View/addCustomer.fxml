@@ -26,8 +26,8 @@
                </font>
             </Label>
             <TextField fx:id="customerNameTextField" layoutX="297.0" layoutY="192.0" prefHeight="25.0" prefWidth="220.0" promptText="Customer Name" />
-            <TextField fx:id="addressTextField" layoutX="297.0" layoutY="262.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: 123 Maple St" />
-            <TextField fx:id="zipCodeTextField" layoutX="635.0" layoutY="263.0" prefHeight="25.0" prefWidth="105.0" promptText="Postal Code" />
+            <TextField fx:id="addressTextField" layoutX="297.0" layoutY="238.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: 123 Maple St" />
+            <TextField fx:id="zipCodeTextField" layoutX="635.0" layoutY="238.0" prefHeight="25.0" prefWidth="150.0" promptText="Postal Code" />
             <Label layoutX="255.0" layoutY="134.0" text="ID">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
@@ -38,12 +38,12 @@
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="229.0" layoutY="266.0" text="Address">
+            <Label layoutX="229.0" layoutY="241.0" text="Address">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="544.0" layoutY="266.0" text="Postal Code">
+            <Label layoutX="543.0" layoutY="241.0" text="Postal Code">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
@@ -54,8 +54,8 @@
                </font>
             </Label>
             <ComboBox fx:id="countryComboBox" layoutX="297.0" layoutY="322.0" onAction="#countryComboBoxHandler" prefWidth="150.0" />
-            <ComboBox fx:id="stateComboBox" layoutX="589.0" layoutY="321.0" onAction="#stateComboBoxHandler" onMouseClicked="#stateComboBoxClicked" prefWidth="150.0" />
-            <Label layoutX="477.0" layoutY="324.0" text="State/Province">
+            <ComboBox fx:id="stateComboBox" layoutX="636.0" layoutY="323.0" onAction="#stateComboBoxHandler" onMouseClicked="#stateComboBoxClicked" prefWidth="150.0" />
+            <Label layoutX="517.0" layoutY="325.0" text="State/Province">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
@@ -77,6 +77,18 @@
                </font>
             </Button>
             <Label layoutX="297.0" layoutY="134.0" prefHeight="17.0" prefWidth="220.0" text="ID auto generated">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="229.0" layoutY="279.0" prefHeight="17.0" prefWidth="52.0" text="City">
+               <font>
+                  <Font name="System Bold Italic" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="cityTextField" layoutX="297.0" layoutY="277.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: Los Angeles" />
+            <TextField fx:id="boroughTextField" editable="false" layoutX="634.0" layoutY="277.0" opacity="0.0" prefHeight="25.0" prefWidth="150.0" />
+            <Label fx:id="boroughLabel" layoutX="543.0" layoutY="281.0" prefHeight="17.0" prefWidth="78.0">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>

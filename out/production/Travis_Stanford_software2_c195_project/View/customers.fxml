@@ -28,12 +28,12 @@
             <TableView fx:id="customersTableView" layoutX="13.0" layoutY="118.0" prefHeight="285.0" prefWidth="810.0">
               <columns>
                 <TableColumn fx:id="customerIDCol" prefWidth="76.0" text="Customer_ID" />
-                <TableColumn fx:id="customerNameCol" prefWidth="131.0" text="Name" />
-                  <TableColumn fx:id="addressCol" prefWidth="146.0" text="Address" />
-                  <TableColumn fx:id="stateProvinceCol" prefWidth="100.0" text="State/Province" />
-                  <TableColumn fx:id="countryCol" prefWidth="100.0" text="Country" />
-                  <TableColumn fx:id="postalCodeCol" minWidth="5.0" prefWidth="98.0" text="Postal Code" />
-                  <TableColumn fx:id="phoneNumberCol" prefWidth="158.0" text="Phone" />
+                <TableColumn fx:id="customerNameCol" prefWidth="111.0" text="Name" />
+                  <TableColumn fx:id="addressCol" prefWidth="190.0" text="Address" />
+                  <TableColumn fx:id="stateProvinceCol" prefWidth="122.0" text="State/Province" />
+                  <TableColumn fx:id="countryCol" prefWidth="106.0" text="Country" />
+                  <TableColumn fx:id="postalCodeCol" minWidth="5.0" prefWidth="90.0" text="Postal Code" />
+                  <TableColumn fx:id="phoneNumberCol" prefWidth="114.0" text="Phone" />
               </columns>
             </TableView>
             <Button fx:id="addCustomerBtn" layoutX="710.0" layoutY="461.0" mnemonicParsing="false" onAction="#addCustomerBtnHandler" prefHeight="35.0" prefWidth="74.0" text="Add" />
