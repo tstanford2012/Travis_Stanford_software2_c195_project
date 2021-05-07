@@ -1,6 +1,8 @@
 package Controller;
 
 import Model.Appointments;
+import Model.Customer;
+import Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,13 +14,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import utils.DBConnection;
+import utils.DBQuery;
 
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AppointmentsController implements Initializable {
@@ -27,10 +32,6 @@ public class AppointmentsController implements Initializable {
     private Label appointmentsLabel;
     @FXML
     Label filterByLabel;
-    @FXML
-    RadioButton monthRadioBtn;
-    @FXML
-    RadioButton weekRadioBtn;
     @FXML
     Button backBtn;
     @FXML
@@ -65,7 +66,6 @@ public class AppointmentsController implements Initializable {
     private ObservableList<Appointments> appointmentList = FXCollections.observableArrayList();
 
 
-    private boolean isMonth;
 
 
 
@@ -86,27 +86,97 @@ public class AppointmentsController implements Initializable {
         }
     }
 
+    public void monthButtonHandler(ActionEvent actionEvent) throws IOException {
 
-    public void monthRadioBtnHandler(ActionEvent actionEvent) {
-        isMonth = true;
-        weekRadioBtn.setSelected(false);
+        nextScreen(actionEvent, "../View/monthlyAppointments.fxml");
 
     }
 
-    public void weekRadioBtnHandler(ActionEvent actionEvent) {
-        isMonth = false;
-        monthRadioBtn.setSelected(false);
+
+    public void weekButtonHandler(ActionEvent actionEvent) throws IOException {
+
+        nextScreen(actionEvent, "../View/weeklyAppointments.fxml");
     }
+
+
+
 
     public void addApptBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/addAppointment.fxml");
     }
 
     public void editApptBtnHandler(ActionEvent actionEvent) throws IOException {
-        nextScreen(actionEvent, "../View/editAppointment.fxml");
+        Appointments appointments = appointmentsTableView.getSelectionModel().getSelectedItem();
+        if(appointmentsTableView.getSelectionModel().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Error modifying appointment");
+            alert.setContentText("Must select an appointment to modify");
+            alert.showAndWait();
+        }
+        else {
+            Stage stage;
+            Parent root;
+            stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../View/editAppointment.fxml"));
+            root = loader.load();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+            EditAppointmentScreen controller = loader.getController();
+            controller.setAppointment(appointments);
+        }
+
+
     }
 
-    public void deleteApptBtnHandler(ActionEvent actionEvent) {
+    public void cancelAppointmentBtnHandler(ActionEvent actionEvent) throws SQLException {
+
+        Appointments appointments = appointmentsTableView.getSelectionModel().getSelectedItem();
+
+        if(appointmentsTableView.getSelectionModel().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("Please select an appointment to cancel");
+            alert.showAndWait();
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.initModality(Modality.NONE);
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Cancel Confirmation");
+            alert.setContentText("Are you sure you want to cancel the appointment with " + appointments.getAppointmentCustomerName() + " at " + appointments.getStart().toString() + "?");
+            Optional<ButtonType> result = alert.showAndWait();
+
+            if(result.get() == ButtonType.OK) {
+                Connection connection = DBConnection.getConnection();
+                int deleteID = appointments.getAppointmentID();
+
+
+                String deleteAppointmentStatement = "DELETE from appointments where Appointment_ID = ?";
+
+
+                //SQL delete statement
+                DBQuery.setPreparedStatement(connection, deleteAppointmentStatement); //Create prepared statement object
+                PreparedStatement preparedDeleteStatement = DBQuery.getPreparedStatement();
+                preparedDeleteStatement.setInt(1, deleteID);
+
+                preparedDeleteStatement.execute();
+
+                if(preparedDeleteStatement.getUpdateCount() > 0) {
+                    System.out.println("Number of rows affected: " + preparedDeleteStatement.getUpdateCount());
+                    Alert deleteAlert = new Alert(Alert.AlertType.INFORMATION);
+                    deleteAlert.setHeaderText("Cancel successful");
+                    deleteAlert.setContentText("Appointment with customer " + appointments.getAppointmentCustomerName() + " at " + appointments.getStart().toString() + " was cancelled!");
+                    deleteAlert.showAndWait();
+                }
+                else {
+                    System.out.println("Values not deleted");
+                }
+                appointmentList.remove(appointments);
+            }
+            else {
+                System.out.println("No longer cancelling");
+            }
+        }
     }
 
     public void backBtnHandler(ActionEvent actionEvent) throws IOException {
@@ -115,10 +185,18 @@ public class AppointmentsController implements Initializable {
 
     public void displayAppointmentTable() throws SQLException {
         appointmentsTableView.refresh();
+        int userID = User.getUserID();
 
 
         Connection connection = DBConnection.getConnection();
-        ResultSet resultSet = connection.createStatement().executeQuery("SELECT * from appointments");
+        String selectStatement = "SELECT * from appointments where User_ID = ?";
+        DBQuery.setPreparedStatement(connection, selectStatement);
+        PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+
+        preparedStatement.setInt(1, userID);
+
+
+        ResultSet resultSet = preparedStatement.executeQuery();
         ResultSet resultSet1 = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY).executeQuery("SELECT Contact_ID, Contact_Name from contacts");
         ResultSet resultSet2 = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY).executeQuery("SELECT Customer_ID, Customer_Name from customers");
 
@@ -145,7 +223,6 @@ public class AppointmentsController implements Initializable {
                     break;
                 }
             }
-
             appointmentList.add(new Appointments(resultSet.getInt("Appointment_ID"), resultSet.getString("Title"), resultSet.getString("Description"),
                     resultSet.getString("Location"), contactName, resultSet.getString("Type"), resultSet.getTimestamp("Start"), resultSet.getTimestamp("End"),
                     resultSet.getInt("Customer_ID"), resultSet.getInt("User_ID"), customerName));
@@ -181,7 +258,6 @@ public class AppointmentsController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-
 
 
 

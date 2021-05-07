@@ -82,14 +82,13 @@ public class LoginPageController implements Initializable {
     }
 
     public void loginButtonHandler(ActionEvent actionEvent) {
+
         String tempUsername = usernameTextField.getText();
         String tempPassword = passwordTextField.getText();
         try {
             //calls the getUserID method and sets the value of userID
             int userID = getUserID(tempUsername);
             User user = new User(userID, tempUsername);
-            //Parent root;
-            //Stage stage;
             if(tempUsername.isEmpty() || tempPassword.isEmpty()) {
                 System.out.println("Enter text");
                 loginFailLabel.setText(resourceBundle.getString("empty"));
@@ -153,6 +152,8 @@ public class LoginPageController implements Initializable {
             String type = filteredList.get(0).getType();
 
             String start = filteredList.get(0).getStartZonedDateTime().toString().substring(0, 16);
+
+
             String[] parts = start.split("T");
             String splitDate = parts[0];
             String splitTime = parts[1];

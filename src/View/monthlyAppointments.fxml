@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.MonthlyAppointmentsScreen">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <AnchorPane prefHeight="656.0" prefWidth="981.0">
+         <children>
+            <TableView fx:id="filterMonthTableView" layoutX="13.0" layoutY="151.0" prefHeight="455.0" prefWidth="958.0">
+              <columns>
+                <TableColumn fx:id="appointmentIDCol" prefWidth="101.0" text="Appointment ID" />
+                <TableColumn fx:id="titleCol" prefWidth="113.0" text="Title" />
+                  <TableColumn fx:id="descriptionCol" prefWidth="81.0" text="Description" />
+                  <TableColumn fx:id="locationCol" minWidth="5.0" prefWidth="77.0" text="Location" />
+                  <TableColumn fx:id="contactCol" prefWidth="111.0" text="Contact" />
+                  <TableColumn fx:id="typeCol" prefWidth="101.0" text="Type" />
+                  <TableColumn fx:id="startCol" prefWidth="120.0" text="Start" />
+                  <TableColumn fx:id="endCol" prefWidth="134.0" text="End" />
+                  <TableColumn fx:id="customerCol" prefWidth="119.0" text="Customer" />
+              </columns>
+            </TableView>
+            <Label layoutX="24.0" layoutY="51.0" text="Year">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="732.0" layoutY="52.0" text="Month">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="yearComboBox" layoutX="76.0" layoutY="49.0" onMouseClicked="#yearComboBoxHandler" prefWidth="150.0" />
+            <ComboBox fx:id="monthComboBox" layoutX="798.0" layoutY="49.0" onMouseClicked="#monthComboBoxHandler" prefWidth="150.0" />
+            <Button fx:id="backButton" layoutX="39.0" layoutY="617.0" mnemonicParsing="false" onAction="#backButtonHandler" prefHeight="25.0" prefWidth="82.0" text="Back" />
+            <Label layoutX="388.0" layoutY="49.0" text="Appointments by Month">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+</GridPane>

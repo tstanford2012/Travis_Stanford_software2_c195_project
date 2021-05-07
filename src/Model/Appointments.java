@@ -83,6 +83,9 @@ public class Appointments {
     public Object getContact() {
         return contact;
     }
+    public String getStringContact() {
+        return contact;
+    }
 
     public void setContact(String contact) {
         this.contact = contact;
