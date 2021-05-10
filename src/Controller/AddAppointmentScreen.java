@@ -4,20 +4,29 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.MouseEvent;
 
 import javafx.scene.control.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import utils.DBConnection;
 import utils.DBQuery;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.text.ParseException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.zone.ZoneRules;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AddAppointmentScreen implements Initializable {
@@ -123,7 +132,20 @@ public class AddAppointmentScreen implements Initializable {
     public void saveButtonHandler(ActionEvent actionEvent) {
     }
 
-    public void cancelButtonHandler(ActionEvent actionEvent) {
+    public void cancelButtonHandler(ActionEvent actionEvent) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initModality(Modality.NONE);
+        alert.setHeaderText("Are you sure you want to cancel?");
+        alert.setContentText("Changes will not be saved");
+        Optional<ButtonType> result = alert.showAndWait();
+
+
+        if(result.get() == ButtonType.OK) {
+            nextScreen(actionEvent, "../View/appointments.fxml");
+        }
+        else {
+            System.out.println("No longer cancelling");
+        }
     }
 
     public void addTestApptButtonHandler(ActionEvent actionEvent) {
@@ -186,10 +208,20 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     private void getAvailableTimes(LocalDate enteredStartDate, LocalDate enteredEndDate) throws SQLException {
+        boolean isEastern;
 
-        ZonedDateTime localTime = LocalDateTime.now().atZone(zoneId);
-        ZonedDateTime easternTime = localTime.toInstant().atZone(ZoneId.of("America/New_York"));
-        ZonedDateTime timeInUTC = localTime.toInstant().atZone(ZoneId.of("UTC"));
+        ZonedDateTime localTime = ZonedDateTime.now(zoneId);
+        ZonedDateTime easternTime = localTime.withZoneSameInstant(ZoneId.of("America/New_York"));
+        ZonedDateTime timeInUTC = localTime.withZoneSameInstant((ZoneId.of("UTC")));
+        ZoneRules zoneRules = zoneId.getRules();
+
+        ZoneId easternZone = ZoneId.of("America/New_York");
+        ZoneRules easternRules = easternZone.getRules();
+
+
+        boolean isLocalDaylightSavings = zoneRules.isDaylightSavings(localTime.toInstant());
+        boolean isEasternDaylightSavings = easternRules.isDaylightSavings(easternTime.toInstant());
+        //System.out.println(isLocalDaylightSavings);
 
         LocalDateTime localDateTime = localTime.toLocalDateTime();
         Instant instant = localDateTime.toInstant(localTime.getOffset());
@@ -228,25 +260,30 @@ public class AddAppointmentScreen implements Initializable {
         int easternOffset = easternTime.getOffset().getTotalSeconds();
 
         System.out.println(easternOffset - localOffset);
-        localOffset = Math.abs(localOffset);
-        easternOffset = Math.abs(easternOffset);
+        //localOffset = Math.abs(localOffset);
+        //easternOffset = Math.abs(easternOffset);
 
-        LocalTime localStart = processOffset(localOffset, easternOffset, true);
-        LocalTime localEnd = processOffset(localOffset, easternOffset, false);
+        LocalTime localStart = processOffset(localOffset, easternOffset, true, isLocalDaylightSavings, isEasternDaylightSavings);
+        LocalTime localEnd = processOffset(localOffset, easternOffset, false, isLocalDaylightSavings, isEasternDaylightSavings);
 
         if(localStart == null) {
+            isEastern = true;
             localStart = easternStart;
         }
         else if(localEnd == null) {
+            isEastern =true;
             localStart = easternEnd;
         }
 
 
         if(localStart.isBefore(easternStart)) {
-            addTimesToComboBox(localStart, true);
+            addTimesToComboBox(localStart, true, false);
         }
         else if(localStart.isAfter(easternStart)) {
-            addTimesToComboBox(localStart, false);
+            addTimesToComboBox(localStart, false, false);
+        }
+        else {
+            addTimesToComboBox(localStart, false, true);
         }
 
 
@@ -312,53 +349,305 @@ public class AddAppointmentScreen implements Initializable {
         return !localTime.isBefore(easternStart) && !localTime.isAfter(easternEnd);
     }
 
-    public static LocalTime processOffset(int localOffset, int easternOffset, boolean isStart) {
+    public static LocalTime processOffset(int localOffset, int easternOffset, boolean isStart, boolean isLocalDaylightSavings, boolean isEasternDaylightSavings) {
        int localMinutes = localOffset / 60;
        int localHours = localMinutes / 60;
+       /*if(isLocalDaylightSavings) {
+           localHours -= 1;
+       }*/
 
        System.out.println(localHours + " hours offset");
 
        int easternMinutes = easternOffset / 60;
        int easternHours = easternMinutes / 60;
+       /*if(isEasternDaylightSavings) {
+           easternHours -= 1;
+       }*/
 
        System.out.println(easternHours + " hours offset");
 
-       int offsetDiff = easternHours - localHours;
+       int offsetDiff;
 
-       if(offsetDiff == 0) {
+        offsetDiff = localHours - easternHours;
+
+
+        if(offsetDiff == 0) {
            System.out.println("Already in eastern timezone");
            return null;
        }
-       else if(offsetDiff < 0) {
+       /*else if(offsetDiff < 0) {
            if(isStart) {
                return LocalTime.of(8 + offsetDiff, 0);
            }
            else {
                return LocalTime.of(22 + offsetDiff, 0);
            }
-       }
+       }*/
        else {
            if(isStart) {
-               return LocalTime.of(8 - offsetDiff, 0);
+               if(8 + offsetDiff > 24) {
+                   int extraTime = (8 + offsetDiff) - 24;
+                   return LocalTime.of(extraTime, 0);
+               }
+               return LocalTime.of(8 + offsetDiff, 0);
            }
            else {
-               return LocalTime.of(22 - offsetDiff, 0);
+               if(22 + offsetDiff > 24) {
+                   int extraTime = (22 + offsetDiff) - 24;
+                   return LocalTime.of(extraTime, 0);
+               }
+               else {
+                   return LocalTime.of(22 + offsetDiff, 0);
+               }
            }
        }
     }
 
-    public void addTimesToComboBox(LocalTime time, boolean isBefore) {
+    public void addTimesToComboBox(LocalTime time, boolean isBefore, boolean isEastern) {
         startTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
                 "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
-        String stringTime = time.toString();
-        if(isBefore) {
-            if(stringTime.contains("07:00")) {
-                startTimeComboBox.getItems().add(0, "07:00");
-                startTimeComboBox.getItems().removeAll("22:00");
+
+        // TODO: 5/10/2021 Fix these times to match the dates
+
+
+        if(!isEastern) {
+            String stringTime = time.toString();
+            if(isBefore) {
+                if(stringTime.contains("07:00")) {
+                    System.out.println("UTC -6");
+                    startTimeComboBox.getItems().add(0, "07:00");
+                    startTimeComboBox.getItems().removeAll("22:00");
+                }
+                else if(stringTime.contains("06:00")) {
+                    System.out.println("UTC -7");
+                    startTimeComboBox.getItems().add(0, "06:00");
+                    startTimeComboBox.getItems().add(1, "07:00");
+                    startTimeComboBox.getItems().removeAll("21:00", "22:00");
+                }
+                else if(stringTime.contains("05:00")) {
+                    System.out.println("UTC -8");
+                    startTimeComboBox.getItems().add(0, "05:00");
+                    startTimeComboBox.getItems().add(1, "06:00");
+                    startTimeComboBox.getItems().add(2, "07:00");
+                    startTimeComboBox.getItems().removeAll("20:00", "21:00", "22:00");
+                }
+                else if(stringTime.contains("04:00")) {
+                    System.out.println("UTC -9");
+                    startTimeComboBox.getItems().add(0, "04:00");
+                    startTimeComboBox.getItems().add(1, "05:00");
+                    startTimeComboBox.getItems().add(2, "06:00");
+                    startTimeComboBox.getItems().add(3, "07:00");
+                    startTimeComboBox.getItems().removeAll("19:00", "20:00", "21:00", "22:00");
+                }
+                else if(stringTime.contains("03:00")) {
+                    System.out.println("UTC -10");
+                    startTimeComboBox.getItems().add(0, "03:00");
+                    startTimeComboBox.getItems().add(1, "04:00");
+                    startTimeComboBox.getItems().add(2, "05:00");
+                    startTimeComboBox.getItems().add(3, "06:00");
+                    startTimeComboBox.getItems().add(4, "07:00");
+                    startTimeComboBox.getItems().removeAll("18:00", "19:00", "20:00", "21:00", "22:00");
+                }
+                else if(stringTime.contains("02:00")) {
+                    System.out.println("UTC -11");
+                    startTimeComboBox.getItems().add(0, "02:00");
+                    startTimeComboBox.getItems().add(1, "03:00");
+                    startTimeComboBox.getItems().add(2, "04:00");
+                    startTimeComboBox.getItems().add(3, "05:00");
+                    startTimeComboBox.getItems().add(4, "06:00");
+                    startTimeComboBox.getItems().add(5, "07:00");
+                    startTimeComboBox.getItems().removeAll("17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
+                }
+                else if(stringTime.contains("01:00")) {
+                    System.out.println("UTC -12");
+                    startTimeComboBox.getItems().add(0, "01:00");
+                    startTimeComboBox.getItems().add(1, "02:00");
+                    startTimeComboBox.getItems().add(2, "03:00");
+                    startTimeComboBox.getItems().add(3, "04:00");
+                    startTimeComboBox.getItems().add(4, "05:00");
+                    startTimeComboBox.getItems().add(5, "06:00");
+                    startTimeComboBox.getItems().add(6, "07:00");
+                    startTimeComboBox.getItems().removeAll("16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
+                }
+            }
+            else {
+                if(stringTime.contains("09:00")) {
+                    System.out.println("UTC -4");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().removeAll("08:00");
+                }
+                else if(stringTime.contains("10:00")) {
+                    System.out.println("UTC -3");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00");
+
+                }
+                else if(stringTime.contains("11:00")) {
+                    System.out.println("UTC -2");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00");
+                }
+                else if(stringTime.contains("12:00")) {
+                    System.out.println("UTC -1");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00");
+                }
+                else if(stringTime.contains("13:00")) {
+                    System.out.println("UTC Time");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
+                }
+                else if(stringTime.contains("14:00")) {
+                    System.out.println("UTC +1");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().add("04:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00");
+                }
+                else if(stringTime.contains("15:00")) {
+                    System.out.println("UTC +2");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().add("04:00");
+                    startTimeComboBox.getItems().add("05:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00");
+                }
+                else if(stringTime.contains("16:00")) {
+                    System.out.println("UTC +3");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().add("04:00");
+                    startTimeComboBox.getItems().add("05:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00");
+                }
+                else if(stringTime.contains("17:00")) {
+                    System.out.println("UTC +4");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().add("04:00");
+                    startTimeComboBox.getItems().add("05:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00");
+                }
+                else if(stringTime.contains("18:00")) {
+                    System.out.println("UTC +5");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().add("04:00");
+                    startTimeComboBox.getItems().add("05:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("07:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00");
+                }
+                else if(stringTime.contains("19:00")) {
+                    System.out.println("UTC +6");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().add("04:00");
+                    startTimeComboBox.getItems().add("05:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("07:00");
+                    startTimeComboBox.getItems().add("08:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00");
+                }
+                else if(stringTime.contains("20:00")) {
+                    System.out.println("UTC +7");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().add("04:00");
+                    startTimeComboBox.getItems().add("05:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("07:00");
+                    startTimeComboBox.getItems().add("08:00");
+                    startTimeComboBox.getItems().add("09:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00");
+                }
+                else if(stringTime.contains("21:00")) {
+                    System.out.println("UTC +8");
+                    startTimeComboBox.getItems().add(0, "23:00");
+                    startTimeComboBox.getItems().add(1, "00:00");
+                    startTimeComboBox.getItems().add(2, "01:00");
+                    startTimeComboBox.getItems().add(3, "02:00");
+                    startTimeComboBox.getItems().add(4, "03:00");
+                    startTimeComboBox.getItems().add(5, "04:00");
+                    startTimeComboBox.getItems().add(6, "05:00");
+                    startTimeComboBox.getItems().add(7, "06:00");
+                    startTimeComboBox.getItems().add(8, "06:00");
+                    startTimeComboBox.getItems().add(9, "07:00");
+                    //startTimeComboBox.getItems().add(10, "08:00");
+                    //startTimeComboBox.getItems().add(11, "09:00");
+                    //startTimeComboBox.getItems().add(12, "10:00");
+                    startTimeComboBox.getItems().removeAll( "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00");
+                }
+                else if(stringTime.contains("22:00")) {
+                    System.out.println("UTC +9");
+                    startTimeComboBox.getItems().add("23:00");
+                    startTimeComboBox.getItems().add("00:00");
+                    startTimeComboBox.getItems().add("01:00");
+                    startTimeComboBox.getItems().add("02:00");
+                    startTimeComboBox.getItems().add("03:00");
+                    startTimeComboBox.getItems().add("04:00");
+                    startTimeComboBox.getItems().add("05:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("06:00");
+                    startTimeComboBox.getItems().add("07:00");
+                    startTimeComboBox.getItems().add("08:00");
+                    startTimeComboBox.getItems().add("09:00");
+                    startTimeComboBox.getItems().add("10:00");
+                    startTimeComboBox.getItems().add("11:00");
+                    startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
+                }
             }
         }
-        else {
+    }
 
-        }
+    private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
+        Stage stage;
+        Parent root;
+        stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(screenName));
+
+        root = loader.load();
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }

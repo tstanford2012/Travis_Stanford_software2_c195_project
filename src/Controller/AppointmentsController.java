@@ -5,6 +5,7 @@ import Model.Customer;
 import Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +24,8 @@ import utils.DBQuery;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -62,8 +65,14 @@ public class AppointmentsController implements Initializable {
     TableColumn<TableView<Appointments>, String> customerCol;
     @FXML
     Button cancelAppointmentButton;
+    @FXML
+    RadioButton weekFilterRadioBtn;
+    @FXML
+    RadioButton monthFilterRadioBtn;
+    boolean isWeek;
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
-    private ObservableList<Appointments> appointmentList = FXCollections.observableArrayList();
+    public static ObservableList<Appointments> appointmentList = FXCollections.observableArrayList();
 
 
 
@@ -86,16 +95,19 @@ public class AppointmentsController implements Initializable {
         }
     }
 
-    public void monthButtonHandler(ActionEvent actionEvent) throws IOException {
 
-        nextScreen(actionEvent, "../View/monthlyAppointments.fxml");
 
+    public void weekFilterRadioBtnHandler(ActionEvent actionEvent) throws SQLException {
+        isWeek = true;
+        monthFilterRadioBtn.setSelected(false);
+        displayAppointmentTable();
     }
 
+    public void monthFilterRadioBtnHandler(ActionEvent actionEvent) throws SQLException {
+        isWeek = false;
+        weekFilterRadioBtn.setSelected(false);
+        displayAppointmentTable();
 
-    public void weekButtonHandler(ActionEvent actionEvent) throws IOException {
-
-        nextScreen(actionEvent, "../View/weeklyAppointments.fxml");
     }
 
 
@@ -202,6 +214,7 @@ public class AppointmentsController implements Initializable {
 
         String contactName = null;
         String customerName = null;
+        appointmentList.clear();
 
 
         while(resultSet.next()) {
@@ -238,10 +251,20 @@ public class AppointmentsController implements Initializable {
         endTimeCol.setCellValueFactory(new PropertyValueFactory<>("end"));
         customerCol.setCellValueFactory(new PropertyValueFactory<>("appointmentCustomerName"));
 
-        appointmentsTableView.setItems(appointmentList);
 
+        if(weekFilterRadioBtn.isSelected() || monthFilterRadioBtn.isSelected()) {
 
+            if(isWeek) {
+                showAppointmentsThisWeek(appointmentList);
+            }
+            else {
+                showAppointmentsThisMonth(appointmentList);
+            }
 
+        }
+        else {
+            appointmentsTableView.setItems(appointmentList);
+        }
     }
 
 
@@ -259,6 +282,36 @@ public class AppointmentsController implements Initializable {
         stage.show();
     }
 
+    public void showAppointmentsThisWeek(ObservableList<Appointments> appointmentList) {
 
+        LocalDate today = LocalDate.now();
+        LocalDate weekFromToday = today.plusWeeks(1);
+
+        //filtered list lambda used to filter appointments this week
+        FilteredList<Appointments> filteredList = new FilteredList<>(appointmentList);
+        filteredList.setPredicate(row -> {
+            LocalDate startDate = LocalDate.parse(row.getStart().toString(), dateTimeFormatter);
+
+            return startDate.isAfter(today.minusDays(1)) && startDate.isBefore(weekFromToday);
+
+        });
+        appointmentsTableView.setItems(filteredList);
+    }
+
+    public void showAppointmentsThisMonth(ObservableList<Appointments> appointmentList) {
+        LocalDate today = LocalDate.now();
+        LocalDate monthFromToday = today.plusMonths(1);
+
+        //filtered list lambda used to filter appointments this month
+        FilteredList<Appointments> filteredList = new FilteredList<>(appointmentList);
+        filteredList.setPredicate(row -> {
+
+            LocalDate startDate = LocalDate.parse(row.getStart().toString(), dateTimeFormatter);
+
+            return startDate.isAfter(today.minusDays(1)) && startDate.isBefore(monthFromToday);
+        });
+        appointmentsTableView.setItems(filteredList);
+
+    }
 
 }

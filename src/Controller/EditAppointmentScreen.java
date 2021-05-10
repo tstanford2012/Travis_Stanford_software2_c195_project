@@ -5,19 +5,25 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import utils.DBConnection;
 import utils.DBQuery;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class EditAppointmentScreen implements Initializable {
@@ -114,7 +120,20 @@ public class EditAppointmentScreen implements Initializable {
     public void saveButtonHandler(ActionEvent actionEvent) {
     }
 
-    public void cancelButtonHandler(ActionEvent actionEvent) {
+    public void cancelButtonHandler(ActionEvent actionEvent) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initModality(Modality.NONE);
+        alert.setHeaderText("Are you sure you want to cancel?");
+        alert.setContentText("Changes will not be saved");
+        Optional<ButtonType> result = alert.showAndWait();
+
+
+        if(result.get() == ButtonType.OK) {
+            nextScreen(actionEvent, "../View/appointments.fxml");
+        }
+        else {
+            System.out.println("No longer cancelling");
+        }
     }
 
     public void setAppointment(Appointments appointments) {
@@ -346,5 +365,18 @@ public class EditAppointmentScreen implements Initializable {
         else {
 
         }
+    }
+    private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
+        Stage stage;
+        Parent root;
+        stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(screenName));
+
+        root = loader.load();
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }

@@ -243,14 +243,21 @@ public class EditCustomerScreen implements Initializable {
         String address = parts[0];
         String city;
         String borough;
-        if(customer.getCountry().contains("United Kingdom")) {
-            borough = parts[1];
-            city = parts[2];
-            boroughTextField.setText(borough);
+        if(parts.length < 2) {
+            city = null;
+            borough = null;
         }
         else {
-            city = parts[1];
+            if(customer.getCountry().contains("United Kingdom")) {
+                borough = parts[1];
+                city = parts[2];
+                boroughTextField.setText(borough);
+            }
+            else {
+                city = parts[1];
+            }
         }
+
 
 
 

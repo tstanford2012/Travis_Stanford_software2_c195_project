@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.WeeklyAppointmentsScreen">
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FutureIteration.WeeklyAppointmentsScreen">
    <columnConstraints>
       <ColumnConstraints />
    </columnConstraints>
@@ -39,6 +39,8 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
+            <Button fx:id="nextWeekBtn" layoutX="1027.0" layoutY="32.0" mnemonicParsing="false" onAction="#nextWeekBtnHandler" prefHeight="27.0" prefWidth="115.0" text="Next Week" />
+            <Button fx:id="previousWeekBtn" layoutX="887.0" layoutY="32.0" mnemonicParsing="false" onAction="#previousWeekBtnHandler" prefHeight="27.0" prefWidth="115.0" text="Previous Week" />
          </children>
       </AnchorPane>
    </children>

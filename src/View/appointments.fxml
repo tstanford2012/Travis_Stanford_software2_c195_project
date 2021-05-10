@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -59,16 +60,16 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Button fx:id="weekButton" layoutX="945.0" layoutY="47.0" mnemonicParsing="false" onAction="#weekButtonHandler" prefHeight="35.0" prefWidth="95.0" text="Week">
+            <RadioButton fx:id="monthFilterRadioBtn" layoutX="941.0" layoutY="56.0" mnemonicParsing="false" onAction="#monthFilterRadioBtnHandler" text="Month">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
-            </Button>
-            <Button fx:id="monthButton" layoutX="788.0" layoutY="47.0" mnemonicParsing="false" onAction="#monthButtonHandler" prefHeight="35.0" prefWidth="95.0" text="Month">
+            </RadioButton>
+            <RadioButton fx:id="weekFilterRadioBtn" layoutX="818.0" layoutY="56.0" mnemonicParsing="false" onAction="#weekFilterRadioBtnHandler" text="Week">
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
-            </Button>
+            </RadioButton>
          </children></AnchorPane>
    </children>
 </GridPane>
