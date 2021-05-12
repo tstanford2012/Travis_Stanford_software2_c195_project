@@ -33,8 +33,6 @@ public class EditAppointmentScreen implements Initializable {
     @FXML
     TextField descriptionTextField;
     @FXML
-    TextField locationTextField;
-    @FXML
     TextField typeTextField;
     @FXML
     TextField startDateTextField;
@@ -47,12 +45,17 @@ public class EditAppointmentScreen implements Initializable {
     @FXML
     ComboBox<String> endTimeComboBox;
     @FXML
+    ComboBox<String> locationComboBox;
+    @FXML
+    ComboBox<String> customerComboBox;
+    @FXML
     Label startTimeErrorLabel;
     @FXML
     Label endTimeErrorLabel;
     @FXML
     Label appointmentIDLabel;
     private ObservableList<String> contactNames = FXCollections.observableArrayList();
+    private ObservableList<String> customerNames = FXCollections.observableArrayList();
     private final ZoneId zoneId = ZoneId.systemDefault();
 
     @Override
@@ -62,9 +65,11 @@ public class EditAppointmentScreen implements Initializable {
         appointmentIDLabel.setText("");
         try {
             pullContactNames();
+            pullCustomers();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
+        locationComboBox.getItems().addAll("Phoenix", "White Plains", "Montreal", "London");
     }
 
 
@@ -72,6 +77,25 @@ public class EditAppointmentScreen implements Initializable {
         if(startDateTextField.getText().isEmpty()) {
             startTimeErrorLabel.setOpacity(1);
         }
+    }
+
+    public void startTimeComboBoxHandler(ActionEvent actionEvent) {
+        AddAppointmentScreen.handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
+
+
+        System.out.println(startTimeComboBox.getValue());
+
+    }
+
+
+    public void endTimeComboBoxHandler(ActionEvent actionEvent) {
+        System.out.println(endTimeComboBox.getValue());
+    }
+
+    public void locationComboBoxHandler(ActionEvent actionEvent) {
+    }
+
+    public void customerComboBoxHandler(ActionEvent actionEvent) {
     }
 
     public void startTimesButtonHandler(ActionEvent actionEvent) throws SQLException {
@@ -89,7 +113,17 @@ public class EditAppointmentScreen implements Initializable {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate enteredStartDate = LocalDate.parse(enteredStartDateString, formatter);
             LocalDate enteredEndDate = LocalDate.parse(enteredEndDateString, formatter);
-            getAvailableTimes(enteredStartDate, enteredEndDate);
+
+            //Alerts the user that only Monday-Friday days are allowed
+            if(enteredStartDate.getDayOfWeek() == DayOfWeek.SATURDAY || enteredStartDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Error getting times");
+                alert.setContentText("Times only available Monday-Friday");
+                alert.showAndWait();
+            }
+            else {
+                getAvailableTimes(enteredStartDate, enteredEndDate);
+            }
         }
     }
 
@@ -106,14 +140,26 @@ public class EditAppointmentScreen implements Initializable {
            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
            LocalDate enteredStartDate = LocalDate.parse(enteredStartDateString, formatter);
            LocalDate enteredEndDate = LocalDate.parse(enteredEndDateString, formatter);
-           getAvailableTimes(enteredStartDate, enteredEndDate);
 
+           //Alerts the user that only Monday-Friday days are allowed
+           if(enteredEndDate.getDayOfWeek() == DayOfWeek.SATURDAY || enteredEndDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+               Alert alert = new Alert(Alert.AlertType.ERROR);
+               alert.setHeaderText("Error getting times");
+               alert.setContentText("Times only available Monday-Friday");
+               alert.showAndWait();
+           }
+           else {
+               getAvailableTimes(enteredStartDate, enteredEndDate);
+           }
        }
     }
 
     public void endTimesComboBoxClicked(MouseEvent mouseEvent) {
         if(endDateTextField.getText().isEmpty()) {
             endTimeErrorLabel.setOpacity(1);
+        }
+        else {
+
         }
     }
 
@@ -142,7 +188,8 @@ public class EditAppointmentScreen implements Initializable {
         appointmentIDLabel.setText(Integer.toString(appointments.getAppointmentID()));
         titleTextField.setText(appointments.getTitle());
         descriptionTextField.setText(appointments.getDescription());
-        locationTextField.setText(appointments.getLocation());
+        locationComboBox.setValue(appointments.getLocation());
+        customerComboBox.setValue(appointments.getAppointmentCustomerName());
         typeTextField.setText(appointments.getType());
 
         String start = appointments.getStart().toString();
@@ -187,6 +234,23 @@ public class EditAppointmentScreen implements Initializable {
             contactNameComboBox.getItems().add(contactName);
         }
     }
+
+    public void pullCustomers() throws SQLException {
+        Connection connection = DBConnection.getConnection();
+
+        String selectStatement = "SELECT Customer_Name from customers";
+        DBQuery.setPreparedStatement(connection, selectStatement);
+        PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        String customerName = null;
+
+        while (resultSet.next()) {
+            customerName = resultSet.getString("Customer_Name");
+            customerNames.add(customerName);
+            customerComboBox.getItems().add(customerName);
+        }
+    }
+
 
     public static boolean isBetween(LocalTime localTime, LocalTime easternStart, LocalTime easternEnd) {
         return !localTime.isBefore(easternStart) && !localTime.isAfter(easternEnd);
@@ -379,4 +443,5 @@ public class EditAppointmentScreen implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
+
 }
