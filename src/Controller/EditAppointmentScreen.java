@@ -54,6 +54,11 @@ public class EditAppointmentScreen implements Initializable {
     Label endTimeErrorLabel;
     @FXML
     Label appointmentIDLabel;
+    @FXML
+    RadioButton officeLocationTimeRadioBtn;
+    @FXML
+    RadioButton timezoneRadioBtn;
+
     private ObservableList<String> contactNames = FXCollections.observableArrayList();
     private ObservableList<String> customerNames = FXCollections.observableArrayList();
     private final ZoneId zoneId = ZoneId.systemDefault();
@@ -63,6 +68,8 @@ public class EditAppointmentScreen implements Initializable {
         startTimeErrorLabel.setOpacity(0);
         endTimeErrorLabel.setOpacity(0);
         appointmentIDLabel.setText("");
+        officeLocationTimeRadioBtn.setSelected(true);
+        timezoneRadioBtn.setSelected(false);
         try {
             pullContactNames();
             pullCustomers();
@@ -104,25 +111,42 @@ public class EditAppointmentScreen implements Initializable {
         }
         else {
             startTimeErrorLabel.setOpacity(0);
-            startTimeComboBox.setValue(null);
             String enteredStartDateString = startDateTextField.getText();
             endDateTextField.setText(enteredStartDateString);
             String enteredEndDateString = endDateTextField.getText();
             startTimeComboBox.getItems().clear();
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate enteredStartDate = LocalDate.parse(enteredStartDateString, formatter);
-            LocalDate enteredEndDate = LocalDate.parse(enteredEndDateString, formatter);
-
-            //Alerts the user that only Monday-Friday days are allowed
-            if(enteredStartDate.getDayOfWeek() == DayOfWeek.SATURDAY || enteredStartDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            //Prevents the user from attempting to view location times with no location selected
+            if(locationComboBox.getValue().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("Error getting times");
-                alert.setContentText("Times only available Monday-Friday");
-                alert.showAndWait();
+                alert.setHeaderText("Location not selected");
+                alert.setContentText("Please select a location and try again");
+                alert.show();
             }
             else {
-                getAvailableTimes(enteredStartDate, enteredEndDate);
+                String location = locationComboBox.getValue();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate enteredStartDate = LocalDate.parse(enteredStartDateString, formatter);
+                LocalDate enteredEndDate = LocalDate.parse(enteredEndDateString, formatter);
+
+
+                //Checks if the date entered is on a weekend and throws an error
+                //Calls the method to add times to the combo box based on which radio button is selected
+                if(officeLocationTimeRadioBtn.isSelected()) {
+                    //Alerts the user that only Monday-Friday days are allowed
+                    if(enteredStartDate.getDayOfWeek() == DayOfWeek.SATURDAY || enteredStartDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText("Error getting times");
+                        alert.setContentText("Times only available Monday-Friday");
+                        alert.showAndWait();
+                    }
+                    else {
+                        //AddAppointmentScreen.addLocationTimesToComboBox(location);
+                    }
+                }
+                else {
+                    getAvailableTimes(enteredStartDate, enteredEndDate);
+                }
             }
         }
     }
@@ -180,6 +204,14 @@ public class EditAppointmentScreen implements Initializable {
         else {
             System.out.println("No longer cancelling");
         }
+    }
+
+    public void officeLocationTimeRadioBtnHandler(ActionEvent actionEvent) {
+        timezoneRadioBtn.setSelected(false);
+    }
+
+    public void timezoneRadioBtnHandler(ActionEvent actionEvent) {
+        officeLocationTimeRadioBtn.setSelected(false);
     }
 
     public void setAppointment(Appointments appointments) {
@@ -348,35 +380,7 @@ public class EditAppointmentScreen implements Initializable {
         Timestamp start = null;
         Timestamp end = null;
 
-        while (resultSet.next()) {
-            start = resultSet.getTimestamp("Start");
-            end = resultSet.getTimestamp("End");
-            LocalDateTime localTimeStart = start.toLocalDateTime();
-            LocalDateTime localTimeEnd = end.toLocalDateTime();
-            String startString = localTimeStart.toString();
-            String endString = localTimeEnd.toString();
-
-            String[] startParts = startString.split("T");
-            String[] endParts = endString.split("T");
-
-
-            String startDate = startParts[0];
-            String endDate = endParts[0];
-
-            String startTime = startParts[1];
-            String endTime = endParts[1];
-            String[] startTimeSplit = startTime.split(":");
-            String startTimeHour = startTimeSplit[0];
-
-            if(startDate.equals(enteredStartDate.toString())) {
-                if(startTimeComboBox.getItems().contains(startTimeHour + ":00")) {
-                    startTimeComboBox.getItems().removeAll(startTimeHour + ":00");
-                }
-            }
-            else if(endDate.equals(enteredEndDate.toString())) {
-                endTimeComboBox.getItems().removeAll(endTime);
-            }
-        }
+        AddAppointmentScreen.startEndTimeSplitFromDatabase(enteredStartDate, enteredEndDate, resultSet, startTimeComboBox, endTimeComboBox);
     }
 
     public static LocalTime processOffset(int localOffset, int easternOffset, boolean isStart) {
@@ -443,5 +447,4 @@ public class EditAppointmentScreen implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-
 }

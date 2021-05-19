@@ -10,7 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.input.MouseEvent;
 
 import javafx.scene.control.*;
 import javafx.stage.Modality;
@@ -25,7 +24,6 @@ import java.text.ParseException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.zone.ZoneRules;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -35,8 +33,6 @@ public class AddAppointmentScreen implements Initializable {
 
     @FXML
     Label startTimeErrorLabel;
-    @FXML
-    Label endTimeErrorLabel;
     @FXML
     TextField titleTextField;
     @FXML
@@ -60,8 +56,6 @@ public class AddAppointmentScreen implements Initializable {
     @FXML
     Button startTimesButton;
     @FXML
-    Button endTimesButton;
-    @FXML
     Button saveButton;
     @FXML
     Button cancelButton;
@@ -69,17 +63,23 @@ public class AddAppointmentScreen implements Initializable {
     Button addTestApptButton;
     @FXML
     Button revealTestButton;
-    private ObservableList<String> contactNames = FXCollections.observableArrayList();
-    private ObservableList<String> customerNames = FXCollections.observableArrayList();
-    private ObservableList<String> startTimes = FXCollections.observableArrayList();
-    private static ObservableList<String> endTimes = FXCollections.observableArrayList();
+    @FXML
+    RadioButton officeLocationTimeRadioBtn;
+    @FXML
+    RadioButton timezoneRadioBtn;
+    private final ObservableList<String> contactNames = FXCollections.observableArrayList();
+    private final ObservableList<String> customerNames = FXCollections.observableArrayList();
+    private static final ObservableList<String> startTimes = FXCollections.observableArrayList();
+    private static final ObservableList<String> endTimes = FXCollections.observableArrayList();
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         startTimeErrorLabel.setOpacity(0);
-        endTimeErrorLabel.setOpacity(0);
+        officeLocationTimeRadioBtn.setSelected(true);
+        timezoneRadioBtn.setSelected(false);
 
         //Initial setOnAction for the comboBoxes
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
@@ -96,16 +96,16 @@ public class AddAppointmentScreen implements Initializable {
     }
 
 
-    public void startTimeComboBoxHandler(ActionEvent actionEvent) {
+    public void startTimeComboBoxHandler() {
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
     }
 
 
-    public void endTimeComboBoxHandler(ActionEvent actionEvent) {
+    public void endTimeComboBoxHandler() {
     }
 
 
-    public void startTimesComboBoxClicked(MouseEvent mouseEvent) {
+    public void startTimesComboBoxClicked() {
 
         if(startDateTextField.getText().isEmpty()) {
             startTimeErrorLabel.setOpacity(1);
@@ -114,7 +114,7 @@ public class AddAppointmentScreen implements Initializable {
 
     }
 
-    public void startTimesButtonHandler(ActionEvent actionEvent) throws SQLException, ParseException {
+    public void startTimesButtonHandler() throws SQLException {
         if(startDateTextField.getText().isEmpty()) {
             System.out.println("Must enter a date");
         }
@@ -124,69 +124,119 @@ public class AddAppointmentScreen implements Initializable {
             endDateTextField.setText(enteredStartDateString);
             String enteredEndDateString = endDateTextField.getText();
             startTimeComboBox.getItems().clear();
+            String locationSelection = locationComboBox.getValue();
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate enteredStartDate = LocalDate.parse(enteredStartDateString, formatter);
-            LocalDate enteredEndDate = LocalDate.parse(enteredEndDateString, formatter);
+            try {
+                LocalDate enteredStartDate = LocalDate.parse(enteredStartDateString, formatter);
+                LocalDate enteredEndDate = LocalDate.parse(enteredEndDateString, formatter);
 
-            //Alerts the user that only Monday-Friday days are allowed
-            if(enteredStartDate.getDayOfWeek() == DayOfWeek.SATURDAY || enteredStartDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                if(timezoneRadioBtn.isSelected()) {
+                    if(enteredStartDate.getDayOfWeek() == DayOfWeek.SATURDAY || enteredStartDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText("Error getting times");
+                        alert.setContentText("Times only available Monday-Friday");
+                        alert.showAndWait();
+                    }
+                    else {
+                        getAvailableTimes(enteredStartDate, enteredEndDate);
+                    }
+                }
+                else {
+                    //Prevents the user from attempting to view location times with no location selected
+                    if(locationSelection == null) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText("Location not selected");
+                        alert.setContentText("Please select a location and try again");
+                        alert.show();
+                    }
+                    else {
+                        String location = locationComboBox.getValue();
+
+                        //Checks if the date entered is on a weekend and throws an error
+                        //Calls the method to add times to the combo box based on which radio button is selected
+                        if(officeLocationTimeRadioBtn.isSelected()) {
+                            //Alerts the user that only Monday-Friday days are allowed
+                            if(enteredStartDate.getDayOfWeek() == DayOfWeek.SATURDAY || enteredStartDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setHeaderText("Error getting times");
+                                alert.setContentText("Times only available Monday-Friday");
+                                alert.showAndWait();
+                            }
+                            else {
+                                addLocationTimesToComboBox(location);
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("Error getting times");
-                alert.setContentText("Times only available Monday-Friday");
+                alert.setHeaderText("ERROR");
+                alert.setContentText("Something went wrong! Try entering a valid date.");
                 alert.showAndWait();
-            }
-            else {
-                getAvailableTimes(enteredStartDate, enteredEndDate);
             }
         }
     }
 
-    public void endTimesButtonHandler(ActionEvent actionEvent) throws SQLException {
+    public void endTimesComboBoxClicked() {
 
-        if(endDateTextField.getText().isEmpty()) {
-            System.out.println("Must enter an end date");
+        if(endDateTextField.getText().isEmpty() || startDateTextField.getText().isEmpty()) {
+            System.out.println("Please enter a start and end date and click the \"Check Times\" button to view times");
+        }
+    }
+
+    public void locationComboBoxHandler() {
+    }
+
+    public void customerComboBoxHandler() {
+    }
+
+
+
+    public void saveButtonHandler() throws SQLException {
+        if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeTextField.getText().isEmpty() ||
+        contactNameComboBox.getValue() == null || customerComboBox.getValue() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Error saving");
+            alert.setContentText("Title, Description, Location, Type, Contact, or Customer fields are empty");
+            alert.showAndWait();
+        }
+        else if(startDateTextField.getText().isEmpty() || endDateTextField.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Error saving");
+            alert.setContentText("Please enter a start or end date");
+            alert.showAndWait();
+        }
+        else if(startTimeComboBox.getValue() == null || endTimeComboBox.getValue() == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Error saving");
+            alert.setContentText("Please select a start or end time");
+            alert.showAndWait();
         }
         else {
-            endTimeErrorLabel.setOpacity(0);
-            endTimeComboBox.getItems().clear();
-            String enteredEndDateString = endDateTextField.getText();
-            String enteredStartDateString = startDateTextField.getText();
+            String fullStart = startDateTextField.getText() + " " + startTimeComboBox.getValue() + ":00";
+            String fullEnd = endDateTextField.getText() + " " + endTimeComboBox.getValue() + ":00";
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate enteredStartDate = LocalDate.parse(enteredStartDateString, formatter);
-            LocalDate enteredEndDate = LocalDate.parse(enteredEndDateString, formatter);
 
-            //Alerts the user that only Monday-Friday days are allowed
-            if(enteredEndDate.getDayOfWeek() == DayOfWeek.SATURDAY || enteredEndDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("Error getting times");
-                alert.setContentText("Times only available Monday-Friday");
-                alert.showAndWait();
-            }
-            else {
-                getAvailableTimes(enteredStartDate, enteredEndDate);
-            }
+            LocalDateTime fullStartLocal = LocalDateTime.parse(fullStart, dateTimeFormatter);
+            LocalDateTime fullEndLocal = LocalDateTime.parse(fullEnd, dateTimeFormatter);
+
+            System.out.println(fullStartLocal);
+            System.out.println(fullEndLocal);
+
+
+            Connection connection = DBConnection.getConnection();
+            String selectStatement = "";
+            String insertStatement = "INSERT into appointments(Title, Description, Location, Type, Start, End, Created_By, Customer_ID, User_ID, Contact_ID) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            DBQuery.setPreparedStatement(connection, insertStatement);
+            PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
         }
     }
 
-    public void endTimesComboBoxClicked(MouseEvent mouseEvent) {
-
-        if(endDateTextField.getText().isEmpty()) {
-            endTimeErrorLabel.setOpacity(1);
-        }
-    }
-
-    public void locationComboBoxHandler(ActionEvent actionEvent) {
-    }
-
-    public void customerComboBoxHandler(ActionEvent actionEvent) {
-    }
 
 
-
-    public void saveButtonHandler(ActionEvent actionEvent) {
-    }
 
     public void cancelButtonHandler(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -204,7 +254,7 @@ public class AddAppointmentScreen implements Initializable {
         }
     }
 
-    public void addTestApptButtonHandler(ActionEvent actionEvent) {
+    public void addTestApptButtonHandler() {
         titleTextField.setText("Title");
         descriptionTextField.setText("Description");
         locationComboBox.setValue("New York");
@@ -241,10 +291,18 @@ public class AddAppointmentScreen implements Initializable {
 
     }
 
-    public void revealTestButtonHandler(ActionEvent actionEvent) {
+    public void revealTestButtonHandler() {
         addTestApptButton.setOpacity(1);
         addTestApptButton.setDisable(false);
         System.out.println("Test Button Revealed");
+    }
+
+    public void officeLocationTimeRadioBtnHandler() {
+        timezoneRadioBtn.setSelected(false);
+    }
+
+    public void timezoneRadioBtnHandler() {
+        officeLocationTimeRadioBtn.setSelected(false);
     }
 
     private void pullContactNames() throws SQLException {
@@ -254,7 +312,7 @@ public class AddAppointmentScreen implements Initializable {
         DBQuery.setPreparedStatement(connection, selectStatement);
         PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
         ResultSet resultSet = preparedStatement.executeQuery();
-        String contactName = null;
+        String contactName;
 
         while(resultSet.next()) {
             contactName = resultSet.getString("Contact_Name");
@@ -270,7 +328,7 @@ public class AddAppointmentScreen implements Initializable {
         DBQuery.setPreparedStatement(connection, selectStatement);
         PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
         ResultSet resultSet = preparedStatement.executeQuery();
-        String customerName = null;
+        String customerName;
 
         while (resultSet.next()) {
             customerName = resultSet.getString("Customer_Name");
@@ -280,20 +338,13 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     private void getAvailableTimes(LocalDate enteredStartDate, LocalDate enteredEndDate) throws SQLException {
-        boolean isEastern;
+        boolean isEastern = false;
 
         ZonedDateTime localTime = ZonedDateTime.now(zoneId);
         ZonedDateTime easternTime = localTime.withZoneSameInstant(ZoneId.of("America/New_York"));
-        ZonedDateTime timeInUTC = localTime.withZoneSameInstant((ZoneId.of("UTC")));
-        ZoneRules zoneRules = zoneId.getRules();
 
         ZoneId easternZone = ZoneId.of("America/New_York");
-        ZoneRules easternRules = easternZone.getRules();
 
-
-        boolean isLocalDaylightSavings = zoneRules.isDaylightSavings(localTime.toInstant());
-        boolean isEasternDaylightSavings = easternRules.isDaylightSavings(easternTime.toInstant());
-        //System.out.println(isLocalDaylightSavings);
 
         LocalDateTime localDateTime = localTime.toLocalDateTime();
         Instant instant = localDateTime.toInstant(localTime.getOffset());
@@ -310,18 +361,9 @@ public class AddAppointmentScreen implements Initializable {
         currentTime = parts1[0] + ":00";
 
 
-        //SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-        //DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        //LocalTime localTimeConversion = LocalTime.parse(currentTime, dateTimeFormatter);
-
         LocalTime easternTimeConversion = easternTime.toLocalTime();
         LocalTime easternStart = LocalTime.of(8, 0);
         LocalTime easternEnd = LocalTime.of(22, 0);
-
-        String enteredDateSplit = enteredStartDate.toString();
-        //String[] parts1 = enteredDateSplit.split("T");
-        //String splitEnteredDate = parts1[0];
-        //String splitEnteredTime = parts1[1];
 
 
 
@@ -332,11 +374,9 @@ public class AddAppointmentScreen implements Initializable {
         int easternOffset = easternTime.getOffset().getTotalSeconds();
 
         System.out.println(easternOffset - localOffset);
-        //localOffset = Math.abs(localOffset);
-        //easternOffset = Math.abs(easternOffset);
 
-        LocalTime localStart = processOffset(localOffset, easternOffset, true, isLocalDaylightSavings, isEasternDaylightSavings);
-        LocalTime localEnd = processOffset(localOffset, easternOffset, false, isLocalDaylightSavings, isEasternDaylightSavings);
+        LocalTime localStart = processOffset(localOffset, easternOffset, true);
+        LocalTime localEnd = processOffset(localOffset, easternOffset, false);
 
         if(localStart == null) {
             isEastern = true;
@@ -349,13 +389,13 @@ public class AddAppointmentScreen implements Initializable {
 
 
         if(localStart.isBefore(easternStart)) {
-            addTimesToComboBox(localStart, true, false);
+            addTimesToComboBox(localStart, true, isEastern);
         }
         else if(localStart.isAfter(easternStart)) {
-            addTimesToComboBox(localStart, false, false);
+            addTimesToComboBox(localStart, false, isEastern);
         }
         else {
-            addTimesToComboBox(localStart, false, true);
+            addTimesToComboBox(localStart, false, isEastern);
         }
 
 
@@ -383,9 +423,13 @@ public class AddAppointmentScreen implements Initializable {
         PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
 
         ResultSet resultSet = preparedStatement.executeQuery();
-        Timestamp start = null;
-        Timestamp end = null;
 
+        startEndTimeSplitFromDatabase(enteredStartDate, enteredEndDate, resultSet, startTimeComboBox, endTimeComboBox);
+    }
+
+    static void startEndTimeSplitFromDatabase(LocalDate enteredStartDate, LocalDate enteredEndDate, ResultSet resultSet, ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) throws SQLException {
+        Timestamp start;
+        Timestamp end;
         while (resultSet.next()) {
             start = resultSet.getTimestamp("Start");
             end = resultSet.getTimestamp("End");
@@ -421,20 +465,14 @@ public class AddAppointmentScreen implements Initializable {
         return !localTime.isBefore(easternStart) && !localTime.isAfter(easternEnd);
     }
 
-    public static LocalTime processOffset(int localOffset, int easternOffset, boolean isStart, boolean isLocalDaylightSavings, boolean isEasternDaylightSavings) {
+    public static LocalTime processOffset(int localOffset, int easternOffset, boolean isStart) {
        int localMinutes = localOffset / 60;
        int localHours = localMinutes / 60;
-       /*if(isLocalDaylightSavings) {
-           localHours -= 1;
-       }*/
 
        System.out.println(localHours + " hours offset");
 
        int easternMinutes = easternOffset / 60;
        int easternHours = easternMinutes / 60;
-       /*if(isEasternDaylightSavings) {
-           easternHours -= 1;
-       }*/
 
        System.out.println(easternHours + " hours offset");
 
@@ -465,7 +503,6 @@ public class AddAppointmentScreen implements Initializable {
            }
            else {
                if(22 + offsetDiff > 24) {
-                   //int extraTime = (22 + offsetDiff) - 24;
                    return LocalTime.of(23, 59);
                }
                else {
@@ -477,7 +514,7 @@ public class AddAppointmentScreen implements Initializable {
 
     public void addTimesToComboBox(LocalTime time, boolean isBefore, boolean isEastern) {
         startTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
-                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
+                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
         endTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
                 "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
         startTimes.addAll(startTimeComboBox.getItems());
@@ -631,6 +668,55 @@ public class AddAppointmentScreen implements Initializable {
         }
     }
 
+    public void addLocationTimesToComboBox(String location) {
+
+        startTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
+        endTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
+        startTimes.addAll(startTimeComboBox.getItems());
+        endTimes.addAll(endTimeComboBox.getItems());
+
+        if(location.contains("Phoenix")) {
+            startTimeComboBox.getItems().add(0, "05:00");
+            startTimeComboBox.getItems().add(1, "06:00");
+            startTimeComboBox.getItems().add(2, "07:00");
+
+            endTimeComboBox.getItems().add(0, "06:00");
+            endTimeComboBox.getItems().add(1, "07:00");
+
+            startTimes.add(0, "05:00");
+            startTimes.add(1, "06:00");
+            startTimes.add(2, "07:00");
+            //startTimes.addAll("05:00", "06:00", "07:00");
+
+            endTimes.add(0, "06:00");
+            endTimes.add(1, "07:00");
+            //endTimes.addAll("06:00", "07:00");
+
+            startTimeComboBox.getItems().removeAll("19:00", "20:00", "21:00", "22:00");
+            endTimeComboBox.getItems().removeAll("20:00", "21:00", "22:00");
+            startTimes.removeAll("19:00", "20:00", "21:00", "22:00");
+            endTimes.removeAll("20:00", "21:00", "22:00");
+        }
+        else if (location.contains("London")) {
+            startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
+            endTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00");
+
+            startTimeComboBox.getItems().add("23:00");
+            endTimeComboBox.getItems().addAll("23:00", "23:59");
+
+            startTimes.add("23:00");
+            endTimes.addAll("23:00", "23:59");
+
+            startTimes.removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
+            endTimes.removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
+        }
+        else {
+            System.out.println("Eastern Times already added");
+        }
+    }
+
     private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
         Stage stage;
         Parent root;
@@ -661,5 +747,4 @@ public class AddAppointmentScreen implements Initializable {
             }
         });
     }
-
 }
