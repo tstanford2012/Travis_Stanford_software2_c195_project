@@ -136,6 +136,7 @@ public class LoginPageController implements Initializable {
 
         FilteredList<Appointments> filteredList = new FilteredList<>(appointmentsAlertList);
 
+        //Lambda expression
         filteredList.setPredicate(row -> {
             LocalDateTime date = LocalDateTime.parse(row.getStartZonedDateTime().toString().substring(0, 16), formatDateTime);
             return date.isAfter(currentTime.minusMinutes(1)) && date.isBefore(fifteenMinFromNow);
@@ -172,7 +173,7 @@ public class LoginPageController implements Initializable {
     }
 
     private void addRemindersToList() throws SQLException {
-        System.out.println(User.getUserName());
+        System.out.println("Username: " + User.getUserName());
         try {
             Connection connection = DBConnection.getConnection();
             DBQuery.setPreparedStatement(connection, "SELECT appointments.Appointment_ID, appointments.Customer_ID, appointments.Title, appointments.Description, " +
@@ -187,12 +188,10 @@ public class LoginPageController implements Initializable {
                 Timestamp startTimestamp = resultSet.getTimestamp("Start");
                 ZonedDateTime startTimeInUTC = startTimestamp.toInstant().atZone(ZoneId.of("UTC"));
                 ZonedDateTime localStartTime = startTimeInUTC.withZoneSameInstant(zoneID);
-                System.out.println("!!!!!!!!!!!!!!!!!" + localStartTime);
 
                 Timestamp endTimestamp = resultSet.getTimestamp("End");
                 ZonedDateTime endTimeInUTC = endTimestamp.toInstant().atZone(ZoneId.of("UTC"));
                 ZonedDateTime localEndTime = endTimeInUTC.withZoneSameInstant(zoneID);
-                System.out.println("!!!!!!!!!!!!!!!!!" + localEndTime);
 
 
                 int appointmentID = resultSet.getInt("Appointment_ID");

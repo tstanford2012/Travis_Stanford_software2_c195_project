@@ -1,5 +1,6 @@
 package Controller;
 
+import Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -139,7 +140,8 @@ public class AddAppointmentScreen implements Initializable {
                         alert.showAndWait();
                     }
                     else {
-                        getAvailableTimes(enteredStartDate, enteredEndDate);
+                        //Do nothing. Functionality to be added in a later iteration
+                        //getAvailableTimes(enteredStartDate, enteredEndDate);
                     }
                 }
                 else {
@@ -165,6 +167,7 @@ public class AddAppointmentScreen implements Initializable {
                             }
                             else {
                                 addLocationTimesToComboBox(location);
+                                getAvailableLocationTimes(enteredStartDate, enteredEndDate);
                             }
                         }
                     }
@@ -193,7 +196,7 @@ public class AddAppointmentScreen implements Initializable {
 
 
 
-    public void saveButtonHandler() throws SQLException {
+    public void saveButtonHandler(ActionEvent actionEvent) throws SQLException, IOException {
         if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeTextField.getText().isEmpty() ||
         contactNameComboBox.getValue() == null || customerComboBox.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -224,14 +227,87 @@ public class AddAppointmentScreen implements Initializable {
             System.out.println(fullStartLocal);
             System.out.println(fullEndLocal);
 
-
-            Connection connection = DBConnection.getConnection();
+            if(validAppointment(fullStartLocal, fullEndLocal)) {
+                System.out.println("Appointment is valid");
+                Connection connection = DBConnection.getConnection();
             String selectStatement = "";
+            String selectCustomerName = "SELECT Customer_ID, Customer_Name from customers";
+            String selectContactName = "SELECT Contact_ID, Contact_Name from contacts";
             String insertStatement = "INSERT into appointments(Title, Description, Location, Type, Start, End, Created_By, Customer_ID, User_ID, Contact_ID) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+            DBQuery.setPreparedStatement(connection, selectCustomerName);
+            PreparedStatement customerPreparedStatement = DBQuery.getPreparedStatement();
+            ResultSet resultSet = customerPreparedStatement.executeQuery();
+
+            int customerID = 0;
+
+            while(resultSet.next()) {
+                int tempCustomerID = resultSet.getInt("Customer_ID");
+                String customerName = resultSet.getString("Customer_Name");
+
+                if(customerComboBox.getValue().contains(customerName)) {
+                    customerID = tempCustomerID;
+                    break;
+                }
+            }
+
+            DBQuery.setPreparedStatement(connection, selectContactName);
+            PreparedStatement contactPreparedStatement = DBQuery.getPreparedStatement();
+            ResultSet resultSet1 = contactPreparedStatement.executeQuery();
+
+            int contactID = 0;
+
+            while (resultSet1.next()) {
+                int tempContactID = resultSet1.getInt("Contact_ID");
+                String contactName = resultSet1.getString("Contact_Name");
+
+                if(contactNameComboBox.getValue().contains(contactName)) {
+                    contactID = tempContactID;
+                }
+                else {
+                    //do nothing
+                }
+            }
+
+
+                System.out.println(titleTextField.getText());
+                System.out.println(descriptionTextField.getText());
+                System.out.println(locationComboBox.getValue());
+                System.out.println(typeTextField.getText());
+                System.out.println(Timestamp.valueOf(fullStart));
+                System.out.println(Timestamp.valueOf(fullEnd));
+                System.out.println(User.getUserName());
+                System.out.println(customerID);
+                System.out.println(User.getUserID());
+                System.out.println(contactID);
             DBQuery.setPreparedStatement(connection, insertStatement);
             PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+
+            preparedStatement.setString(1, titleTextField.getText());
+            preparedStatement.setString(2, descriptionTextField.getText());
+            preparedStatement.setString(3, locationComboBox.getValue());
+            preparedStatement.setString(4, typeTextField.getText());
+            preparedStatement.setTimestamp(5, Timestamp.valueOf(fullStart));
+            preparedStatement.setTimestamp(6, Timestamp.valueOf(fullEnd));
+            preparedStatement.setString(7, User.getUserName());
+            preparedStatement.setInt(8, customerID);
+            preparedStatement.setInt(9, User.getUserID());
+            preparedStatement.setInt(10, contactID);
+
+            preparedStatement.execute();
+                System.out.println("New record added");
+
+            nextScreen(actionEvent, "../View/appointments.fxml");
+
+
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("Could not save appointment!");
+                alert.setHeaderText("Appointment times conflict with another scheduled appointment.");
+                alert.showAndWait();
+            }
         }
     }
 
@@ -427,6 +503,44 @@ public class AddAppointmentScreen implements Initializable {
         startEndTimeSplitFromDatabase(enteredStartDate, enteredEndDate, resultSet, startTimeComboBox, endTimeComboBox);
     }
 
+    public void getAvailableLocationTimes(LocalDate enteredStartDate, LocalDate enteredEndDate) throws SQLException {
+        ZonedDateTime localTime = ZonedDateTime.now(zoneId);
+
+        String currentTimeSplit = localTime.toString();
+        String[] parts = currentTimeSplit.split("T");
+        String currentDate = parts[0];
+        String currentTime = parts[1];
+
+        String[] parts1 = currentTime.split(":");
+        currentTime = parts1[0] + ":00";
+
+
+        if(currentDate.equals(enteredStartDate.toString())) {
+            if(startTimeComboBox.getItems().contains(currentTime)) {
+                int enteredTimeIndex = startTimeComboBox.getItems().indexOf(currentTime);
+                int firstIndex = 0;
+                while(startTimeComboBox.getItems().contains(currentTime)) {
+                    if(enteredTimeIndex > firstIndex) {
+                        System.out.println(startTimeComboBox.getItems().get(0));
+                        startTimeComboBox.getItems().remove(0);
+                    }
+                }
+            }
+        }
+
+        Connection connection = DBConnection.getConnection();
+
+        String selectStatement = "SELECT Start, END from appointments";
+        DBQuery.setPreparedStatement(connection, selectStatement);
+        PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        startEndTimeSplitFromDatabase(enteredStartDate, enteredEndDate, resultSet, startTimeComboBox, endTimeComboBox);
+
+
+    }
+
     static void startEndTimeSplitFromDatabase(LocalDate enteredStartDate, LocalDate enteredEndDate, ResultSet resultSet, ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) throws SQLException {
         Timestamp start;
         Timestamp end;
@@ -448,15 +562,31 @@ public class AddAppointmentScreen implements Initializable {
             String startTime = startParts[1];
             String endTime = endParts[1];
             String[] startTimeSplit = startTime.split(":");
+            String[] endTimeSplit = endTime.split(":");
             String startTimeHour = startTimeSplit[0];
+            String endTimeHour = endTimeSplit[0];
 
             if(startDate.equals(enteredStartDate.toString())) {
-                if(startTimeComboBox.getItems().contains(startTimeHour + ":00")) {
-                    startTimeComboBox.getItems().removeAll(startTimeHour + ":00");
+                if(startTimeComboBox.getItems().contains(startTimeHour + ":00") || startTimeComboBox.getItems().contains(endTimeHour)) {
+                    int beginningIndex = startTimeComboBox.getItems().indexOf(startTimeHour + ":00");
+                    int endIndex = startTimeComboBox.getItems().indexOf(endTimeHour + ":00");
+                    while(beginningIndex <= endIndex) {
+                        startTimeComboBox.getItems().remove(beginningIndex);
+                        endIndex = startTimeComboBox.getItems().indexOf(endTimeHour + ":00");
+                    }
+
+                    //startTimeComboBox.getItems().removeAll(startTimeHour + ":00");
                 }
-            }
-            else if(endDate.equals(enteredEndDate.toString())) {
-                endTimeComboBox.getItems().removeAll(endTime);
+                if(endTimeComboBox.getItems().contains(endTimeHour + ":00") || endTimeComboBox.getItems().contains(startTimeHour + ":00")) {
+                    int beginningIndex = endTimeComboBox.getItems().indexOf(startTimeHour + ":00");
+                    int endIndex = endTimeComboBox.getItems().indexOf(endTimeHour + ":00");
+                    while(beginningIndex <= endIndex) {
+                        endTimeComboBox.getItems().remove(beginningIndex);
+                        endIndex = endTimeComboBox.getItems().indexOf(endTimeHour + ":00");
+                    }
+
+                    //endTimeComboBox.getItems().removeAll(endTimeHour + ":00", startTimeHour + ":00");
+                }
             }
         }
     }
@@ -515,12 +645,11 @@ public class AddAppointmentScreen implements Initializable {
     public void addTimesToComboBox(LocalTime time, boolean isBefore, boolean isEastern) {
         startTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
                 "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
-        endTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+        endTimeComboBox.getItems().addAll("09:00", "10:00", "11:00", "12:00", "13:00",
                 "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
         startTimes.addAll(startTimeComboBox.getItems());
         endTimes.addAll(endTimeComboBox.getItems());
 
-        // TODO: 5/10/2021 Fix these times to match the dates
 
 
         if(!isEastern) {
@@ -672,7 +801,7 @@ public class AddAppointmentScreen implements Initializable {
 
         startTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
                 "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
-        endTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+        endTimeComboBox.getItems().addAll("09:00", "10:00", "11:00", "12:00", "13:00",
                 "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
         startTimes.addAll(startTimeComboBox.getItems());
         endTimes.addAll(endTimeComboBox.getItems());
@@ -746,5 +875,40 @@ public class AddAppointmentScreen implements Initializable {
                 endTimeComboBox.getItems().remove(index);
             }
         });
+    }
+
+    private boolean validAppointment(LocalDateTime start, LocalDateTime end) throws SQLException {
+        int appointmentID = -1;
+        String userName = User.getUserName();
+        int userID = User.getUserID();
+
+        try {
+            Connection connection = DBConnection.getConnection();
+            String selectStatement = "SELECT * FROM appointments WHERE (? BETWEEN Start AND End OR ? BETWEEN Start AND End OR ? < Start AND ? > End) AND " +
+                    "(Created_By = ? AND Appointment_ID != ?)";
+            DBQuery.setPreparedStatement(connection, selectStatement);
+            PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+
+
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(start));
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(end));
+            preparedStatement.setTimestamp(3, Timestamp.valueOf(start));
+            preparedStatement.setTimestamp(4, Timestamp.valueOf(end));
+            preparedStatement.setString(5, userName);
+            preparedStatement.setInt(6, appointmentID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return false;
+            }
+
+        } catch (SQLException sqe) {
+            System.out.println("SQL error while calling validAppointment");
+            sqe.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("An unknown nonSQL error occurred");
+            e.printStackTrace();
+        }
+        return true;
     }
 }
