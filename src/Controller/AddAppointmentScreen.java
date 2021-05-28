@@ -31,6 +31,10 @@ import java.util.ResourceBundle;
 public class AddAppointmentScreen implements Initializable {
 
     private final ZoneId zoneId = ZoneId.systemDefault();
+    ZoneId phoenixZone = ZoneId.of("America/Phoenix");
+    ZoneId londonZone = ZoneId.of("Europe/London");
+    ZoneId easternZone = ZoneId.of("America/New_York");
+    ZoneId utc = ZoneId.of("UTC");
 
     @FXML
     Label startTimeErrorLabel;
@@ -73,6 +77,7 @@ public class AddAppointmentScreen implements Initializable {
     private static final ObservableList<String> startTimes = FXCollections.observableArrayList();
     private static final ObservableList<String> endTimes = FXCollections.observableArrayList();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private boolean testAppointment = false;
 
 
 
@@ -224,12 +229,81 @@ public class AddAppointmentScreen implements Initializable {
             LocalDateTime fullStartLocal = LocalDateTime.parse(fullStart, dateTimeFormatter);
             LocalDateTime fullEndLocal = LocalDateTime.parse(fullEnd, dateTimeFormatter);
 
-            System.out.println(fullStartLocal);
-            System.out.println(fullEndLocal);
+
+
+
+            ZonedDateTime fullStartZone;
+            ZonedDateTime fullEndZone;
+
+
+
 
             if(validAppointment(fullStartLocal, fullEndLocal)) {
-                System.out.println("Appointment is valid");
-                Connection connection = DBConnection.getConnection();
+            System.out.println("Appointment is valid");
+
+            LocalDateTime localStartToDatabase = null;
+            LocalDateTime localEndToDatabase = null;
+
+            if(testAppointment) {
+                fullStartZone = ZonedDateTime.of(fullStartLocal, zoneId);
+                ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                fullEndZone = ZonedDateTime.of(fullEndLocal, zoneId);
+                ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+            }
+
+            else if(locationComboBox.getValue().contains("Phoenix")) {
+                fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
+                ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
+                ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+
+
+
+            }
+            else if(locationComboBox.getValue().contains("London")) {
+                fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
+                ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                fullEndZone = ZonedDateTime.of(fullEndLocal, londonZone);
+                ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+
+            }
+            else {
+                fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
+                ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                fullEndZone = ZonedDateTime.of(fullEndLocal, easternZone);
+                ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+            }
+
+            String[] parts = localStartToDatabase.toString().split("T");
+            String date = parts[0];
+            String time = parts[1];
+
+            String startToDatabase = date + " " + time + ":00";
+
+            parts = localEndToDatabase.toString().split("T");
+            date = parts[0];
+            time = parts[1];
+
+            String endToDatabase = date + " " + time + ":00";
+
+
+            Connection connection = DBConnection.getConnection();
             String selectStatement = "";
             String selectCustomerName = "SELECT Customer_ID, Customer_Name from customers";
             String selectContactName = "SELECT Contact_ID, Contact_Name from contacts";
@@ -275,8 +349,8 @@ public class AddAppointmentScreen implements Initializable {
                 System.out.println(descriptionTextField.getText());
                 System.out.println(locationComboBox.getValue());
                 System.out.println(typeTextField.getText());
-                System.out.println(Timestamp.valueOf(fullStart));
-                System.out.println(Timestamp.valueOf(fullEnd));
+                System.out.println(Timestamp.valueOf(startToDatabase));
+                System.out.println(Timestamp.valueOf(endToDatabase));
                 System.out.println(User.getUserName());
                 System.out.println(customerID);
                 System.out.println(User.getUserID());
@@ -288,8 +362,8 @@ public class AddAppointmentScreen implements Initializable {
             preparedStatement.setString(2, descriptionTextField.getText());
             preparedStatement.setString(3, locationComboBox.getValue());
             preparedStatement.setString(4, typeTextField.getText());
-            preparedStatement.setTimestamp(5, Timestamp.valueOf(fullStart));
-            preparedStatement.setTimestamp(6, Timestamp.valueOf(fullEnd));
+            preparedStatement.setString(5, startToDatabase);
+            preparedStatement.setString(6, endToDatabase);
             preparedStatement.setString(7, User.getUserName());
             preparedStatement.setInt(8, customerID);
             preparedStatement.setInt(9, User.getUserID());
@@ -330,41 +404,58 @@ public class AddAppointmentScreen implements Initializable {
         }
     }
 
-    public void addTestApptButtonHandler() {
-        titleTextField.setText("Title");
-        descriptionTextField.setText("Description");
-        locationComboBox.setValue("New York");
-        typeTextField.setText("Appointment Type");
+    public void addTestApptButtonHandler(ActionEvent actionEvent) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText("Confirming....");
+        alert.setContentText("Would you like to add a test appointment for 15 min from now?\nThis will ignore the location selection for times");
 
-        long minutesToAdd = 15;
-        long hoursToAdd = 1;
-
-        ZonedDateTime startInstant = Instant.now().atZone(zoneId);
-        ZonedDateTime startTimePlusFifteen = startInstant.plus(minutesToAdd, ChronoUnit.MINUTES);
-        ZonedDateTime endInstant = startInstant.plus(hoursToAdd, ChronoUnit.HOURS);
+        Optional<ButtonType> result = alert.showAndWait();
 
 
-        System.out.println(startInstant);
-        System.out.println(startTimePlusFifteen);
+        if(result.get() == ButtonType.OK) {
+            testAppointment = true;
 
-        String startSplit = startTimePlusFifteen.toString();
-        String[] parts = startSplit.split("T");
-        String startDate = parts[0];
-        String startTime = parts[1];
+            titleTextField.setText("Title");
+            descriptionTextField.setText("Description");
+            locationComboBox.setValue("White Plains");
+            typeTextField.setText("Appointment Type");
 
-        String endSplit = endInstant.toString();
-        String[] parts1 = endSplit.split("T");
-        String endDate = parts1[0];
-        String endTime = parts1[1];
+            long minutesToAdd = 15;
+            long endMinutesToAdd = 10;
+            long hoursToAdd = 1;
 
-
-        startDateTextField.setText(startDate);
-        endDateTextField.setText(endDate);
-
-        startTimeComboBox.setValue(startTime);
-        endTimeComboBox.setValue(endTime);
+            ZonedDateTime startInstant = Instant.now().atZone(zoneId).truncatedTo(ChronoUnit.MINUTES);
+            ZonedDateTime startTimePlusFifteen = startInstant.plus(minutesToAdd, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MINUTES);
+            ZonedDateTime endInstant = startInstant.plus(endMinutesToAdd, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MINUTES);
 
 
+            System.out.println(startInstant);
+            System.out.println(startTimePlusFifteen);
+
+            LocalDateTime localStartPlusFifteen = startTimePlusFifteen.toLocalDateTime();
+            LocalDateTime localEnd = endInstant.toLocalDateTime();
+
+            String startSplit = localStartPlusFifteen.toString();
+            String[] parts = startSplit.split("T");
+            String startDate = parts[0];
+            String startTime = parts[1];
+
+            String endSplit = localEnd.toString();
+            String[] parts1 = endSplit.split("T");
+            String endDate = parts1[0];
+            String endTime = parts1[1];
+
+
+            startDateTextField.setText(startDate);
+            endDateTextField.setText(endDate);
+
+            startTimeComboBox.setValue(startTime);
+            endTimeComboBox.setValue(endTime);
+
+        }
+        else {
+            System.out.println("Appointment is normal");
+        }
     }
 
     public void revealTestButtonHandler() {
@@ -504,7 +595,21 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     public void getAvailableLocationTimes(LocalDate enteredStartDate, LocalDate enteredEndDate) throws SQLException {
+
         ZonedDateTime localTime = ZonedDateTime.now(zoneId);
+        ZonedDateTime phoenixTime = localTime.withZoneSameInstant(phoenixZone);
+        ZonedDateTime easternTime = localTime.withZoneSameInstant(easternZone);
+        ZonedDateTime londonTime = localTime.withZoneSameInstant(londonZone);
+
+        if(locationComboBox.getValue().contains("Phoenix") && !timezoneRadioBtn.isSelected()) {
+            localTime = phoenixTime;
+        }
+        else if(locationComboBox.getValue().contains("London") && !timezoneRadioBtn.isSelected()) {
+            localTime = londonTime;
+        }
+        else if(!timezoneRadioBtn.isSelected()) {
+            localTime = easternTime;
+        }
 
         String currentTimeSplit = localTime.toString();
         String[] parts = currentTimeSplit.split("T");
@@ -517,12 +622,15 @@ public class AddAppointmentScreen implements Initializable {
 
         if(currentDate.equals(enteredStartDate.toString())) {
             if(startTimeComboBox.getItems().contains(currentTime)) {
-                int enteredTimeIndex = startTimeComboBox.getItems().indexOf(currentTime);
+                int currentTimeIndex = startTimeComboBox.getItems().indexOf(currentTime);
                 int firstIndex = 0;
                 while(startTimeComboBox.getItems().contains(currentTime)) {
-                    if(enteredTimeIndex > firstIndex) {
+                    if(currentTimeIndex >= firstIndex) {
                         System.out.println(startTimeComboBox.getItems().get(0));
                         startTimeComboBox.getItems().remove(0);
+                    }
+                    else {
+                        break;
                     }
                 }
             }
@@ -566,6 +674,9 @@ public class AddAppointmentScreen implements Initializable {
             String startTimeHour = startTimeSplit[0];
             String endTimeHour = endTimeSplit[0];
 
+            // TODO: 5/28/2021 The times are not being correctly removed. Possibly the <= index check below.
+
+
             if(startDate.equals(enteredStartDate.toString())) {
                 if(startTimeComboBox.getItems().contains(startTimeHour + ":00") || startTimeComboBox.getItems().contains(endTimeHour)) {
                     int beginningIndex = startTimeComboBox.getItems().indexOf(startTimeHour + ":00");
@@ -580,6 +691,11 @@ public class AddAppointmentScreen implements Initializable {
                 if(endTimeComboBox.getItems().contains(endTimeHour + ":00") || endTimeComboBox.getItems().contains(startTimeHour + ":00")) {
                     int beginningIndex = endTimeComboBox.getItems().indexOf(startTimeHour + ":00");
                     int endIndex = endTimeComboBox.getItems().indexOf(endTimeHour + ":00");
+                    if(beginningIndex == -1) {
+                        endTimeComboBox.getItems().add(0, startTimeHour + ":00");
+                        beginningIndex = endTimeComboBox.getItems().indexOf(startTimeHour + ":00");
+                        endIndex = endTimeComboBox.getItems().indexOf(endTimeHour + ":00");
+                    }
                     while(beginningIndex <= endIndex) {
                         endTimeComboBox.getItems().remove(beginningIndex);
                         endIndex = endTimeComboBox.getItems().indexOf(endTimeHour + ":00");

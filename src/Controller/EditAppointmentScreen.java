@@ -276,11 +276,74 @@ public class EditAppointmentScreen implements Initializable {
             LocalDateTime fullStartLocal = LocalDateTime.parse(fullStart, dateTimeFormatter);
             LocalDateTime fullEndLocal = LocalDateTime.parse(fullEnd, dateTimeFormatter);
 
+            ZoneId phoenixZone = ZoneId.of("America/Phoenix");
+            ZoneId londonZone = ZoneId.of("Europe/London");
+            ZoneId easternZone = ZoneId.of("America/New_York");
+            ZoneId utc = ZoneId.of("UTC");
+
+
+
+            ZonedDateTime fullStartZone;
+            ZonedDateTime fullEndZone;
+
             System.out.println(fullStartLocal);
             System.out.println(fullEndLocal);
 
             if(validAppointment(fullStartLocal, fullEndLocal)) {
                 System.out.println("Appointment is valid");
+
+                LocalDateTime localStartToDatabase = null;
+                LocalDateTime localEndToDatabase = null;
+
+                if(locationComboBox.getValue().contains("Phoenix")) {
+                    fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
+                    ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                    fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
+                    ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                    localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                    localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+
+
+
+                }
+                else if(locationComboBox.getValue().contains("London")) {
+                    fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
+                    ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                    fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
+                    ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                    localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                    localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+
+                }
+                else {
+                    fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
+                    ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                    fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
+                    ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                    localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                    localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+                }
+
+                String[] parts = localStartToDatabase.toString().split("T");
+                String date = parts[0];
+                String time = parts[1];
+
+                String startToDatabase = date + " " + time + ":00";
+
+                parts = localEndToDatabase.toString().split("T");
+                date = parts[0];
+                time = parts[1];
+
+                String endToDatabase = date + " " + time + ":00";
+
+
+
                 Connection connection = DBConnection.getConnection();
                 String selectStatement = "";
                 String selectCustomerName = "SELECT Customer_ID, Customer_Name from customers";
@@ -327,8 +390,8 @@ public class EditAppointmentScreen implements Initializable {
                 System.out.println(descriptionTextField.getText());
                 System.out.println(locationComboBox.getValue());
                 System.out.println(typeTextField.getText());
-                System.out.println(Timestamp.valueOf(fullStart));
-                System.out.println(Timestamp.valueOf(fullEnd));
+                System.out.println(Timestamp.valueOf(startToDatabase));
+                System.out.println(Timestamp.valueOf(endToDatabase));
                 System.out.println(User.getUserName());
                 System.out.println(customerID);
                 System.out.println(User.getUserID());
@@ -340,8 +403,8 @@ public class EditAppointmentScreen implements Initializable {
                 preparedStatement.setString(2, descriptionTextField.getText());
                 preparedStatement.setString(3, locationComboBox.getValue());
                 preparedStatement.setString(4, typeTextField.getText());
-                preparedStatement.setTimestamp(5, Timestamp.valueOf(fullStart));
-                preparedStatement.setTimestamp(6, Timestamp.valueOf(fullEnd));
+                preparedStatement.setTimestamp(5, Timestamp.valueOf(startToDatabase));
+                preparedStatement.setTimestamp(6, Timestamp.valueOf(endToDatabase));
                 preparedStatement.setString(7, User.getUserName());
                 preparedStatement.setInt(8, customerID);
                 preparedStatement.setInt(9, User.getUserID());
