@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.time.*;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -85,6 +86,7 @@ public class AddAppointmentScreen implements Initializable {
         startTimeErrorLabel.setOpacity(0);
         officeLocationTimeRadioBtn.setSelected(true);
         timezoneRadioBtn.setSelected(false);
+        endDateTextField.setEditable(false);
 
         //Initial setOnAction for the comboBoxes
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
@@ -238,153 +240,187 @@ public class AddAppointmentScreen implements Initializable {
 
             ZonedDateTime fullStartZone;
             ZonedDateTime fullEndZone;
+            String location = locationComboBox.getValue();
 
+            ZonedDateTime selectionTimeLocation;
 
-
-
-            if(validAppointment(fullStartLocal, fullEndLocal)) {
-            System.out.println("Appointment is valid");
-
-            LocalDateTime localStartToDatabase;
-            LocalDateTime localEndToDatabase;
-
-            if(testAppointment) {
-                fullStartZone = ZonedDateTime.of(fullStartLocal, zoneId);
-                ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                fullEndZone = ZonedDateTime.of(fullEndLocal, zoneId);
-                ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+            if(location.contains("Phoenix")) {
+                selectionTimeLocation = fullStartLocal.atZone(phoenixZone);
             }
-
-            else if(locationComboBox.getValue().contains("Phoenix")) {
-                fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
-                ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
-                ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-
-
-
-            }
-            else if(locationComboBox.getValue().contains("London")) {
-                fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
-                ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                fullEndZone = ZonedDateTime.of(fullEndLocal, londonZone);
-                ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-
+            else if(location.contains("London")) {
+                selectionTimeLocation = fullStartLocal.atZone(londonZone);
             }
             else {
-                fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
-                ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                fullEndZone = ZonedDateTime.of(fullEndLocal, easternZone);
-                ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+                selectionTimeLocation = fullStartLocal.atZone(easternZone);
             }
+            ZonedDateTime selectionTimeInLocalTime = selectionTimeLocation.withZoneSameInstant(zoneId);
 
-            String[] parts = localStartToDatabase.toString().split("T");
-            String date = parts[0];
-            String time = parts[1];
-
-            String startToDatabase = date + " " + time + ":00";
-
-            parts = localEndToDatabase.toString().split("T");
-            date = parts[0];
-            time = parts[1];
-
-            String endToDatabase = date + " " + time + ":00";
+            String selectionTimeInLocalTimeString = selectionTimeInLocalTime.toString();
+            String[] selectionSplit1 = selectionTimeInLocalTimeString.split("T");
+            String split1Time = selectionSplit1[1];
 
 
-            Connection connection = DBConnection.getConnection();
-            String selectCustomerName = "SELECT Customer_ID, Customer_Name from customers";
-            String selectContactName = "SELECT Contact_ID, Contact_Name from contacts";
-            String insertStatement = "INSERT into appointments(Title, Description, Location, Type, Start, End, Created_By, Customer_ID, Last_Updated_By, User_ID, Contact_ID) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String[] selectionSplit2 = split1Time.split("-");
+            String selectionTime = selectionSplit2[0];
+            String fullZone = selectionSplit2[1];
 
-            DBQuery.setPreparedStatement(connection, selectCustomerName);
-            PreparedStatement customerPreparedStatement = DBQuery.getPreparedStatement();
-            ResultSet resultSet = customerPreparedStatement.executeQuery();
+            String[] selectionSplit3 = fullZone.split("05:00");
+            String zoneOnly = selectionSplit3[1];
 
-            int customerID = 0;
 
-            while(resultSet.next()) {
-                int tempCustomerID = resultSet.getInt("Customer_ID");
-                String customerName = resultSet.getString("Customer_Name");
+            Alert timeAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            timeAlert.setHeaderText("Are you sure you want this time?");
+            timeAlert.setContentText("The time you selected is " + selectionTime + " " + zoneOnly + " in your local time.");
+            Optional<ButtonType> result = timeAlert.showAndWait();
 
-                if(customerComboBox.getValue().contains(customerName)) {
-                    customerID = tempCustomerID;
-                    break;
-                }
-            }
+            if(result.get() == ButtonType.OK) {
+                if(validAppointment(fullStartLocal, fullEndLocal)) {
+                    System.out.println("Appointment is valid");
 
-            DBQuery.setPreparedStatement(connection, selectContactName);
-            PreparedStatement contactPreparedStatement = DBQuery.getPreparedStatement();
-            ResultSet resultSet1 = contactPreparedStatement.executeQuery();
+                    LocalDateTime localStartToDatabase;
+                    LocalDateTime localEndToDatabase;
 
-            int contactID = 0;
+                    if(testAppointment) {
+                        fullStartZone = ZonedDateTime.of(fullStartLocal, zoneId);
+                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
 
-            while (resultSet1.next()) {
-                int tempContactID = resultSet1.getInt("Contact_ID");
-                String contactName = resultSet1.getString("Contact_Name");
+                        fullEndZone = ZonedDateTime.of(fullEndLocal, zoneId);
+                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
 
-                if(contactNameComboBox.getValue().contains(contactName)) {
-                    contactID = tempContactID;
+                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+                    }
+
+                    else if(locationComboBox.getValue().contains("Phoenix")) {
+                        fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
+                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                        fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
+                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+
+
+
+                    }
+                    else if(locationComboBox.getValue().contains("London")) {
+                        fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
+                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                        fullEndZone = ZonedDateTime.of(fullEndLocal, londonZone);
+                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+
+                    }
+                    else {
+                        fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
+                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                        fullEndZone = ZonedDateTime.of(fullEndLocal, easternZone);
+                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+                    }
+
+                    String[] parts = localStartToDatabase.toString().split("T");
+                    String date = parts[0];
+                    String time = parts[1];
+
+                    String startToDatabase = date + " " + time + ":00";
+
+                    parts = localEndToDatabase.toString().split("T");
+                    date = parts[0];
+                    time = parts[1];
+
+                    String endToDatabase = date + " " + time + ":00";
+
+
+                    Connection connection = DBConnection.getConnection();
+                    String selectCustomerName = "SELECT Customer_ID, Customer_Name from customers";
+                    String selectContactName = "SELECT Contact_ID, Contact_Name from contacts";
+                    String insertStatement = "INSERT into appointments(Title, Description, Location, Type, Start, End, Created_By, Customer_ID, Last_Updated_By, User_ID, Contact_ID) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                    DBQuery.setPreparedStatement(connection, selectCustomerName);
+                    PreparedStatement customerPreparedStatement = DBQuery.getPreparedStatement();
+                    ResultSet resultSet = customerPreparedStatement.executeQuery();
+
+                    int customerID = 0;
+
+                    while(resultSet.next()) {
+                        int tempCustomerID = resultSet.getInt("Customer_ID");
+                        String customerName = resultSet.getString("Customer_Name");
+
+                        if(customerComboBox.getValue().contains(customerName)) {
+                            customerID = tempCustomerID;
+                            break;
+                        }
+                    }
+
+                    DBQuery.setPreparedStatement(connection, selectContactName);
+                    PreparedStatement contactPreparedStatement = DBQuery.getPreparedStatement();
+                    ResultSet resultSet1 = contactPreparedStatement.executeQuery();
+
+                    int contactID = 0;
+
+                    while (resultSet1.next()) {
+                        int tempContactID = resultSet1.getInt("Contact_ID");
+                        String contactName = resultSet1.getString("Contact_Name");
+
+                        if(contactNameComboBox.getValue().contains(contactName)) {
+                            contactID = tempContactID;
+                        }
+                        else {
+                            //do nothing
+                        }
+                    }
+
+
+                    System.out.println(titleTextField.getText());
+                    System.out.println(descriptionTextField.getText());
+                    System.out.println(locationComboBox.getValue());
+                    System.out.println(typeTextField.getText());
+                    System.out.println(Timestamp.valueOf(startToDatabase));
+                    System.out.println(Timestamp.valueOf(endToDatabase));
+                    System.out.println(User.getUserName());
+                    System.out.println(customerID);
+                    System.out.println(User.getUserID());
+                    System.out.println(contactID);
+                    DBQuery.setPreparedStatement(connection, insertStatement);
+                    PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+
+                    preparedStatement.setString(1, titleTextField.getText());
+                    preparedStatement.setString(2, descriptionTextField.getText());
+                    preparedStatement.setString(3, locationComboBox.getValue());
+                    preparedStatement.setString(4, typeTextField.getText());
+                    preparedStatement.setString(5, startToDatabase);
+                    preparedStatement.setString(6, endToDatabase);
+                    preparedStatement.setString(7, User.getUserName());
+                    preparedStatement.setInt(8, customerID);
+                    preparedStatement.setString(9, User.getUserName());
+                    preparedStatement.setInt(10, User.getUserID());
+                    preparedStatement.setInt(11, contactID);
+
+                    preparedStatement.execute();
+                    System.out.println("New record added");
+
+                    nextScreen(actionEvent);
+
+
                 }
                 else {
-                    //do nothing
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText("Could not save appointment!");
+                    alert.setHeaderText("Appointment times conflict with another scheduled appointment or has invalid time.");
+                    alert.showAndWait();
                 }
             }
-
-
-                System.out.println(titleTextField.getText());
-                System.out.println(descriptionTextField.getText());
-                System.out.println(locationComboBox.getValue());
-                System.out.println(typeTextField.getText());
-                System.out.println(Timestamp.valueOf(startToDatabase));
-                System.out.println(Timestamp.valueOf(endToDatabase));
-                System.out.println(User.getUserName());
-                System.out.println(customerID);
-                System.out.println(User.getUserID());
-                System.out.println(contactID);
-            DBQuery.setPreparedStatement(connection, insertStatement);
-            PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
-
-            preparedStatement.setString(1, titleTextField.getText());
-            preparedStatement.setString(2, descriptionTextField.getText());
-            preparedStatement.setString(3, locationComboBox.getValue());
-            preparedStatement.setString(4, typeTextField.getText());
-            preparedStatement.setString(5, startToDatabase);
-            preparedStatement.setString(6, endToDatabase);
-            preparedStatement.setString(7, User.getUserName());
-            preparedStatement.setInt(8, customerID);
-            preparedStatement.setString(9, User.getUserName());
-            preparedStatement.setInt(10, User.getUserID());
-            preparedStatement.setInt(11, contactID);
-
-            preparedStatement.execute();
-                System.out.println("New record added");
-
-            nextScreen(actionEvent);
-
-
-            }
             else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText("Could not save appointment!");
-                alert.setHeaderText("Appointment times conflict with another scheduled appointment.");
-                alert.showAndWait();
+                System.out.println("No longer saving....");
             }
         }
     }
@@ -418,6 +454,11 @@ public class AddAppointmentScreen implements Initializable {
 
         if(result.get() == ButtonType.OK) {
             testAppointment = true;
+            startTimeComboBox.getItems().clear();
+            endTimeComboBox.getItems().clear();
+            startTimeComboBox.valueProperty().set(null);
+            endTimeComboBox.valueProperty().set(null);
+
 
             titleTextField.setText("Title");
             descriptionTextField.setText("Description");
@@ -430,11 +471,11 @@ public class AddAppointmentScreen implements Initializable {
 
             ZonedDateTime startInstant = Instant.now().atZone(zoneId).truncatedTo(ChronoUnit.MINUTES);
             ZonedDateTime startTimePlusFifteen = startInstant.plus(minutesToAdd, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MINUTES);
-            ZonedDateTime endInstant = startInstant.plus(endMinutesToAdd, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MINUTES);
+            ZonedDateTime endInstant = startTimePlusFifteen.plus(endMinutesToAdd, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MINUTES);
 
 
-            System.out.println(startInstant);
-            System.out.println(startTimePlusFifteen);
+            System.out.println("Current time: " + startInstant);
+            System.out.println("Fifteen Minutes from now: " + startTimePlusFifteen);
 
             LocalDateTime localStartPlusFifteen = startTimePlusFifteen.toLocalDateTime();
             LocalDateTime localEnd = endInstant.toLocalDateTime();
@@ -455,6 +496,8 @@ public class AddAppointmentScreen implements Initializable {
 
             startTimeComboBox.setValue(startTime);
             endTimeComboBox.setValue(endTime);
+            System.out.println("Start time ComboBox value: " + startTimeComboBox.getValue());
+            System.out.println("End time ComboBox value: " + endTimeComboBox.getValue());
 
         }
         else {
@@ -728,6 +771,27 @@ public class AddAppointmentScreen implements Initializable {
             if (resultSet.next()) {
                 return false;
             }
+            ZoneId locationZone;
+            if(locationComboBox.getValue().contains("Phoenix")) {
+                locationZone = ZoneId.of("America/Phoenix");
+            }
+            else if(locationComboBox.getValue().contains("London")) {
+                locationZone = ZoneId.of("Europe/London");
+            }
+            else {
+                locationZone = ZoneId.of("America/New_York");
+            }
+            ZonedDateTime currentDate = LocalDateTime.now().atZone(zoneId);
+            ZonedDateTime currentDateLocation = currentDate.withZoneSameInstant(locationZone);
+            String[] parts = currentDateLocation.toString().split("T");
+            String date = parts[0];
+            if(startDateTextField.getText().contains(date)) {
+                LocalDateTime startDateTime = LocalDateTime.parse(date + "T" + startTimeComboBox.getValue());
+                if(startDateTime.isBefore(ChronoLocalDateTime.from(currentDateLocation))) {
+                    return false;
+
+                }
+            }
 
         } catch (SQLException sqe) {
             System.out.println("SQL error while calling validAppointment");
@@ -784,8 +848,5 @@ public class AddAppointmentScreen implements Initializable {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-
     }
-
 }

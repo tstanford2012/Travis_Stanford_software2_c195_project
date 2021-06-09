@@ -1,0 +1,50 @@
+2021-06-09T11:24:01.317803800 User: test has altered the appointment with ID: 17
+Info: Title
+Description
+White Plains
+Appointment Type
+Start time: 2021-05-28T06:59-05:00[America/Chicago] 
+End Time: 2021-05-28T07:44-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-09T12:14:49.320848600 User: test has altered the appointment with ID: 17
+Info: Title
+Description
+London
+Appointment Type
+Start time: 2021-05-28T10:00-05:00[America/Chicago] 
+End Time: 2021-05-28T19:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-09T12:15:48.084083200 User: test has altered the appointment with ID: 17
+Info: Title
+Description
+London
+Appointment Type
+Start time: 2021-05-28T10:00-05:00[America/Chicago] 
+End Time: 2021-05-28T19:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-09T12:24:05.561114100 User: test has altered the appointment with ID: 17
+Info: Title
+Description
+London
+Appointment Type
+Start time: 2021-05-28T10:00-05:00[America/Chicago] 
+End Time: 2021-05-28T11:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-09T12:33:43.770072700 User: test has altered the appointment with ID: 17
+Info: Title
+Description
+White Plains
+Appointment Type
+Start time: 2021-05-28T09:00-05:00[America/Chicago] 
+End Time: 2021-05-28T10:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================

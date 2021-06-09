@@ -43,6 +43,10 @@ public class MainScreenController implements Initializable {
         nextScreen(actionEvent, "../View/customers.fxml");
     }
 
+    public void reportsButtonHandler(ActionEvent actionEvent) throws IOException {
+        nextScreen(actionEvent, "../View/reports.fxml");
+    }
+
 
     public void exitButtonHandler(ActionEvent actionEvent) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
