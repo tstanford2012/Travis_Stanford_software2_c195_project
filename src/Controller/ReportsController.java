@@ -19,8 +19,8 @@ public class ReportsController {
 
     }
 
-    public void contactScheduleBtnHandler(ActionEvent actionEvent) {
-
+    public void contactScheduleBtnHandler(ActionEvent actionEvent) throws IOException {
+        nextScreen(actionEvent, "../View/contactSchedule.fxml");
     }
 
 

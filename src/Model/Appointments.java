@@ -44,6 +44,34 @@ public class Appointments {
         this.appointmentCustomerName = appointmentCustomerName;
     }
 
+
+    public Appointments(int appointment_id, Timestamp start, Timestamp end, int customer_id, int user_id) {
+        this.appointmentID = appointment_id;
+        this.start = start;
+        this.end = end;
+        this.customerID = customer_id;
+        this.userID = user_id;
+    }
+
+    public Appointments(int appointmentID, String type, int customerID, int userID) {
+        this.appointmentID = appointmentID;
+        this.type = type;
+        this.customerID = customerID;
+        this.userID = userID;
+    }
+
+
+    public Appointments(int appointment_id, String title, String type, String description, Timestamp start, Timestamp end, int customer_id) {
+        this.appointmentID = appointment_id;
+        this.title = title;
+        this.type = type;
+        this.description = description;
+        this.start = start;
+        this.end = end;
+        this.customerID = customer_id;
+    }
+
+
     public int getAppointmentID() {
         return appointmentID;
     }

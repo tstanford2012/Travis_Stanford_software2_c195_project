@@ -35,8 +35,6 @@ public class EditAppointmentScreen implements Initializable {
     @FXML
     TextField descriptionTextField;
     @FXML
-    TextField typeTextField;
-    @FXML
     TextField startDateTextField;
     @FXML
     TextField endDateTextField;
@@ -50,6 +48,8 @@ public class EditAppointmentScreen implements Initializable {
     ComboBox<String> locationComboBox;
     @FXML
     ComboBox<String> customerComboBox;
+    @FXML
+    ComboBox<String> typeComboBox;
     @FXML
     Label startTimeErrorLabel;
     @FXML
@@ -81,6 +81,7 @@ public class EditAppointmentScreen implements Initializable {
 
         //Initial setOnAction for the comboBoxes
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
+        addTypesToComboBox();
 
         try {
             pullContactNames();
@@ -162,6 +163,8 @@ public class EditAppointmentScreen implements Initializable {
                     }
                     else {
                         String location = locationComboBox.getValue();
+                        String startTime = startTimeComboBox.getValue();
+                        String endTime = endTimeComboBox.getValue();
 
                         //Checks if the date entered is on a weekend and throws an error
                         //Calls the method to add times to the combo box based on which radio button is selected
@@ -174,8 +177,12 @@ public class EditAppointmentScreen implements Initializable {
                                 alert.showAndWait();
                             }
                             else {
+                                startTimes.clear();
+                                endTimes.clear();
                                 addLocationTimesToComboBox(location);
                                 printAppointmentTimes(enteredStartDate);
+                                startTimeComboBox.setValue(startTime);
+                                endTimeComboBox.setValue(endTime);
                                 //getAvailableLocationTimes(enteredStartDate, enteredEndDate);
 
                             }
@@ -195,7 +202,7 @@ public class EditAppointmentScreen implements Initializable {
 
     public void saveButtonHandler(ActionEvent actionEvent) throws SQLException, IOException {
         boolean isValid = false;
-        if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeTextField.getText().isEmpty() ||
+        if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeComboBox.getValue() == null ||
                 contactNameComboBox.getValue() == null || customerComboBox.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Error saving");
@@ -393,7 +400,7 @@ public class EditAppointmentScreen implements Initializable {
                     preparedStatement.setString(1, titleTextField.getText());
                     preparedStatement.setString(2, descriptionTextField.getText());
                     preparedStatement.setString(3, locationComboBox.getValue());
-                    preparedStatement.setString(4, typeTextField.getText());
+                    preparedStatement.setString(4, typeComboBox.getValue());
                     preparedStatement.setString(5, startToDatabase);
                     preparedStatement.setString(6, endToDatabase);
                     preparedStatement.setString(7, User.getUserName());
@@ -465,7 +472,7 @@ public class EditAppointmentScreen implements Initializable {
         descriptionTextField.setText(appointments.getDescription());
         locationComboBox.setValue(appointments.getLocation());
         customerComboBox.setValue(appointments.getAppointmentCustomerName());
-        typeTextField.setText(appointments.getType());
+        typeComboBox.setValue(appointments.getType());
 
         String start = appointments.getStart().toString();
         String end = appointments.getEnd().toString();
@@ -695,6 +702,7 @@ public class EditAppointmentScreen implements Initializable {
 
             endTimeComboBox.getItems().add(0, "06:00");
             endTimeComboBox.getItems().add(1, "07:00");
+            endTimeComboBox.getItems().add(2, "08:00");
 
             startTimes.add(0, "05:00");
             startTimes.add(1, "06:00");
@@ -703,6 +711,7 @@ public class EditAppointmentScreen implements Initializable {
 
             endTimes.add(0, "06:00");
             endTimes.add(1, "07:00");
+            endTimes.add(2, "08:00");
             //endTimes.addAll("06:00", "07:00");
 
             startTimeComboBox.getItems().removeAll("19:00", "20:00", "21:00", "22:00");
@@ -726,6 +735,10 @@ public class EditAppointmentScreen implements Initializable {
         else {
             System.out.println("Eastern Times already added");
         }
+    }
+
+    private void addTypesToComboBox() {
+        typeComboBox.getItems().addAll("De-Briefing", "Planning Session", "New Account", "Follow Up");
     }
 
 
@@ -922,7 +935,7 @@ public class EditAppointmentScreen implements Initializable {
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName, true));
         if(valid) {
             bufferedWriter.append(String.valueOf(LocalDateTime.now())).append(" ").append("User: " + userName + " has altered the appointment with ID: ").append(appointmentID).append("\n").append(
-                    "Info: " + titleTextField.getText() + "\n" + descriptionTextField.getText() + "\n" + locationComboBox.getValue() + "\n" + typeTextField.getText() + "\n" +
+                    "Info: " + titleTextField.getText() + "\n" + descriptionTextField.getText() + "\n" + locationComboBox.getValue() + "\n" + typeComboBox.getValue() + "\n" +
                     "Start time: " + startZoneLocal + " " + "\n" + "End Time: " + endZoneLocal +  " " + "\n" + "CustomerID: " + customerID + "\n" + "ContactID: " + contactID + "\n" + "==========================").append("\n");
         }
         else {

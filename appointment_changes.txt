@@ -48,3 +48,123 @@ End Time: 2021-05-28T10:00-05:00[America/Chicago]
 CustomerID: 1
 ContactID: 1
 ==========================
+2021-06-16T11:21:36.313250300 User: test has altered the appointment with ID: 1
+Info: title
+description
+Phoenix
+Planning Session
+Start time: 2020-05-28T07:00-05:00[America/Chicago] 
+End Time: 2020-05-28T08:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 3
+==========================
+2021-06-16T11:22:24.450405100 User: test has altered the appointment with ID: 1
+Info: title
+description
+Phoenix
+Planning Session
+Start time: 2020-06-17T07:00-05:00[America/Chicago] 
+End Time: 2020-06-17T08:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 3
+==========================
+2021-06-16T11:23:15.768496600 User: test has altered the appointment with ID: 7
+Info: title
+description
+Montreal
+De-Briefing
+Start time: 2021-06-17T08:00-05:00[America/Chicago] 
+End Time: 2021-06-17T09:00-05:00[America/Chicago] 
+CustomerID: 16
+ContactID: 1
+==========================
+2021-06-16T11:23:35.079893500 User: test has altered the appointment with ID: 1
+Info: title
+description
+Phoenix
+Planning Session
+Start time: 2021-06-17T07:00-05:00[America/Chicago] 
+End Time: 2021-06-17T08:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 3
+==========================
+2021-06-16T11:24:22.042146800 User: test has altered the appointment with ID: 8
+Info: title
+description
+London
+Planning session
+Start time: 2021-06-17T09:00-05:00[America/Chicago] 
+End Time: 2021-06-17T10:00-05:00[America/Chicago] 
+CustomerID: 16
+ContactID: 2
+==========================
+2021-06-16T11:24:51.466516900 User: test has altered the appointment with ID: 11
+Info: title
+description
+White Plains
+type
+Start time: 2021-06-17T10:00-05:00[America/Chicago] 
+End Time: 2021-06-17T11:00-05:00[America/Chicago] 
+CustomerID: 3
+ContactID: 3
+==========================
+2021-06-16T12:23:56.276903900 User: test has altered the appointment with ID: 11
+Info: title
+description
+White Plains
+New Account
+Start time: 2021-06-17T10:00-05:00[America/Chicago] 
+End Time: 2021-06-17T11:00-05:00[America/Chicago] 
+CustomerID: 3
+ContactID: 3
+==========================
+2021-06-16T12:24:09.597624600 User: test has altered the appointment with ID: 12
+Info: title
+description
+Phoenix
+Follow Up
+Start time: 2021-05-26T20:00-05:00[America/Chicago] 
+End Time: 2021-05-26T21:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-16T12:24:27.928825700 User: test has altered the appointment with ID: 15
+Info: Title
+Description
+White Plains
+De-Briefing
+Start time: 2021-06-02T11:00-05:00[America/Chicago] 
+End Time: 2021-06-02T12:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-16T12:24:34.400798600 User: test has altered the appointment with ID: 17
+Info: Title
+Description
+White Plains
+Follow Up
+Start time: 2021-05-28T09:00-05:00[America/Chicago] 
+End Time: 2021-05-28T10:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-16T12:24:42.639465900 User: test has altered the appointment with ID: 18
+Info: Title
+Description
+White Plains
+New Account
+Start time: 2021-06-16T16:00-05:00[America/Chicago] 
+End Time: 2021-06-16T17:00-05:00[America/Chicago] 
+CustomerID: 2
+ContactID: 1
+==========================
+2021-06-16T12:48:15.874516500 User: test has altered the appointment with ID: 8
+Info: title
+description
+London
+Planning Session
+Start time: 2021-06-17T09:00-05:00[America/Chicago] 
+End Time: 2021-06-17T10:00-05:00[America/Chicago] 
+CustomerID: 16
+ContactID: 2
+==========================

@@ -43,7 +43,7 @@ public class AddAppointmentScreen implements Initializable {
     @FXML
     TextField descriptionTextField;
     @FXML
-    TextField typeTextField;
+    ComboBox<String> typeComboBox;
     @FXML
     TextField startDateTextField;
     @FXML
@@ -90,6 +90,8 @@ public class AddAppointmentScreen implements Initializable {
 
         //Initial setOnAction for the comboBoxes
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
+
+        addTypesToComboBox();
 
         try {
             pullContactNames();
@@ -208,7 +210,7 @@ public class AddAppointmentScreen implements Initializable {
 
 
     public void saveButtonHandler(ActionEvent actionEvent) throws SQLException, IOException {
-        if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeTextField.getText().isEmpty() ||
+        if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeComboBox.getValue() == null ||
         contactNameComboBox.getValue() == null || customerComboBox.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Error saving");
@@ -383,7 +385,7 @@ public class AddAppointmentScreen implements Initializable {
                     System.out.println(titleTextField.getText());
                     System.out.println(descriptionTextField.getText());
                     System.out.println(locationComboBox.getValue());
-                    System.out.println(typeTextField.getText());
+                    System.out.println(typeComboBox.getValue());
                     System.out.println(Timestamp.valueOf(startToDatabase));
                     System.out.println(Timestamp.valueOf(endToDatabase));
                     System.out.println(User.getUserName());
@@ -396,7 +398,7 @@ public class AddAppointmentScreen implements Initializable {
                     preparedStatement.setString(1, titleTextField.getText());
                     preparedStatement.setString(2, descriptionTextField.getText());
                     preparedStatement.setString(3, locationComboBox.getValue());
-                    preparedStatement.setString(4, typeTextField.getText());
+                    preparedStatement.setString(4, typeComboBox.getValue());
                     preparedStatement.setString(5, startToDatabase);
                     preparedStatement.setString(6, endToDatabase);
                     preparedStatement.setString(7, User.getUserName());
@@ -463,7 +465,7 @@ public class AddAppointmentScreen implements Initializable {
             titleTextField.setText("Title");
             descriptionTextField.setText("Description");
             locationComboBox.setValue("White Plains");
-            typeTextField.setText("Appointment Type");
+            typeComboBox.setValue("Planning Session");
 
             long minutesToAdd = 15;
             long endMinutesToAdd = 10;
@@ -715,6 +717,10 @@ public class AddAppointmentScreen implements Initializable {
         else {
             System.out.println("Eastern Times already added");
         }
+    }
+
+    private void addTypesToComboBox() {
+        typeComboBox.getItems().addAll("De-Briefing", "Planning Session", "New Account", "Follow Up");
     }
 
     private void nextScreen(ActionEvent actionEvent) throws IOException {

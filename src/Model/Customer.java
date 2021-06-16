@@ -12,6 +12,8 @@ public class Customer {
     private String postalCode;
     private String phoneNumber;
     private int divisionID;
+    private int totalWeekAppointments;
+    private int totalMonthAppointments;
 
     private ObservableList<Appointments> appointments = FXCollections.observableArrayList();
     public static ObservableList<Customer> customerList = FXCollections.observableArrayList();
@@ -25,6 +27,12 @@ public class Customer {
         this.postalCode = postalCode;
         this.phoneNumber = phoneNumber;
         this.divisionID = divisionID;
+    }
+
+    public Customer(int customerID, int totalWeekAppointments, int totalMonthAppointments) {
+        this.customerID = customerID;
+        this.totalWeekAppointments = totalWeekAppointments;
+        this.totalMonthAppointments = totalMonthAppointments;
     }
 
     public static ObservableList<Customer> getCustomerList() {
