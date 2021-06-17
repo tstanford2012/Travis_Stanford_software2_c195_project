@@ -3,7 +3,6 @@ package utils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class DBQuery {
     private static PreparedStatement statement; //statement reference
@@ -17,6 +16,7 @@ public class DBQuery {
     public static PreparedStatement getPreparedStatement() {
         return statement;
     }
+    //returns the prepared statement when called
     public static PreparedStatement getPreparedStatement(int generatedKeys) {
         return statement;
     }

@@ -20,6 +20,8 @@ public class DBConnection {
 
     private static final String username = "U06gVI";
 
+    //attempts the connect to the database and prints an error if unsuccessful
+    //returns the connection if successful
     public static Connection startConnection() {
         try {
             Class.forName(MYSQLJDBCDriver);
@@ -33,10 +35,12 @@ public class DBConnection {
         return conn;
 
     }
+    //returns the database connection when called
     public static Connection getConnection() {
         return conn;
     }
 
+    //closes the database connection when called
     public static void closeConnection() {
         try {
             conn.close();
@@ -45,18 +49,4 @@ public class DBConnection {
             //do nothing
         }
     }
-
-    /*
-    Info about working with the database:
-    Using the execute() method we can run SQL queries
-    It accepts a string argument. The select statement is the argument (ex execute(select * from customers))
-    The method returns a boolean. If true is returned, a select statement was executed.
-    If false was returned, an insert into, update, or delete statement was executed.
-
-    getUpdateCount() method returns the number of rows affected by an insert into, update, or delete command.
-    getUpdateCount should only be called if execute() returns false.
-
-
-     */
-
 }

@@ -26,43 +26,43 @@
                </font>
             </Label>
             <TextField fx:id="customerIDTextField" editable="false" layoutX="297.0" layoutY="130.0" prefHeight="25.0" prefWidth="220.0" promptText="Auto Generated- Disabled" />
-            <TextField fx:id="customerNameTextField" layoutX="297.0" layoutY="174.0" prefHeight="25.0" prefWidth="220.0" promptText="Customer Name" />
-            <TextField fx:id="addressTextField" layoutX="297.0" layoutY="221.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: 123 Maple St" />
-            <TextField fx:id="zipCodeTextField" layoutX="618.0" layoutY="221.0" prefHeight="25.0" prefWidth="150.0" promptText="Postal Code" />
+            <TextField fx:id="firstNameTextField" layoutX="297.0" layoutY="174.0" prefHeight="25.0" prefWidth="220.0" promptText="Customer First Name" />
+            <TextField fx:id="addressTextField" layoutX="297.0" layoutY="278.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: 123 Maple St" />
+            <TextField fx:id="zipCodeTextField" layoutX="618.0" layoutY="279.0" prefHeight="25.0" prefWidth="150.0" promptText="Postal Code" />
             <Label layoutX="255.0" layoutY="134.0" text="ID">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="243.0" layoutY="177.0" text="Name">
+            <Label layoutX="207.0" layoutY="177.0" text="First Name">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="231.0" layoutY="223.0" text="Address">
+            <Label layoutX="229.0" layoutY="281.0" text="Address">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="527.0" layoutY="223.0" text="Postal Code">
+            <Label layoutX="527.0" layoutY="281.0" text="Postal Code">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="230.0" layoutY="317.0" text="Country">
+            <Label layoutX="229.0" layoutY="379.0" text="Country">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <ComboBox fx:id="countryComboBox" layoutX="297.0" layoutY="314.0" onAction="#countryComboBoxHandler" prefWidth="150.0" />
-            <ComboBox fx:id="stateComboBox" layoutX="618.0" layoutY="316.0" onMouseClicked="#stateComboBoxClicked" prefWidth="150.0" />
-            <Label layoutX="508.0" layoutY="319.0" text="State/Province">
+            <ComboBox fx:id="countryComboBox" layoutX="298.0" layoutY="376.0" onAction="#countryComboBoxHandler" prefWidth="150.0" />
+            <ComboBox fx:id="stateComboBox" layoutX="618.0" layoutY="376.0" onMouseClicked="#stateComboBoxClicked" prefWidth="150.0" />
+            <Label layoutX="508.0" layoutY="379.0" text="State/Province">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="phoneNumberTextField" layoutX="297.0" layoutY="375.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: 888-888-8888" />
-            <Label layoutX="184.0" layoutY="378.0" text="Phone Number">
+            <TextField fx:id="phoneNumberTextField" layoutX="297.0" layoutY="427.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: 888-888-8888" />
+            <Label layoutX="185.0" layoutY="430.0" text="Phone Number">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
@@ -77,18 +77,24 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Label alignment="CENTER" layoutX="237.0" layoutY="270.0" prefHeight="17.0" prefWidth="52.0" text="City">
+            <Label alignment="CENTER" layoutX="237.0" layoutY="332.0" prefHeight="17.0" prefWidth="52.0" text="City">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="cityTextField" layoutX="298.0" layoutY="267.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: Los Angeles" />
-            <Label fx:id="boroughLabel" alignment="CENTER" layoutX="534.0" layoutY="271.0" prefHeight="20.0" prefWidth="78.0">
+            <TextField fx:id="cityTextField" layoutX="297.0" layoutY="329.0" prefHeight="25.0" prefWidth="220.0" promptText="Ex: Los Angeles" />
+            <Label fx:id="boroughLabel" alignment="CENTER" layoutX="534.0" layoutY="332.0" prefHeight="20.0" prefWidth="78.0">
                <font>
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="boroughTextField" layoutX="618.0" layoutY="269.0" opacity="0.0" prefHeight="25.0" prefWidth="150.0" />
+            <TextField fx:id="boroughTextField" layoutX="618.0" layoutY="329.0" opacity="0.0" prefHeight="25.0" prefWidth="150.0" />
+            <Label layoutX="208.0" layoutY="227.0" text="Last Name">
+               <font>
+                  <Font name="System Bold Italic" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="lastNameTextField" layoutX="297.0" layoutY="224.0" prefHeight="25.0" prefWidth="220.0" promptText="Customer Last Name" />
          </children></AnchorPane>
    </children>
 </GridPane>

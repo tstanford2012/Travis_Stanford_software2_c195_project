@@ -4,11 +4,13 @@ public class User {
     private static int userID;
     private static String userName;
 
+    //constructor
     public User(int userID, String userName) {
         User.userID = userID;
         User.userName = userName;
     }
 
+    //getters and setters
     public static int getUserID() {
         return userID;
     }

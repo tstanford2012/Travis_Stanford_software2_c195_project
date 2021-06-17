@@ -17,12 +17,15 @@ import utils.DBQuery;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AddCustomerScreen implements Initializable {
     @FXML
-    TextField customerNameTextField;
+    TextField firstNameTextField;
+    @FXML
+    TextField lastNameTextField;
     @FXML
     TextField addressTextField;
     @FXML
@@ -106,7 +109,8 @@ public class AddCustomerScreen implements Initializable {
 
     public void addCustomerSaveBtnHandler(ActionEvent actionEvent) throws Exception {
         int customerID;
-        String customerName;
+        String customerFirstName;
+        String customerLastName;
         String address;
         String stateProvince;
         String country;
@@ -118,7 +122,8 @@ public class AddCustomerScreen implements Initializable {
 
 
         try {
-            customerName = customerNameTextField.getText();
+            customerFirstName = firstNameTextField.getText();
+            customerLastName = lastNameTextField.getText();
             stateProvince = stateComboBox.getValue();
             country = countryComboBox.getValue();
             postalCode = zipCodeTextField.getText();
@@ -131,7 +136,7 @@ public class AddCustomerScreen implements Initializable {
             }
 
 
-            if(customerNameTextField.getText().isEmpty()) {
+            if(firstNameTextField.getText().isEmpty() || lastNameTextField.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Error adding customer");
@@ -161,56 +166,77 @@ public class AddCustomerScreen implements Initializable {
                         }
                     }
 
+                    String selectStatement = "SELECT Customer_Name from customers";
+                    DBQuery.setPreparedStatement(conn, selectStatement);
+                    PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
 
-                    Connection connection = DBConnection.getConnection();
-                    String statement = "INSERT INTO customers(Customer_Name, Address, Postal_Code, Phone, Division_ID, Created_By, Last_Updated_By) VALUES (?,?,?,?,?,?,?)";
-                    PreparedStatement preparedStatement = connection.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS);
+                    ResultSet resultSet = preparedStatement.executeQuery();
 
-                    preparedStatement.setString(1, customerName);
-                    preparedStatement.setString(2, address);
-                    preparedStatement.setString(3, postalCode);
-                    preparedStatement.setString(4, phoneNumber);
-                    preparedStatement.setInt(5, divisionID);
-                    preparedStatement.setString(6, "Software 2 Program");
-                    preparedStatement.setString(7, "Software 2 Program");
-
-                    preparedStatement.executeUpdate();
-
-                    ResultSet resultSet = preparedStatement.getGeneratedKeys();
-
-
-                    if(resultSet.next()) {
-                        System.out.println("Auto Generated Key: " + resultSet.getInt(1));
+                    String customerName = customerFirstName + " " + customerLastName;
+                    boolean nameExists = false;
+                    while (resultSet.next()) {
+                        if(customerName.toLowerCase(Locale.ROOT).contains(resultSet.getString("Customer_Name").toLowerCase(Locale.ROOT))) {
+                            nameExists = true;
+                            break;
+                        }
                     }
+                    if(nameExists) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText("Could not save...");
+                        alert.setContentText("The entered name is the same as a record in the database.\nTry entering another name.");
+                        alert.showAndWait();
+                    }
+                    else {
+                        Connection connection = DBConnection.getConnection();
+                        String statement = "INSERT INTO customers(Customer_Name, Address, Postal_Code, Phone, Division_ID, Created_By, Last_Updated_By) VALUES (?,?,?,?,?,?,?)";
+                        preparedStatement = connection.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS);
 
-                    customerID = resultSet.getInt(1);
+                        preparedStatement.setString(1, customerName);
+                        preparedStatement.setString(2, address);
+                        preparedStatement.setString(3, postalCode);
+                        preparedStatement.setString(4, phoneNumber);
+                        preparedStatement.setInt(5, divisionID);
+                        preparedStatement.setString(6, "Software 2 Program");
+                        preparedStatement.setString(7, "Software 2 Program");
+
+                        preparedStatement.executeUpdate();
+
+                        resultSet = preparedStatement.getGeneratedKeys();
 
 
-                    Customer.customerList.remove(customer);
-                    Customer newCustomer = new Customer(customerID, customerName, address, stateProvince, country, postalCode, phoneNumber, divisionID);
-                    Customer.customerList.add(newCustomer);
-                    newCustomer.setCustomerID(customerID);
-                    newCustomer.setCustomerName(customerName);
-                    newCustomer.setCustomerAddress(address);
-                    newCustomer.setStateProvince(stateProvince);
-                    newCustomer.setCountry(country);
-                    newCustomer.setPostalCode(postalCode);
-                    newCustomer.setPhoneNumber(phoneNumber);
-                    newCustomer.setDivisionID(divisionID);
+                        if(resultSet.next()) {
+                            System.out.println("Auto Generated Key: " + resultSet.getInt(1));
+                        }
+
+                        customerID = resultSet.getInt(1);
+
+
+                        Customer.customerList.remove(customer);
+                        Customer newCustomer = new Customer(customerID, customerName, address, stateProvince, country, postalCode, phoneNumber, divisionID);
+                        Customer.customerList.add(newCustomer);
+                        newCustomer.setCustomerID(customerID);
+                        newCustomer.setCustomerName(customerName);
+                        newCustomer.setCustomerAddress(address);
+                        newCustomer.setStateProvince(stateProvince);
+                        newCustomer.setCountry(country);
+                        newCustomer.setPostalCode(postalCode);
+                        newCustomer.setPhoneNumber(phoneNumber);
+                        newCustomer.setDivisionID(divisionID);
 
 
 
-                    Stage stage;
-                    Parent root;
-                    stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                        Stage stage;
+                        Parent root;
+                        stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
 
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../View/customers.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("../View/customers.fxml"));
 
-                    root = loader.load();
+                        root = loader.load();
 
-                    Scene scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.show();
+                        Scene scene = new Scene(root);
+                        stage.setScene(scene);
+                        stage.show();
+                    }
                 }
             }
         } catch(Exception e) {

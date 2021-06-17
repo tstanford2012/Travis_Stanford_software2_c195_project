@@ -18,6 +18,8 @@ public class Customer {
     private ObservableList<Appointments> appointments = FXCollections.observableArrayList();
     public static ObservableList<Customer> customerList = FXCollections.observableArrayList();
 
+
+    //constructor
     public Customer(int customerID, String customerName, String customerAddress, String stateProvince, String country, String postalCode, String phoneNumber, int divisionID) {
         this.customerID = customerID;
         this.customerName = customerName;
@@ -29,25 +31,19 @@ public class Customer {
         this.divisionID = divisionID;
     }
 
+    //constructor
     public Customer(int customerID, int totalWeekAppointments, int totalMonthAppointments) {
         this.customerID = customerID;
         this.totalWeekAppointments = totalWeekAppointments;
         this.totalMonthAppointments = totalMonthAppointments;
     }
 
+    //getters and setters
     public static ObservableList<Customer> getCustomerList() {
         return customerList;
     }
     public ObservableList<Appointments> getAppointments() {
         return appointments;
-    }
-
-    public void addCustomer(Customer newCustomer) {
-        customerList.add(newCustomer);
-    }
-
-    public void addAppointment(Appointments newAppointment) {
-        appointments.add(newAppointment);
     }
 
     public void setAppointments(ObservableList<Appointments> customerAppointments) {

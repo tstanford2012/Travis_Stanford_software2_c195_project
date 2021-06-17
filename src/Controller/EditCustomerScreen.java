@@ -12,12 +12,15 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import utils.DBConnection;
+import utils.DBQuery;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -25,7 +28,9 @@ public class EditCustomerScreen implements Initializable {
     @FXML
     TextField customerIDTextField;
     @FXML
-    TextField customerNameTextField;
+    TextField firstNameTextField;
+    @FXML
+    TextField lastNameTextField;
     @FXML
     TextField addressTextField;
     @FXML
@@ -102,7 +107,8 @@ public class EditCustomerScreen implements Initializable {
     public void editCustomerSaveBtnHandler(ActionEvent actionEvent) {
 
         int customerID;
-        String customerName;
+        String customerFirstName;
+        String customerLastName;
         String address;
         String stateProvince;
         String country;
@@ -115,7 +121,8 @@ public class EditCustomerScreen implements Initializable {
 
         try {
             customerID = Integer.parseInt(customerIDTextField.getText());
-            customerName = customerNameTextField.getText();
+            customerFirstName = firstNameTextField.getText();
+            customerLastName = lastNameTextField.getText();
             stateProvince = stateComboBox.getValue();
             country = countryComboBox.getValue();
             postalCode = zipCodeTextField.getText();
@@ -129,7 +136,7 @@ public class EditCustomerScreen implements Initializable {
 
 
 
-            if(customerNameTextField.getText().isEmpty()) {
+            if(firstNameTextField.getText().isEmpty() || lastNameTextField.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Error adding customer");
@@ -158,48 +165,59 @@ public class EditCustomerScreen implements Initializable {
                             break;
                         }
                     }
+                    String customerName = customerFirstName + " " + customerLastName;
+
+                    boolean isValid = validName(customerName);
 
 
-                    Connection connection = DBConnection.getConnection();
-                    String updateStatement = "UPDATE customers SET Customer_Name = ?, Address = ?, Postal_Code = ?, Phone = ?, Division_ID = ?, Last_Updated_By = ? where Customer_ID = ?";
-                    PreparedStatement preparedStatement = connection.prepareStatement(updateStatement);
+                    if(isValid) {
+                        Connection connection = DBConnection.getConnection();
+                        String updateStatement = "UPDATE customers SET Customer_Name = ?, Address = ?, Postal_Code = ?, Phone = ?, Division_ID = ?, Last_Updated_By = ? where Customer_ID = ?";
+                        PreparedStatement preparedStatement = connection.prepareStatement(updateStatement);
 
-                    preparedStatement.setString(1, customerName);
-                    preparedStatement.setString(2, address);
-                    preparedStatement.setString(3, postalCode);
-                    preparedStatement.setString(4, phoneNumber);
-                    preparedStatement.setInt(5, divisionID);
-                    preparedStatement.setString(6, "Software 2 Program");
-                    preparedStatement.setInt(7, customerID);
+                        preparedStatement.setString(1, customerName);
+                        preparedStatement.setString(2, address);
+                        preparedStatement.setString(3, postalCode);
+                        preparedStatement.setString(4, phoneNumber);
+                        preparedStatement.setInt(5, divisionID);
+                        preparedStatement.setString(6, "Software 2 Program");
+                        preparedStatement.setInt(7, customerID);
 
-                    preparedStatement.executeUpdate();
-
-
-                    Customer.customerList.remove(customer);
-                    Customer newCustomer = new Customer(customerID, customerName, address, stateProvince, country, postalCode, phoneNumber, divisionID);
-                    Customer.customerList.add(newCustomer);
-                    newCustomer.setCustomerID(customerID);
-                    newCustomer.setCustomerName(customerName);
-                    newCustomer.setCustomerAddress(address);
-                    newCustomer.setStateProvince(stateProvince);
-                    newCustomer.setCountry(country);
-                    newCustomer.setPostalCode(postalCode);
-                    newCustomer.setPhoneNumber(phoneNumber);
-                    newCustomer.setDivisionID(divisionID);
+                        preparedStatement.executeUpdate();
 
 
+                        Customer.customerList.remove(customer);
+                        Customer newCustomer = new Customer(customerID, customerName, address, stateProvince, country, postalCode, phoneNumber, divisionID);
+                        Customer.customerList.add(newCustomer);
+                        newCustomer.setCustomerID(customerID);
+                        newCustomer.setCustomerName(customerName);
+                        newCustomer.setCustomerAddress(address);
+                        newCustomer.setStateProvince(stateProvince);
+                        newCustomer.setCountry(country);
+                        newCustomer.setPostalCode(postalCode);
+                        newCustomer.setPhoneNumber(phoneNumber);
+                        newCustomer.setDivisionID(divisionID);
 
-                    Stage stage;
-                    Parent root;
-                    stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
 
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("../View/customers.fxml"));
 
-                    root = loader.load();
+                        Stage stage;
+                        Parent root;
+                        stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
 
-                    Scene scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.show();
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("../View/customers.fxml"));
+
+                        root = loader.load();
+
+                        Scene scene = new Scene(root);
+                        stage.setScene(scene);
+                        stage.show();
+                    }
+                    else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setHeaderText("Could not save...");
+                        alert.setContentText("The entered name is the same as a record in the database.\nTry entering another name.");
+                        alert.showAndWait();
+                    }
                 }
             }
         } catch(Exception e) {
@@ -239,6 +257,10 @@ public class EditCustomerScreen implements Initializable {
     public void setCustomer(Customer customer) {
         this.customer = customer;
         String fullAddress = customer.getCustomerAddress();
+        String customerName = customer.getCustomerName();
+        String[] nameSplit = customerName.split(" ");
+        String firstName = nameSplit[0];
+        String lastName = nameSplit[1];
         String[] parts = fullAddress.split(", ");
         String address = parts[0];
         String city;
@@ -262,7 +284,8 @@ public class EditCustomerScreen implements Initializable {
 
 
         customerIDTextField.setText(Integer.toString(customer.getCustomerID()));
-        customerNameTextField.setText(customer.getCustomerName());
+        firstNameTextField.setText(firstName);
+        lastNameTextField.setText(lastName);
         addressTextField.setText(address);
         cityTextField.setText(city);
         countryComboBox.setValue(customer.getCountry());
@@ -270,5 +293,28 @@ public class EditCustomerScreen implements Initializable {
         zipCodeTextField.setText(customer.getPostalCode());
         phoneNumberTextField.setText(customer.getPhoneNumber());
 
+    }
+
+    private boolean validName(String customerName) throws SQLException {
+        Connection connection = DBConnection.getConnection();
+        String selectStatement = "SELECT Customer_Name, Customer_ID from customers";
+        DBQuery.setPreparedStatement(connection, selectStatement);
+
+        PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+        boolean isValid = false;
+
+        while (resultSet.next()) {
+            if(customerName.toLowerCase(Locale.ROOT).contains(resultSet.getString("Customer_Name").toLowerCase(Locale.ROOT)) &&
+                    Integer.parseInt(customerIDTextField.getText()) != resultSet.getInt("Customer_ID")) {
+                isValid = false;
+                break;
+            }
+            else {
+                isValid = true;
+            }
+        }
+        return isValid;
     }
 }

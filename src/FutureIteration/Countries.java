@@ -1,4 +1,4 @@
-package Model;
+package FutureIteration;
 
 public class Countries {
     private int countryID;

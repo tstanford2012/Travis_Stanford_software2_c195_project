@@ -155,7 +155,7 @@ public class AppointmentsController implements Initializable {
             alert.initModality(Modality.NONE);
             alert.setTitle("Confirmation");
             alert.setHeaderText("Cancel Confirmation");
-            alert.setContentText("Are you sure you want to cancel the appointment with " + appointments.getAppointmentCustomerName() + " at " + appointments.getStart().toString() + "?");
+            alert.setContentText("Are you sure you want to cancel the " + appointments.getType() + " appointment # " + appointments.getAppointmentID() + " with " + appointments.getAppointmentCustomerName() + " at " + appointments.getStart().toString() + "?");
             Optional<ButtonType> result = alert.showAndWait();
 
             if(result.get() == ButtonType.OK) {
@@ -177,7 +177,7 @@ public class AppointmentsController implements Initializable {
                     System.out.println("Number of rows affected: " + preparedDeleteStatement.getUpdateCount());
                     Alert deleteAlert = new Alert(Alert.AlertType.INFORMATION);
                     deleteAlert.setHeaderText("Cancel successful");
-                    deleteAlert.setContentText("Appointment with customer " + appointments.getAppointmentCustomerName() + " at " + appointments.getStart().toString() + " was cancelled!");
+                    deleteAlert.setContentText(appointments.getType() + " Appointment # " + deleteID + " with customer " + appointments.getAppointmentCustomerName() + " at " + appointments.getStart().toString() + " was cancelled!");
                     deleteAlert.showAndWait();
                 }
                 else {

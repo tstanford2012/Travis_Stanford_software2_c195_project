@@ -1,7 +1,7 @@
 package Controller;
 
-import DBAccess.DBCountries;
-import Model.Countries;
+import FutureIteration.DBCountries;
+import FutureIteration.Countries;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;

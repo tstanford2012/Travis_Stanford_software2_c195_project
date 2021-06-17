@@ -20,6 +20,7 @@ public class Appointments {
     private String appointmentCustomerName;
     private int userID;
 
+    //constructor
     public Appointments(int appointmentID, String title, String description, String location, String contact, String type, Timestamp start, Timestamp end, int customerID, int userID, String appointmentCustomerName) {
         this.appointmentID = appointmentID;
         this.title = title;
@@ -34,6 +35,7 @@ public class Appointments {
         this.appointmentCustomerName = appointmentCustomerName;
     }
 
+    //constructor
     public Appointments(int appointmentID, String type, String description, ZonedDateTime startZonedDateTime, ZonedDateTime endZoneDateTime, int customerID, String appointmentCustomerName) {
         this.appointmentID = appointmentID;
         this.type = type;
@@ -44,7 +46,7 @@ public class Appointments {
         this.appointmentCustomerName = appointmentCustomerName;
     }
 
-
+    //constructor
     public Appointments(int appointment_id, Timestamp start, Timestamp end, int customer_id, int user_id) {
         this.appointmentID = appointment_id;
         this.start = start;
@@ -53,6 +55,7 @@ public class Appointments {
         this.userID = user_id;
     }
 
+    //constructor
     public Appointments(int appointmentID, String type, int customerID, int userID) {
         this.appointmentID = appointmentID;
         this.type = type;
@@ -61,6 +64,7 @@ public class Appointments {
     }
 
 
+    //constructor
     public Appointments(int appointment_id, String title, String type, String description, Timestamp start, Timestamp end, int customer_id) {
         this.appointmentID = appointment_id;
         this.title = title;
@@ -71,7 +75,7 @@ public class Appointments {
         this.customerID = customer_id;
     }
 
-
+    //getters and setters
     public int getAppointmentID() {
         return appointmentID;
     }

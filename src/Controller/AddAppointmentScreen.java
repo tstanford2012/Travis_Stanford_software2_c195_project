@@ -30,6 +30,7 @@ import java.util.ResourceBundle;
 
 public class AddAppointmentScreen implements Initializable {
 
+    //Zone IDs to allow for time changing
     private final ZoneId zoneId = ZoneId.systemDefault();
     ZoneId phoenixZone = ZoneId.of("America/Phoenix");
     ZoneId londonZone = ZoneId.of("Europe/London");
@@ -72,34 +73,47 @@ public class AddAppointmentScreen implements Initializable {
     RadioButton officeLocationTimeRadioBtn;
     @FXML
     RadioButton timezoneRadioBtn;
+
+    //Observable lists
     private final ObservableList<String> contactNames = FXCollections.observableArrayList();
     private final ObservableList<String> customerNames = FXCollections.observableArrayList();
     private static final ObservableList<String> startTimes = FXCollections.observableArrayList();
     private static final ObservableList<String> endTimes = FXCollections.observableArrayList();
+
+    //Date formatter for the times
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     private boolean testAppointment = false;
 
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //Sets the error label to be hidden on initialization
         startTimeErrorLabel.setOpacity(0);
+
+        //Selects the radio button on initialization and deselects the other radio button
         officeLocationTimeRadioBtn.setSelected(true);
         timezoneRadioBtn.setSelected(false);
+
+        //Makes the end date text field not editable. The times are viewed with the start date
         endDateTextField.setEditable(false);
 
         //Initial setOnAction for the comboBoxes
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
 
+        //Adds the types of appointments to the combo box
         addTypesToComboBox();
 
         try {
+            //Gets the contact names and customer names and adds them to the combo boxes
             pullContactNames();
             pullCustomers();
 
         } catch (SQLException exception) {
             System.out.println(exception.getMessage());
         }
+        //adds locations to the combo box
         locationComboBox.getItems().addAll("Phoenix", "White Plains", "Montreal", "London");
 
     }

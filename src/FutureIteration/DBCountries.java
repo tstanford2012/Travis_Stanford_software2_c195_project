@@ -1,6 +1,6 @@
-package DBAccess;
+package FutureIteration;
 
-import Model.Countries;
+import FutureIteration.Countries;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import utils.DBConnection;
@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.*;
 
 public class DBCountries {
     public static ObservableList<Countries> getAllCountries() {
