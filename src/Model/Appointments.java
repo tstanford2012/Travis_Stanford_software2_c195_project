@@ -5,6 +5,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
+/**
+ * This class holds the attributes, constructors, getters, and setters for the appointment object
+ */
 public class Appointments {
     private int appointmentID;
     private String title;

@@ -24,6 +24,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * This class allows the user to edit/modify an existing customer that was selected from the table on the customer screen.
+ */
 public class EditCustomerScreen implements Initializable {
     @FXML
     TextField customerIDTextField;

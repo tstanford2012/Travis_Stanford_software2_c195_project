@@ -19,6 +19,9 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * This class has several buttons used to navigate to the main portions of the application
+ */
 public class MainScreenController implements Initializable {
     @FXML
     Label welcomeLabel;

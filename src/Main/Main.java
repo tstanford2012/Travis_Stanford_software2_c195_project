@@ -9,6 +9,9 @@ import utils.DBConnection;
 
 import java.sql.*;
 
+/**
+ * This class starts the database connection and goes to the log in page
+ */
 public class Main extends Application {
 
     @Override

@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * This class has several buttons that allow the user to navigate to another screen depending on which report they would like to view.
+ */
 public class ReportsController {
 
     /**

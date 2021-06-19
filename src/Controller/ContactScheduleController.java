@@ -27,6 +27,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+/**
+ * This class displays the appointments in a table that are associated with a contact that is selected by the user
+ */
 public class ContactScheduleController implements Initializable {
     @FXML
     TableView<Appointments> contactScheduleTableView;

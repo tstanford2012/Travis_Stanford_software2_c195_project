@@ -28,6 +28,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * This class allows the user to edit/modify an existing appointment that was selected in the table on the appointment screen.
+ */
 public class EditAppointmentScreen implements Initializable {
     Appointments appointments;
     @FXML

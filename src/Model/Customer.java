@@ -3,6 +3,9 @@ package Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+/**
+ * This class contains the attributes, constructors, getters, and setters for the customer object
+ */
 public class Customer {
     private int customerID;
     private String customerName;

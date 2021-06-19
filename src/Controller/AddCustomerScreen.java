@@ -21,6 +21,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * This class allows the user to enter information into combo boxes and text fields in order to save a new customer to the database
+ */
 public class AddCustomerScreen implements Initializable {
     @FXML
     TextField firstNameTextField;

@@ -26,6 +26,9 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * This class displays the customers in a table and has various buttons to allow for adding, editing, and deleting customers
+ */
 public class CustomersController implements Initializable {
     private ObservableList<Customer> customerList = FXCollections.observableArrayList();
     @FXML

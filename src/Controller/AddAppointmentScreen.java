@@ -28,6 +28,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+
+/**
+ * This class allows the user to enter information into combo boxes and text fields in order to save them as an appointment in the database.
+ */
 public class AddAppointmentScreen implements Initializable {
 
     //Zone IDs to allow for time changing
@@ -93,7 +97,6 @@ public class AddAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param url
      * @param resourceBundle
      *
      * sets the error label to be hidden, adds the types, locations, contact names, and customer names to the combo box during initialization
@@ -131,8 +134,8 @@ public class AddAppointmentScreen implements Initializable {
 
 
     /**
-     * -mouse click handler for the start time combo box
-     * -Displays the error label when the date text field is empty
+     * Mouse click handler for the start time combo box.
+     * Displays the error label when the date text field is empty.
      */
     public void startTimesComboBoxClicked() {
 
@@ -144,8 +147,8 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     /**
-     * -handler for the start time combo box
-     * -runs the handleComboBoxSelection method when a selection is changed
+     * Handler for the start time combo box.
+     * Runs the handleComboBoxSelection method when a selection is changed.
      */
     public void startTimeComboBoxHandler() {
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
@@ -153,14 +156,14 @@ public class AddAppointmentScreen implements Initializable {
 
 
     /**
-     * handler for the end time combo box
+     * Handler for the end time combo box.
      */
     public void endTimeComboBoxHandler() {
     }
 
     /**
-     * -mouse click handler for the end time combo box
-     * -prints an error message to the console when the end date or start date text fields are empty
+     * Mouse click handler for the end time combo box.
+     * Prints an error message to the console when the end date or start date text fields are empty.
      */
     public void endTimesComboBoxClicked() {
 
@@ -170,7 +173,7 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     /**
-     *handler for the location combo box
+     *Handler for the location combo box.
      */
     public void locationComboBoxHandler() {
     }
@@ -178,17 +181,16 @@ public class AddAppointmentScreen implements Initializable {
 
 
     /**
-     * handler for the customer combo box
+     * Handler for the customer combo box.
      */
     public void customerComboBoxHandler() {
     }
 
     /**
-     * -handler for the view times button
-     * -prints an error to the console if the date field is empty
-     * -gets the start date from the text field and checks if it is valid. If valid, it calls the addLocationTimesToComboBox method
-     *  and printAppointmentTimes method.
-     * -combo box times are displayed depending on the location that is selected
+     * Handler for the view times button.
+     * Prints an error to the console if the date field is empty.
+     * Gets the start date from the text field and checks if it is valid. If valid, it calls the addLocationTimesToComboBox method and printAppointmentTimes method.
+     * Combo box times are displayed depending on the location that is selected.
      */
     public void startTimesButtonHandler() {
         if(startDateTextField.getText().isEmpty()) {
@@ -261,13 +263,13 @@ public class AddAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent is passed to the nextScreen method to go to the desired screen.
      * @throws SQLException
      * @throws IOException
-     * -handler for the save button
-     * -checks if all fields have values
-     * -changes the times and dates into the correct formats
-     * -inserts the record into the database and goes to the appointment screen if everything is valid
+     * Handler for the save button.
+     * Checks if all fields have values.
+     * Changes the times and dates into the correct formats.
+     * Inserts the record into the database and goes to the appointment screen if everything is valid.
      */
     public void saveButtonHandler(ActionEvent actionEvent) throws SQLException, IOException {
         if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeComboBox.getValue() == null ||
@@ -489,10 +491,10 @@ public class AddAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent is passed to the nextScreen method to go to the desired screen.
      * @throws IOException
-     * -Cancel button handler
-     * -Asks for confirmation and then goes back to the appointments screen if yes is selected
+     * Cancel button handler.
+     * Asks for confirmation and then goes back to the appointments screen if yes is selected.
      */
     public void cancelButtonHandler(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -511,9 +513,9 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     /**
-     * -handler for the hidden add test appointment button
-     * -fills in all the fields and selects the time to be 15 min in the future in the users local time.
-     * -to be used to easily add an appointment to test the appointment alert during log in
+     * Handler for the hidden add test appointment button.
+     * Fills in all the fields and selects the time to be 15 min in the future in the users local time.
+     * To be used to easily add an appointment to test the appointment alert during log in.
      */
     public void addTestApptButtonHandler() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -577,8 +579,8 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     /**
-     * -handler for the hidden reveal button at the top left on the add appointment screen.
-     * -pressing this button will reveal the add test appointment button and make it clickable
+     * Handler for the hidden reveal button at the top left on the add appointment screen.
+     * Pressing this button will reveal the add test appointment button and make it clickable.
      */
     public void revealTestButtonHandler() {
         addTestApptButton.setOpacity(1);
@@ -587,8 +589,8 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     /**
-     * -handler for the office location radio button
-     * -Deselects the time zone radio button when selected
+     * Handler for the office location radio button.
+     * Deselects the time zone radio button when selected.
      */
     public void officeLocationTimeRadioBtnHandler() {
         timezoneRadioBtn.setSelected(false);
@@ -597,8 +599,8 @@ public class AddAppointmentScreen implements Initializable {
 
 
     /**
-     * -handler for the time zone radio button
-     * -Deselects the office location radio button when selected
+     * Handler for the time zone radio button.
+     * Deselects the office location radio button when selected.
      */
     public void timezoneRadioBtnHandler() {
         officeLocationTimeRadioBtn.setSelected(false);
@@ -607,7 +609,7 @@ public class AddAppointmentScreen implements Initializable {
     /**
      *
      * @throws SQLException
-     * gets the contact names from the database and adds them to the combo box
+     * Gets the contact names from the database and adds them to the combo box.
      */
     private void pullContactNames() throws SQLException {
         Connection connection = DBConnection.getConnection();
@@ -628,7 +630,7 @@ public class AddAppointmentScreen implements Initializable {
     /**
      *
      * @throws SQLException
-     * gets the customer names from the database and adds them to the combo box
+     * Gets the customer names from the database and adds them to the combo box.
      */
     public void pullCustomers() throws SQLException {
         Connection connection = DBConnection.getConnection();
@@ -817,7 +819,7 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     /**
-     * Adds the appointment types to the types combo box
+     * Adds the appointment types to the types combo box.
      */
     private void addTypesToComboBox() {
         typeComboBox.getItems().addAll("De-Briefing", "Planning Session", "New Account", "Follow Up");
@@ -825,9 +827,9 @@ public class AddAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent is passed from other methods.
      * @throws IOException
-     * causes the app to go back to the appointments screen when called
+     * Causes the app to go back to the appointments screen when called.
      */
     private void nextScreen(ActionEvent actionEvent) throws IOException {
         Stage stage;
@@ -847,9 +849,9 @@ public class AddAppointmentScreen implements Initializable {
      *
      * @param startTimeComboBox
      * @param endTimeComboBox
-     * -onAction for the combo boxes. Removes previous times from the end combo box based on the start time that is selected.
+     * onAction for the combo boxes. Removes previous times from the end combo box based on the start time that is selected.
      *
-     * -lambda used to reduce the amount of code necessary for the combo box function
+     * Lambda used to reduce the amount of code necessary for the combo box function.
      */
     public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) {
 
@@ -872,11 +874,11 @@ public class AddAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param start
-     * @param end
+     * @param start appointment start time
+     * @param end appointment end time
      * @return
-     * -validation for the appointment
-     * -calls the database and checks if the appointment is either during or overlaps an already existing appointment.
+     * Validation for the appointment.
+     * Calls the database and checks if the appointment is either during or overlaps an already existing appointment.
      */
     private boolean validAppointment(LocalDateTime start, LocalDateTime end) {
         int appointmentID = -1;
@@ -935,9 +937,9 @@ public class AddAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param enteredDate
+     * @param enteredDate date entered by the user
      * @throws SQLException
-     * Prints the times for the appointments that are on the selected date to the console in the users local time when called
+     * Prints the times for the appointments that are on the selected date to the console in the users local time when called.
      */
     private void printAppointmentTimes(LocalDate enteredDate) throws SQLException {
         String appointmentDate = null;

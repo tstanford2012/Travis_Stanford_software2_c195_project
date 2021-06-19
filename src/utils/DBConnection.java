@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * This class has methods to establish, get and close a connection to the database.
+ */
 public class DBConnection {
     //JDBC URL parts
     private static final String protocol = "jdbc";
@@ -20,8 +23,14 @@ public class DBConnection {
 
     private static final String username = "U06gVI";
 
-    //attempts the connect to the database and prints an error if unsuccessful
-    //returns the connection if successful
+    //
+
+    /**
+     *
+     * @return returns the connection if successful
+     * attempts the connect to the database and prints an error if unsuccessful
+     *
+     */
     public static Connection startConnection() {
         try {
             Class.forName(MYSQLJDBCDriver);
@@ -35,12 +44,18 @@ public class DBConnection {
         return conn;
 
     }
-    //returns the database connection when called
+
+    /**
+     *
+     * @return returns the database connection when called
+     */
     public static Connection getConnection() {
         return conn;
     }
 
-    //closes the database connection when called
+    /**
+     * closes the database connection when called
+     */
     public static void closeConnection() {
         try {
             conn.close();

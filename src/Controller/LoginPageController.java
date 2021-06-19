@@ -34,6 +34,11 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 
+/**
+ * This class checks entered credentials to log into the application.
+ * The labels and error messages will be translated into either english or french depending on the users system language.
+ * This class also alerts the user of an upcoming appointment if it is scheduled in the next 15 min from the users local time
+ */
 public class LoginPageController implements Initializable {
     @FXML
     Label usernameLabel;

@@ -29,6 +29,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
+/**
+ * This class allows the user to generate a report of the amount of appointments by either month or type based on what customer they have selected.
+ *
+ */
 public class TotalAppointmentsController implements Initializable {
 
     @FXML

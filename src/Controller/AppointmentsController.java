@@ -28,6 +28,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * This class displays a table of appointment and has several buttons to allow for adding, editing, or deleting appointments.
+ * Also allows for filtering of the appointments by week and month.
+ */
 public class AppointmentsController implements Initializable {
 
     @FXML
