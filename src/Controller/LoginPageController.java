@@ -27,8 +27,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -57,6 +55,13 @@ public class LoginPageController implements Initializable {
     private DateTimeFormatter formatDateTime = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm");
     ResourceBundle resourceBundle = ResourceBundle.getBundle(fileName, Locale.getDefault());
 
+    /**
+     *
+     * @param url
+     * @param rb
+     * -sets the labels on the login page to the system language
+     * -displays the time zone of the user on the login page
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
@@ -81,6 +86,13 @@ public class LoginPageController implements Initializable {
 
     }
 
+    /**
+     *
+     * @param actionEvent
+     * -handler for the log in button
+     * -validates the username and password and creates a new User object based on the userID
+     * -goes to the application if the username and password is correct
+     */
     public void loginButtonHandler(ActionEvent actionEvent) {
 
         String tempUsername = usernameTextField.getText();
@@ -98,8 +110,10 @@ public class LoginPageController implements Initializable {
                 if (validatePassword(userID, tempPassword)) {
                     loginFailLabel.setText(" ");
 
+                    //calls the methods for the appointment reminders
                     addRemindersToList();
                     appointmentIn15MinAlert();
+                    //calls the loginActivity method to add a record to the text file
                     loginActivity(User.getUserName(), true);
                     System.out.println("Log in successful!");
 
@@ -127,6 +141,10 @@ public class LoginPageController implements Initializable {
         }
 
     }
+
+    /**
+     * filters the appointments and displays an alert if there is an appointment in the next 15 min of the users local time
+     */
     private void appointmentIn15MinAlert() {
         System.out.println("Starting appointment alert......");
         LocalDateTime currentTime = LocalDateTime.now();
@@ -136,11 +154,12 @@ public class LoginPageController implements Initializable {
 
         FilteredList<Appointments> filteredList = new FilteredList<>(appointmentsAlertList);
 
-        //Lambda expression
+        //Lambda expression used to reduce the code required to filter the appointments
         filteredList.setPredicate(row -> {
             LocalDateTime date = LocalDateTime.parse(row.getStartZonedDateTime().toString().substring(0, 16), formatDateTime);
             return date.isAfter(currentTime.minusMinutes(1)) && date.isBefore(fifteenMinFromNow);
         });
+        //displays an alert to the user that there are no upcoming appointments
         if(filteredList.isEmpty()) {
             Alert noApptAlert = new Alert(Alert.AlertType.INFORMATION);
             noApptAlert.setContentText("No immediate appointments found");
@@ -148,6 +167,7 @@ public class LoginPageController implements Initializable {
             System.out.println("No upcoming appointments");
         }
         else {
+            //gets the data and displays an alert for the user when an appointment is in 15 min of the users local time
             String description = filteredList.get(0).getDescription();
             String customerName = filteredList.get(0).getAppointmentCustomerName();
             String type = filteredList.get(0).getType();
@@ -172,6 +192,11 @@ public class LoginPageController implements Initializable {
         System.out.println("Ending appointment alert.........");
     }
 
+    /**
+     *
+     * @throws SQLException
+     * gets the appointments from the database and adds them to the observable list
+     */
     private void addRemindersToList() throws SQLException {
         System.out.println("Username: " + User.getUserName());
         try {
@@ -211,7 +236,15 @@ public class LoginPageController implements Initializable {
         }
     }
 
-    //validates the entered password
+    /**
+     *
+     * @param userID
+     * @param password
+     * @return
+     * @throws SQLException
+     *
+     * validates the entered password
+     */
     private boolean validatePassword(int userID, String password) throws SQLException {
         Connection connection = DBConnection.getConnection();
         try {
@@ -244,7 +277,14 @@ public class LoginPageController implements Initializable {
         return false;
     }
 
-    //gets the userID from the entered username
+    /**
+     *
+     * @param username
+     * @return
+     * @throws SQLException
+     *
+     * gets the userID from the entered username
+     */
     private int getUserID(String username) throws SQLException {
         Connection connection = DBConnection.getConnection();
         int userID = -1;
@@ -273,6 +313,15 @@ public class LoginPageController implements Initializable {
         }
         return userID;
     }
+
+    /**
+     *
+     * @param userName
+     * @param successful
+     * @throws IOException
+     *
+     * adds a log in attempt to the login_activity text file whether the attempt was successful of not
+     */
     private void loginActivity(String userName, boolean successful) throws IOException {
         String fileName = "login_activity.txt";
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName, true));

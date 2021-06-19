@@ -1,7 +1,6 @@
 package Controller;
 
 import Model.Appointments;
-import Model.Customer;
 import Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,15 +19,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import utils.DBConnection;
 import utils.DBQuery;
-
-import javax.naming.ldap.PagedResultsControl;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
@@ -48,6 +44,12 @@ public class TotalAppointmentsController implements Initializable {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
 
+    /**
+     *
+     * @param url
+     * @param resourceBundle
+     * adds the customer names to the combo box during initialization
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -58,15 +60,30 @@ public class TotalAppointmentsController implements Initializable {
     }
 
 
+    /**
+     * -handler for the appointment type radio button
+     * -deselects the month radio button when selected
+     *
+     */
     public void appointmentTypeRadBtnHandler(MouseEvent mouseEvent) {
         monthRadBtn.setSelected(false);
     }
 
+    /**
+     *
+     * @param mouseEvent
+     * -handler for the month radio button
+     * -deselects the appointment type radio button when selected
+     */
     public void monthRadBtnHandler(MouseEvent mouseEvent) {
         appointmentTypeRadBtn.setSelected(false);
     }
 
 
+    /**
+     * -handler for the back button
+     * -goes back to the reports screen when the button is pressed
+     */
     public void backButtonHandler(ActionEvent actionEvent) throws IOException {
         Stage stage;
         Parent root;
@@ -81,6 +98,13 @@ public class TotalAppointmentsController implements Initializable {
         stage.show();
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws SQLException
+     *
+     * Calculates the number of appointments for the next month or for each type depending on which customer is selected from the combo box
+     */
     public void calculateBtnHandler(ActionEvent actionEvent) throws SQLException {
         String customerName = customerComboBox.getValue();
         appointmentList.clear();
@@ -154,11 +178,18 @@ public class TotalAppointmentsController implements Initializable {
         }
     }
 
+    /**
+     *
+     * @param appointmentList
+     * @return
+     *
+     * uses a filtered list to calculate the amount of appointments for the next month
+     */
     public int calculateAppointmentsThisMonth(ObservableList<Appointments> appointmentList) {
         LocalDateTime today = LocalDateTime.now();
         LocalDateTime monthFromToday = today.plusMonths(1);
 
-        //filtered list lambda used to filter appointments this month
+        //filtered list lambda used to reduce code required to filter appointments this month
         FilteredList<Appointments> filteredList = new FilteredList<>(appointmentList);
         filteredList.setPredicate(row -> {
 
@@ -170,6 +201,15 @@ public class TotalAppointmentsController implements Initializable {
 
     }
 
+    /**
+     *
+     * @param customerID
+     * @param userID
+     * @param customerName
+     * @throws SQLException
+     *
+     * Calculates the totals for each type of appointment for the selected customer
+     */
     private void calculateAppointmentTypeTotals(int customerID, int userID, String customerName) throws SQLException {
         String debrief = "De-Briefing";
         String planning = "Planning Session";
@@ -221,6 +261,11 @@ public class TotalAppointmentsController implements Initializable {
 
     }
 
+    /**
+     *
+     * @throws SQLException
+     * pulls the customer names from the database and adds them to the customer combo box
+     */
     private void fillCustomerComboBox() throws SQLException {
         String customerName = null;
         Connection connection = DBConnection.getConnection();

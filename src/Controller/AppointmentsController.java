@@ -1,7 +1,6 @@
 package Controller;
 
 import Model.Appointments;
-import Model.Customer;
 import Model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -76,11 +75,12 @@ public class AppointmentsController implements Initializable {
 
 
 
-
-
-
-
-
+    /**
+     *
+     * @param url
+     * @param resourceBundle
+     * displays the appointment table during initialization
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -95,14 +95,24 @@ public class AppointmentsController implements Initializable {
         }
     }
 
-
-
+    /**
+     *
+     * @param actionEvent
+     * @throws SQLException
+     * filters the appointments by week and deselects the month radio button
+     */
     public void weekFilterRadioBtnHandler(ActionEvent actionEvent) throws SQLException {
         isWeek = true;
         monthFilterRadioBtn.setSelected(false);
         displayAppointmentTable();
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws SQLException
+     * filters the appointments by month and deselects the week radio button
+     */
     public void monthFilterRadioBtnHandler(ActionEvent actionEvent) throws SQLException {
         isWeek = false;
         weekFilterRadioBtn.setSelected(false);
@@ -110,13 +120,22 @@ public class AppointmentsController implements Initializable {
 
     }
 
-
-
-
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * goes to the add appointment screen when the button is pressed
+     */
     public void addApptBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/addAppointment.fxml");
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * goes to the edit appointment screen when called as long as an appointment in the table is selected
+     */
     public void editApptBtnHandler(ActionEvent actionEvent) throws IOException {
         Appointments appointments = appointmentsTableView.getSelectionModel().getSelectedItem();
         if(appointmentsTableView.getSelectionModel().isEmpty()) {
@@ -141,6 +160,12 @@ public class AppointmentsController implements Initializable {
 
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws SQLException
+     * handler for the cancel/delete button. Removes the selected appointment from the database after confirmation
+     */
     public void cancelAppointmentBtnHandler(ActionEvent actionEvent) throws SQLException {
 
         Appointments appointments = appointmentsTableView.getSelectionModel().getSelectedItem();
@@ -151,6 +176,7 @@ public class AppointmentsController implements Initializable {
             alert.showAndWait();
         }
         else {
+            //confirmation for the delete. Only deletes if the ok button on the alert is pressed
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initModality(Modality.NONE);
             alert.setTitle("Confirmation");
@@ -191,10 +217,21 @@ public class AppointmentsController implements Initializable {
         }
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * goes back to the main screen when the back button is pressed
+     */
     public void backBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/mainScreen.fxml");
     }
 
+    /**
+     *
+     * @throws SQLException
+     * displays the appointment table when called. Only displays appointments for the logged in user.
+     */
     public void displayAppointmentTable() throws SQLException {
         appointmentsTableView.refresh();
         int userID = User.getUserID();
@@ -223,6 +260,8 @@ public class AppointmentsController implements Initializable {
 
 
             while(resultSet1.next()) {
+                //sets the contact name for display based on the contact ID
+                //name used to be more user friendly
                 if(contactIDName == resultSet1.getInt("Contact_ID")) {
                     contactName = resultSet1.getString("Contact_Name");
                     resultSet1.beforeFirst();
@@ -230,17 +269,21 @@ public class AppointmentsController implements Initializable {
                 }
             }
             while(resultSet2.next()) {
+                //sets the customer name for display based on the customer ID
+                //name used to be more user friendly
                 if(customerIDName == resultSet2.getInt("Customer_ID")) {
                     customerName = resultSet2.getString("Customer_Name");
                     resultSet2.beforeFirst();
                     break;
                 }
             }
+            //adds the appointments to the observable list
             appointmentList.add(new Appointments(resultSet.getInt("Appointment_ID"), resultSet.getString("Title"), resultSet.getString("Description"),
                     resultSet.getString("Location"), contactName, resultSet.getString("Type"), resultSet.getTimestamp("Start"), resultSet.getTimestamp("End"),
                     resultSet.getInt("Customer_ID"), resultSet.getInt("User_ID"), customerName));
         }
 
+        //sets the table column properties
         appointmentIDCol.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -252,6 +295,7 @@ public class AppointmentsController implements Initializable {
         customerCol.setCellValueFactory(new PropertyValueFactory<>("appointmentCustomerName"));
 
 
+        //calls the appropriate method to filter the appointments based on which radio button is selected
         if(weekFilterRadioBtn.isSelected() || monthFilterRadioBtn.isSelected()) {
 
             if(isWeek) {
@@ -267,7 +311,13 @@ public class AppointmentsController implements Initializable {
         }
     }
 
-
+    /**
+     *
+     * @param actionEvent
+     * @param screenName
+     * @throws IOException
+     * takes the fxml string and goes to the corresponding screen when called
+     */
     private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
         Stage stage;
         Parent root;
@@ -282,6 +332,12 @@ public class AppointmentsController implements Initializable {
         stage.show();
     }
 
+    /**
+     *
+     * @param appointmentList
+     * -filters the appointments and displays the appointments in the next week on the appointment table when called
+     * -filtered list lambda used to filter appointments this week
+     */
     public void showAppointmentsThisWeek(ObservableList<Appointments> appointmentList) {
 
         LocalDate today = LocalDate.now();
@@ -298,6 +354,12 @@ public class AppointmentsController implements Initializable {
         appointmentsTableView.setItems(filteredList);
     }
 
+    /**
+     *
+     * @param appointmentList
+     * -filters the appointments and displays the appointments in the next month on the appointment table when called
+     * -filtered list lambda used to filter appointments this month
+     */
     public void showAppointmentsThisMonth(ObservableList<Appointments> appointmentList) {
         LocalDate today = LocalDate.now();
         LocalDate monthFromToday = today.plusMonths(1);

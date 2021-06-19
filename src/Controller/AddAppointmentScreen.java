@@ -74,19 +74,30 @@ public class AddAppointmentScreen implements Initializable {
     @FXML
     RadioButton timezoneRadioBtn;
 
-    //Observable lists
+
+    /**
+     * Observable lists
+     */
     private final ObservableList<String> contactNames = FXCollections.observableArrayList();
     private final ObservableList<String> customerNames = FXCollections.observableArrayList();
     private static final ObservableList<String> startTimes = FXCollections.observableArrayList();
     private static final ObservableList<String> endTimes = FXCollections.observableArrayList();
 
-    //Date formatter for the times
+    /**
+     * Date formatter for the times
+     */
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private boolean testAppointment = false;
 
 
-
+    /**
+     *
+     * @param url
+     * @param resourceBundle
+     *
+     * sets the error label to be hidden, adds the types, locations, contact names, and customer names to the combo box during initialization
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //Sets the error label to be hidden on initialization
@@ -119,6 +130,10 @@ public class AddAppointmentScreen implements Initializable {
     }
 
 
+    /**
+     * -mouse click handler for the start time combo box
+     * -Displays the error label when the date text field is empty
+     */
     public void startTimesComboBoxClicked() {
 
         if(startDateTextField.getText().isEmpty()) {
@@ -128,17 +143,25 @@ public class AddAppointmentScreen implements Initializable {
 
     }
 
+    /**
+     * -handler for the start time combo box
+     * -runs the handleComboBoxSelection method when a selection is changed
+     */
     public void startTimeComboBoxHandler() {
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
     }
 
 
+    /**
+     * handler for the end time combo box
+     */
     public void endTimeComboBoxHandler() {
     }
 
-
-
-
+    /**
+     * -mouse click handler for the end time combo box
+     * -prints an error message to the console when the end date or start date text fields are empty
+     */
     public void endTimesComboBoxClicked() {
 
         if(endDateTextField.getText().isEmpty() || startDateTextField.getText().isEmpty()) {
@@ -146,12 +169,27 @@ public class AddAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     *handler for the location combo box
+     */
     public void locationComboBoxHandler() {
     }
 
+
+
+    /**
+     * handler for the customer combo box
+     */
     public void customerComboBoxHandler() {
     }
 
+    /**
+     * -handler for the view times button
+     * -prints an error to the console if the date field is empty
+     * -gets the start date from the text field and checks if it is valid. If valid, it calls the addLocationTimesToComboBox method
+     *  and printAppointmentTimes method.
+     * -combo box times are displayed depending on the location that is selected
+     */
     public void startTimesButtonHandler() {
         if(startDateTextField.getText().isEmpty()) {
             System.out.println("Must enter a date");
@@ -221,8 +259,16 @@ public class AddAppointmentScreen implements Initializable {
     }
 
 
-
-
+    /**
+     *
+     * @param actionEvent
+     * @throws SQLException
+     * @throws IOException
+     * -handler for the save button
+     * -checks if all fields have values
+     * -changes the times and dates into the correct formats
+     * -inserts the record into the database and goes to the appointment screen if everything is valid
+     */
     public void saveButtonHandler(ActionEvent actionEvent) throws SQLException, IOException {
         if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeComboBox.getValue() == null ||
         contactNameComboBox.getValue() == null || customerComboBox.getValue() == null) {
@@ -284,18 +330,22 @@ public class AddAppointmentScreen implements Initializable {
             String zoneOnly = selectionSplit3[1];
 
 
+            //An alert that displays the selected time in the users local time
             Alert timeAlert = new Alert(Alert.AlertType.CONFIRMATION);
             timeAlert.setHeaderText("Are you sure you want this time?");
             timeAlert.setContentText("The time you selected is " + selectionTime + " " + zoneOnly + " in your local time.");
             Optional<ButtonType> result = timeAlert.showAndWait();
 
             if(result.get() == ButtonType.OK) {
+                //calls the validAppointment method and continues if true
                 if(validAppointment(fullStartLocal, fullEndLocal)) {
                     System.out.println("Appointment is valid");
 
                     LocalDateTime localStartToDatabase;
                     LocalDateTime localEndToDatabase;
 
+                    //if the test appointment button is selected, the time will not be converted using the selected location
+                    //the users time zone will be used instead
                     if(testAppointment) {
                         fullStartZone = ZonedDateTime.of(fullStartLocal, zoneId);
                         ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
@@ -307,6 +357,7 @@ public class AddAppointmentScreen implements Initializable {
                         localEndToDatabase = endTimeToDatabase.toLocalDateTime();
                     }
 
+                    //changes the time depending on which location is selected and then changes that time to UTC
                     else if(locationComboBox.getValue().contains("Phoenix")) {
                         fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
                         ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
@@ -383,6 +434,7 @@ public class AddAppointmentScreen implements Initializable {
 
                     int contactID = 0;
 
+                    //gets the contactID from the database based on which name on the form was selected
                     while (resultSet1.next()) {
                         int tempContactID = resultSet1.getInt("Contact_ID");
                         String contactName = resultSet1.getString("Contact_Name");
@@ -396,16 +448,7 @@ public class AddAppointmentScreen implements Initializable {
                     }
 
 
-                    System.out.println(titleTextField.getText());
-                    System.out.println(descriptionTextField.getText());
-                    System.out.println(locationComboBox.getValue());
-                    System.out.println(typeComboBox.getValue());
-                    System.out.println(Timestamp.valueOf(startToDatabase));
-                    System.out.println(Timestamp.valueOf(endToDatabase));
-                    System.out.println(User.getUserName());
-                    System.out.println(customerID);
-                    System.out.println(User.getUserID());
-                    System.out.println(contactID);
+
                     DBQuery.setPreparedStatement(connection, insertStatement);
                     PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
 
@@ -429,6 +472,8 @@ public class AddAppointmentScreen implements Initializable {
 
                 }
                 else {
+                    //Displays an alert if the times conflict with another appointment
+                    //Displays if validAppointment returns false
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setHeaderText("Could not save appointment!");
                     alert.setHeaderText("Appointment times conflict with another scheduled appointment or has invalid time.");
@@ -442,8 +487,13 @@ public class AddAppointmentScreen implements Initializable {
     }
 
 
-
-
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * -Cancel button handler
+     * -Asks for confirmation and then goes back to the appointments screen if yes is selected
+     */
     public void cancelButtonHandler(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.initModality(Modality.NONE);
@@ -460,6 +510,11 @@ public class AddAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     * -handler for the hidden add test appointment button
+     * -fills in all the fields and selects the time to be 15 min in the future in the users local time.
+     * -to be used to easily add an appointment to test the appointment alert during log in
+     */
     public void addTestApptButtonHandler() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setHeaderText("Confirming....");
@@ -521,20 +576,39 @@ public class AddAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     * -handler for the hidden reveal button at the top left on the add appointment screen.
+     * -pressing this button will reveal the add test appointment button and make it clickable
+     */
     public void revealTestButtonHandler() {
         addTestApptButton.setOpacity(1);
         addTestApptButton.setDisable(false);
         System.out.println("Test Button Revealed");
     }
 
+    /**
+     * -handler for the office location radio button
+     * -Deselects the time zone radio button when selected
+     */
     public void officeLocationTimeRadioBtnHandler() {
         timezoneRadioBtn.setSelected(false);
     }
 
+
+
+    /**
+     * -handler for the time zone radio button
+     * -Deselects the office location radio button when selected
+     */
     public void timezoneRadioBtnHandler() {
         officeLocationTimeRadioBtn.setSelected(false);
     }
 
+    /**
+     *
+     * @throws SQLException
+     * gets the contact names from the database and adds them to the combo box
+     */
     private void pullContactNames() throws SQLException {
         Connection connection = DBConnection.getConnection();
 
@@ -551,6 +625,11 @@ public class AddAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     *
+     * @throws SQLException
+     * gets the customer names from the database and adds them to the combo box
+     */
     public void pullCustomers() throws SQLException {
         Connection connection = DBConnection.getConnection();
 
@@ -566,6 +645,8 @@ public class AddAppointmentScreen implements Initializable {
             customerComboBox.getItems().add(customerName);
         }
     }
+
+    //This method is currently disabled. To be added in a later iteration. For removing times from the combo box to make the app more user friendly.
 
     /*public void getAvailableLocationTimes(LocalDate enteredStartDate, LocalDate enteredEndDate) {
 
@@ -621,6 +702,8 @@ public class AddAppointmentScreen implements Initializable {
 
 
     }*/
+
+    //This method is currently disabled. To be added in a later iteration.
 
     /*static void startEndTimeSplitFromDatabase(LocalDate enteredStartDate, LocalDate enteredEndDate, ResultSet resultSet, ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) throws SQLException {
         Timestamp start;
@@ -679,11 +762,11 @@ public class AddAppointmentScreen implements Initializable {
         }
     }*/
 
-    public static boolean isBetween(LocalTime localTime, LocalTime easternStart, LocalTime easternEnd) {
-        return !localTime.isBefore(easternStart) && !localTime.isAfter(easternEnd);
-    }
-
-
+    /**
+     *
+     * @param location
+     * Adds times to the start and end combo boxes depending on which location is selected. The times are all within the EST office hours.
+     */
     public void addLocationTimesToComboBox(String location) {
         startTimeComboBox.getItems().clear();
         endTimeComboBox.getItems().clear();
@@ -733,10 +816,19 @@ public class AddAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     * Adds the appointment types to the types combo box
+     */
     private void addTypesToComboBox() {
         typeComboBox.getItems().addAll("De-Briefing", "Planning Session", "New Account", "Follow Up");
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * causes the app to go back to the appointments screen when called
+     */
     private void nextScreen(ActionEvent actionEvent) throws IOException {
         Stage stage;
         Parent root;
@@ -751,7 +843,17 @@ public class AddAppointmentScreen implements Initializable {
         stage.show();
     }
 
+    /**
+     *
+     * @param startTimeComboBox
+     * @param endTimeComboBox
+     * -onAction for the combo boxes. Removes previous times from the end combo box based on the start time that is selected.
+     *
+     * -lambda used to reduce the amount of code necessary for the combo box function
+     */
     public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) {
+
+        //lambda used to reduce the amount of code necessary for the function
         startTimeComboBox.setOnAction(e -> {
             String selectedStartTimeString = startTimeComboBox.getValue();
             endTimeComboBox.getItems().setAll(endTimes);
@@ -768,6 +870,14 @@ public class AddAppointmentScreen implements Initializable {
         });
     }
 
+    /**
+     *
+     * @param start
+     * @param end
+     * @return
+     * -validation for the appointment
+     * -calls the database and checks if the appointment is either during or overlaps an already existing appointment.
+     */
     private boolean validAppointment(LocalDateTime start, LocalDateTime end) {
         int appointmentID = -1;
         String userName = User.getUserName();
@@ -823,6 +933,12 @@ public class AddAppointmentScreen implements Initializable {
         return true;
     }
 
+    /**
+     *
+     * @param enteredDate
+     * @throws SQLException
+     * Prints the times for the appointments that are on the selected date to the console in the users local time when called
+     */
     private void printAppointmentTimes(LocalDate enteredDate) throws SQLException {
         String appointmentDate = null;
         LocalDateTime localAppointmentDate = null;

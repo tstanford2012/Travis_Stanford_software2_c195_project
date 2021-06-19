@@ -48,16 +48,28 @@ public class ContactScheduleController implements Initializable {
     ComboBox<String> contactComboBox;
     private ObservableList<Appointments> contactAppointmentList = FXCollections.observableArrayList();
 
+    /**
+     *
+     * @param url
+     * @param resourceBundle
+     * calls the fillContactComboBox method to add the names of the contacts to the box
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            fillCustomerComboBox();
+            fillContactComboBox();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
     }
 
-
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * -handler for the back button
+     * -goes back to the reports screen when the button is pressed
+     */
     public void backButtonHandler(ActionEvent actionEvent) throws IOException {
         Stage stage;
         Parent root;
@@ -72,6 +84,13 @@ public class ContactScheduleController implements Initializable {
         stage.show();
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws SQLException
+     * -handler for the view button
+     * -displays the appointments in the table that are associated with the contact that is selected
+     */
     public void contactScheduleButtonHandler(ActionEvent actionEvent) throws SQLException {
         String contactName = contactComboBox.getValue();
         if(contactName == null) {
@@ -85,7 +104,12 @@ public class ContactScheduleController implements Initializable {
         }
     }
 
-    private void fillCustomerComboBox() throws SQLException {
+    /**
+     *
+     * @throws SQLException
+     * selects the contact names from the database and adds them to the combo box when called
+     */
+    private void fillContactComboBox() throws SQLException {
         Connection connection = DBConnection.getConnection();
         String selectStatement = "SELECT * from contacts";
         DBQuery.setPreparedStatement(connection, selectStatement);
@@ -99,6 +123,12 @@ public class ContactScheduleController implements Initializable {
 
     }
 
+    /**
+     *
+     * @param contactName
+     * @throws SQLException
+     * takes the contact name that is selected and displays the information in the table
+     */
     private void displayTable(String contactName) throws SQLException {
         contactAppointmentList.clear();
         Connection connection = DBConnection.getConnection();
@@ -129,6 +159,7 @@ public class ContactScheduleController implements Initializable {
 
 
 
+        //sets the table column properties
         appointmentIDCol.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));

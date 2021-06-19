@@ -43,27 +43,31 @@ public class AddCustomerScreen implements Initializable {
     @FXML
     Label boroughLabel;
     Customer customer;
-    private int customerID;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //clears and adds countries to the country combo box
         countryComboBox.getItems().clear();
         countryComboBox.getItems().addAll("United States", "United Kingdom", "Canada");
         stateComboBox.getItems().clear();
 
     }
 
-
+    /**
+     *
+     * @param actionEvent
+     * adds the states/provinces to the combo box depending on which country is selected. Reveals the borough combo box if United kingdom is selected
+     */
     public void countryComboBoxHandler(ActionEvent actionEvent) {
         String country = countryComboBox.getValue();
         if(country.contains("United States")) {
             stateComboBox.getItems().clear();
-            stateComboBox.getItems().addAll("Alabama", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia",
-                    "Florida", "Georgia", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
+            stateComboBox.getItems().addAll("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia",
+                    "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
                     "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York",
                     "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-                    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming", "Hawaii", "Alaska");
+                    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming");
             boroughTextField.setOpacity(0);
             boroughTextField.setPromptText("");
             boroughTextField.setEditable(false);
@@ -89,6 +93,14 @@ public class AddCustomerScreen implements Initializable {
         System.out.println(country);
     }
 
+    //
+
+    /**
+     *
+     * @param mouseEvent
+     * -mouse click handler for the state combo box.
+     * -Displays an alert if the country is empty
+     */
     public void stateComboBoxClicked(MouseEvent mouseEvent) {
         String country = countryComboBox.getValue();
         stateComboBox.setOnAction(actionEvent -> {
@@ -103,10 +115,22 @@ public class AddCustomerScreen implements Initializable {
         }
     }
 
+    /**
+     *
+     * @param actionEvent
+     * handler for the state combo box
+     */
     public void stateComboBoxHandler(ActionEvent actionEvent) {
 
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws Exception
+     * -handler for the save button
+     * -ensures all fields have values and inserts the record into the database if valid
+     */
     public void addCustomerSaveBtnHandler(ActionEvent actionEvent) throws Exception {
         int customerID;
         String customerFirstName;
@@ -128,6 +152,8 @@ public class AddCustomerScreen implements Initializable {
             country = countryComboBox.getValue();
             postalCode = zipCodeTextField.getText();
             phoneNumber = phoneNumberTextField.getText();
+
+            //concatenates the address to include the borough if United Kingdom is selected
             if(country.contains("United Kingdom")) {
                 address = addressTextField.getText() + ", " + boroughTextField.getText() + ", " + cityTextField.getText();
             }
@@ -166,6 +192,7 @@ public class AddCustomerScreen implements Initializable {
                         }
                     }
 
+                    //Code below ensures that the entered name is not already in the database
                     String selectStatement = "SELECT Customer_Name from customers";
                     DBQuery.setPreparedStatement(conn, selectStatement);
                     PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
@@ -180,6 +207,7 @@ public class AddCustomerScreen implements Initializable {
                             break;
                         }
                     }
+                    //Throws an error if the entered name is already in the database
                     if(nameExists) {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setHeaderText("Could not save...");
@@ -246,6 +274,12 @@ public class AddCustomerScreen implements Initializable {
 
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * handler for the cancel button. Goes  to the customers screen after confirmation.
+     */
     public void cancelBtnHandler(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirming...");
@@ -266,37 +300,6 @@ public class AddCustomerScreen implements Initializable {
         }
         else {
             System.out.println("Not cancelling...");
-        }
-    }
-
-    private static void insertRecords() throws SQLException {
-        Connection connection = DBConnection.getConnection();
-
-        //SQL insert statement
-        String insertStatement = "INSERT INTO customers(Customer_Name, Address, Postal_Code, Phone, Create_Date, Last_Updated_By, Division_ID) VALUES(?,?,?,?,?,?,?)";
-        DBQuery.setPreparedStatement(connection, insertStatement); //Create prepared statement object
-        PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
-
-        String customerName;
-        String createDate = "2021-04-06 00:00:00";
-        String createdBy = "Admin";
-        String lastUpdateBy = "Admin";
-
-
-        //key value mapping
-        //preparedStatement.setString(1, customerName);
-        preparedStatement.setString(2, createDate);
-        preparedStatement.setString(3, createdBy);
-        preparedStatement.setString(4, lastUpdateBy);
-
-        preparedStatement.execute();
-
-        //check rows affected
-        if(preparedStatement.getUpdateCount() > 0) {
-            System.out.println(preparedStatement.getUpdateCount() + " row(s) affected");
-        }
-        else {
-            System.out.println("No changes made.");
         }
     }
 }

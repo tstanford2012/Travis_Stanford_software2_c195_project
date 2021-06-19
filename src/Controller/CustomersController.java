@@ -49,7 +49,12 @@ public class CustomersController implements Initializable {
     public TableColumn<TableView<Customer>, String> phoneNumberCol;
 
 
-
+    /**
+     *
+     * @param url
+     * @param resourceBundle
+     * calls the displayCustomerTable method to display the table during initialization
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -59,6 +64,11 @@ public class CustomersController implements Initializable {
         }
     }
 
+    /**
+     *
+     * @throws SQLException
+     * gets the information from the database and displays the customer table when called
+     */
     private void displayCustomerTable() throws SQLException {
         customersTableView.refresh();
         String stateProvince = null;
@@ -77,6 +87,7 @@ public class CustomersController implements Initializable {
             int setTwoDivisionID = setOneDivisionID;
 
 
+            //sets the country based on the division ID
             if((setOneDivisionID > 0 && setOneDivisionID < 55)) {
                 country = "United States";
                 resultSet1.beforeFirst();
@@ -107,6 +118,7 @@ public class CustomersController implements Initializable {
                     }
                 }
             }
+            //adds the customers to the observable list
             customerList.add(new Customer(resultSet.getInt("Customer_ID"), resultSet.getString("Customer_Name"),
                     resultSet.getString("Address"), stateProvince, country, resultSet.getString("Postal_Code"),
                     resultSet.getString("Phone"), resultSet.getInt("Division_ID")));
@@ -114,6 +126,7 @@ public class CustomersController implements Initializable {
 
 
 
+        //sets the column properties
         customerIDCol.setCellValueFactory(new PropertyValueFactory<>("customerID"));
         customerNameCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
         addressCol.setCellValueFactory(new PropertyValueFactory<>("customerAddress"));
@@ -124,11 +137,22 @@ public class CustomersController implements Initializable {
         customersTableView.setItems(customerList);
     }
 
-
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * goes to the add customer screen when called
+     */
     public void addCustomerBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/addCustomer.fxml");
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * goes to the edit customer screen when a customer in the table is selected. The information for the customer is carried over to the next screen.
+     */
     public void editCustomerBtnHandler(ActionEvent actionEvent) throws IOException {
         Customer customer = customersTableView.getSelectionModel().getSelectedItem();
         if(customersTableView.getSelectionModel().isEmpty()) {
@@ -153,6 +177,13 @@ public class CustomersController implements Initializable {
         }
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws SQLException
+     * -handler for the delete button
+     * -deletes a customer and all of the selected customer's appointments after confirmation
+     */
     public void deleteCustomerBtnHandler(ActionEvent actionEvent) throws SQLException {
 
         Customer customer = customersTableView.getSelectionModel().getSelectedItem();
@@ -167,7 +198,7 @@ public class CustomersController implements Initializable {
             alert.initModality(Modality.NONE);
             alert.setTitle("Confirmation");
             alert.setHeaderText("Delete Confirmation");
-            alert.setContentText("Are you sure you want to delete the record?");
+            alert.setContentText("Are you sure you want to delete the customer and all of their appointments?");
             Optional<ButtonType> result = alert.showAndWait();
 
             if(result.get() == ButtonType.OK) {
@@ -176,6 +207,7 @@ public class CustomersController implements Initializable {
                 int deleteID = customer.getCustomerID();
 
 
+                //statements to delete the customer and their appointments
                 String deleteCustomerStatement = "DELETE from customers where Customer_ID = ?";
                 String deleteAppointmentStatement = "DELETE from appointments where Customer_ID = ?";
 
@@ -200,6 +232,7 @@ public class CustomersController implements Initializable {
 
                 preparedDeleteStatement.execute();
 
+                //prints a message to the console notifying the user if delete was successful and how many records were removed
                 if(preparedDeleteStatement.getUpdateCount() > 0) {
                     System.out.println("Number of rows affected: " + preparedDeleteStatement.getUpdateCount());
                     Alert deleteAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -218,11 +251,24 @@ public class CustomersController implements Initializable {
         }
     }
 
-
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * -handler for the back button
+     * -goes back to the main screen when the button is pressed
+     */
     public void backBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/mainScreen.fxml");
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @param screenName
+     * @throws IOException
+     * takes the fxml string and goes to the corresponding screen when called
+     */
     private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
         Stage stage;
         Parent root;

@@ -69,6 +69,12 @@ public class EditAppointmentScreen implements Initializable {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     DateTimeFormatter formatterWithMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s");
 
+    /**
+     *
+     * @param url
+     * @param resourceBundle
+     * sets the error labels to be invisible, sets the radio button, and calls several methods to add information to combo boxes during initialization
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         startTimeErrorLabel.setOpacity(0);
@@ -81,33 +87,49 @@ public class EditAppointmentScreen implements Initializable {
 
         //Initial setOnAction for the comboBoxes
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
+        //calls the method and adds the types of appointments to the combo box
         addTypesToComboBox();
 
         try {
+            //calls the methods and adds the names of the customers/contacts to the combo boxes
             pullContactNames();
             pullCustomers();
         } catch (SQLException exception) {
             System.out.println(exception.getMessage());
         }
+        //adds the locations to the location combo box
         locationComboBox.getItems().addAll("Phoenix", "White Plains", "Montreal", "London");
     }
 
-
+    /**
+     * -mouse click handler for the start combo box
+     * -displays the error label if the start combo box is clicked with no date entered
+     */
     public void startTimesComboBoxClicked() {
         if(startDateTextField.getText().isEmpty()) {
             startTimeErrorLabel.setOpacity(1);
         }
     }
 
+    /**
+     * -handler for the start time combo box
+     * -calls the method to remove previous times from the end combo box based on the start time selected
+     */
     public void startTimeComboBoxHandler() {
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
 
     }
 
-
+    /**
+     * handler for the end time combo box
+     */
     public void endTimeComboBoxHandler() {
     }
 
+    /**
+     * -mouse click handler for the end times combo box
+     * -prints an error to the console when either the start date or end date text fields are empty
+     */
     public void endTimesComboBoxClicked() {
         if(endDateTextField.getText().isEmpty() || startDateTextField.getText().isEmpty()) {
             System.out.println("Please enter a start and end date and click the \"Check Times\" button to view times");
@@ -117,12 +139,27 @@ public class EditAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     * -handler for the location combo box
+     * -currently does nothing
+     */
     public void locationComboBoxHandler() {
     }
 
+
+
+    /**
+     * -handler for the customerComboBox
+     * -currently does nothing
+     */
     public void customerComboBoxHandler() {
     }
 
+    /**
+     * -handler for the view times button
+     * -verifies that the entered date is valid and not on a weekend
+     * -adds the times to the start and end combo boxes based on the selected location
+     */
     public void startTimesButtonHandler() {
         if(startDateTextField.getText().isEmpty()) {
             System.out.println("Must enter a date");
@@ -200,8 +237,19 @@ public class EditAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws SQLException
+     * @throws IOException
+     * -handler for the save button
+     * -verifies that all fields have values
+     * -converts the selected time to the appropriate time based on the selected location and then to UTC to save to the database
+     * -updates the record in the database with the new information if valid
+     */
     public void saveButtonHandler(ActionEvent actionEvent) throws SQLException, IOException {
         boolean isValid = false;
+
         if(titleTextField.getText().isEmpty() || descriptionTextField.getText().isEmpty() || locationComboBox.getValue() == null || typeComboBox.getValue() == null ||
                 contactNameComboBox.getValue() == null || customerComboBox.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -222,6 +270,7 @@ public class EditAppointmentScreen implements Initializable {
             alert.showAndWait();
         }
         else {
+            //adds string information for formatting purposes
             String tempStart = startTimeComboBox.getValue();
             String tempEnd = endTimeComboBox.getValue();
 
@@ -265,6 +314,8 @@ public class EditAppointmentScreen implements Initializable {
 
             ZonedDateTime selectionTimeLocation;
 
+
+            //converts the selected time to the location time
             if(location.contains("Phoenix")) {
                 selectionTimeLocation = fullStartLocal.atZone(phoenixZone);
             }
@@ -289,6 +340,8 @@ public class EditAppointmentScreen implements Initializable {
             String zoneOnly = selectionSplit3[1];
 
 
+            //confirmation that the selected time is correct
+            //displays in the users local time
             Alert timeAlert = new Alert(Alert.AlertType.CONFIRMATION);
             timeAlert.setHeaderText("Are you sure you want this time?");
             timeAlert.setContentText("The time you selected is " + selectionTime + " " + zoneOnly + " in your local time.");
@@ -296,6 +349,7 @@ public class EditAppointmentScreen implements Initializable {
 
 
             if(result.get() == ButtonType.OK) {
+                //calls the validAppointment method and saves to the database if true is returned
                 if(validAppointment(fullStartLocal, fullEndLocal)) {
                     System.out.println("Appointment is valid");
                     isValid = true;
@@ -303,6 +357,7 @@ public class EditAppointmentScreen implements Initializable {
                     LocalDateTime localStartToDatabase;
                     LocalDateTime localEndToDatabase;
 
+                    //converts the time from the location time to UTC based on the location selected
                     if(locationComboBox.getValue().contains("Phoenix")) {
                         fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
                         ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
@@ -316,6 +371,7 @@ public class EditAppointmentScreen implements Initializable {
 
 
                     }
+                    //converts the time from the location time to UTC based on the location selected
                     else if(locationComboBox.getValue().contains("London")) {
                         fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
                         ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
@@ -327,6 +383,7 @@ public class EditAppointmentScreen implements Initializable {
                         localEndToDatabase = endTimeToDatabase.toLocalDateTime();
 
                     }
+                    //converts the time from the location time to UTC based on the location selected
                     else {
                         fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
                         ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
@@ -440,6 +497,13 @@ public class EditAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * -cancel button handler
+     * -goes back to the appointments screen after confirmation when the button is pressed
+     */
     public void cancelButtonHandler(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.initModality(Modality.NONE);
@@ -456,14 +520,27 @@ public class EditAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     * -handler for the office location radio button
+     * -deselects the time zone radio button when selected
+     */
     public void officeLocationTimeRadioBtnHandler() {
         timezoneRadioBtn.setSelected(false);
     }
 
+    /**
+     * -handler for the time zone radio button
+     * -deselects the office location radio button when selected
+     */
     public void timezoneRadioBtnHandler() {
         officeLocationTimeRadioBtn.setSelected(false);
     }
 
+    /**
+     *
+     * @param appointments
+     * sets the values for the text fields and combo boxes to be the values from the appointment that was selected on the appointment table
+     */
     public void setAppointment(Appointments appointments) {
         this.appointments = appointments;
 
@@ -557,6 +634,11 @@ public class EditAppointmentScreen implements Initializable {
 
     }
 
+    /**
+     *
+     * @throws SQLException
+     * pulls the contact names from the database and adds them to the combo box
+     */
     private void pullContactNames() throws SQLException {
         Connection connection = DBConnection.getConnection();
 
@@ -573,6 +655,11 @@ public class EditAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     *
+     * @throws SQLException
+     * pulls the customer names from the database and adds them to the combo box
+     */
     public void pullCustomers() throws SQLException {
         Connection connection = DBConnection.getConnection();
 
@@ -590,48 +677,48 @@ public class EditAppointmentScreen implements Initializable {
     }
 
 
-    /*public static boolean isBetween(LocalTime localTime, LocalTime easternStart, LocalTime easternEnd) {
-        return !localTime.isBefore(easternStart) && !localTime.isAfter(easternEnd);
-    }*/
 
+    //method currently disabled. To be added to a later iteration. Used to remove times from the combo boxes
 
-    public void getAvailableLocationTimes(LocalDate enteredStartDate, LocalDate enteredEndDate) throws SQLException {
-        ZonedDateTime localTime = ZonedDateTime.now(zoneId);
+//    public void getAvailableLocationTimes(LocalDate enteredStartDate, LocalDate enteredEndDate) throws SQLException {
+//        ZonedDateTime localTime = ZonedDateTime.now(zoneId);
+//
+//        String currentTimeSplit = localTime.toString();
+//        String[] parts = currentTimeSplit.split("T");
+//        String currentDate = parts[0];
+//        String currentTime = parts[1];
+//
+//        String[] parts1 = currentTime.split(":");
+//        currentTime = parts1[0] + ":00";
+//
+//
+//        if(currentDate.equals(enteredStartDate.toString())) {
+//            if(startTimeComboBox.getItems().contains(currentTime)) {
+//                int enteredTimeIndex = startTimeComboBox.getItems().indexOf(currentTime);
+//                int firstIndex = 0;
+//                while(startTimeComboBox.getItems().contains(currentTime)) {
+//                    if(enteredTimeIndex > firstIndex) {
+//                        System.out.println(startTimeComboBox.getItems().get(0));
+//                        startTimeComboBox.getItems().remove(0);
+//                    }
+//                }
+//            }
+//        }
+//
+//        Connection connection = DBConnection.getConnection();
+//
+//        String selectStatement = "SELECT Start, END from appointments";
+//        DBQuery.setPreparedStatement(connection, selectStatement);
+//        PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+//
+//        ResultSet resultSet = preparedStatement.executeQuery();
+//
+//        startEndTimeSplitFromDatabase(enteredStartDate, enteredEndDate, resultSet, startTimeComboBox, endTimeComboBox);
+//
+//
+//    }
 
-        String currentTimeSplit = localTime.toString();
-        String[] parts = currentTimeSplit.split("T");
-        String currentDate = parts[0];
-        String currentTime = parts[1];
-
-        String[] parts1 = currentTime.split(":");
-        currentTime = parts1[0] + ":00";
-
-
-        if(currentDate.equals(enteredStartDate.toString())) {
-            if(startTimeComboBox.getItems().contains(currentTime)) {
-                int enteredTimeIndex = startTimeComboBox.getItems().indexOf(currentTime);
-                int firstIndex = 0;
-                while(startTimeComboBox.getItems().contains(currentTime)) {
-                    if(enteredTimeIndex > firstIndex) {
-                        System.out.println(startTimeComboBox.getItems().get(0));
-                        startTimeComboBox.getItems().remove(0);
-                    }
-                }
-            }
-        }
-
-        /*Connection connection = DBConnection.getConnection();
-
-        String selectStatement = "SELECT Start, END from appointments";
-        DBQuery.setPreparedStatement(connection, selectStatement);
-        PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
-
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        startEndTimeSplitFromDatabase(enteredStartDate, enteredEndDate, resultSet, startTimeComboBox, endTimeComboBox);*/
-
-
-    }
+    //method currently disabled. To be added to a later iteration.
 
 //    static void startEndTimeSplitFromDatabase(LocalDate enteredStartDate, LocalDate enteredEndDate, ResultSet resultSet, ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) throws SQLException {
 //        Timestamp start;
@@ -684,6 +771,12 @@ public class EditAppointmentScreen implements Initializable {
 //    }
 
 
+    /**
+     *
+     * @param location
+     * -Adds the start and end times to the combo boxes based on the location that is selected
+     * -all times added are within the EST business hours
+     */
     public void addLocationTimesToComboBox(String location) {
         startTimeComboBox.getItems().clear();
         endTimeComboBox.getItems().clear();
@@ -737,11 +830,19 @@ public class EditAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     * adds the appointment types to the type combo box
+     */
     private void addTypesToComboBox() {
         typeComboBox.getItems().addAll("De-Briefing", "Planning Session", "New Account", "Follow Up");
     }
 
-
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * goes back to the appointments screen when called
+     */
     private void nextScreen(ActionEvent actionEvent) throws IOException {
         Stage stage;
         Parent root;
@@ -756,8 +857,16 @@ public class EditAppointmentScreen implements Initializable {
         stage.show();
     }
 
-
+    /**
+     *
+     * @param startTimeComboBox
+     * @param endTimeComboBox
+     * -removes previous times from the end combo box based on the selected start time
+     * -lambda used to reduce the amount of code necessary for the function
+     */
     public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) {
+
+        //
         startTimeComboBox.setOnAction(e -> {
             String selectedStartTimeString = startTimeComboBox.getValue();
             endTimeComboBox.getItems().setAll(endTimes);
@@ -774,6 +883,14 @@ public class EditAppointmentScreen implements Initializable {
         });
     }
 
+    /**
+     *
+     * @param start
+     * @param end
+     * @return
+     * -validation for the appointment
+     * -calls the database and checks if the appointment is either during or overlaps an already existing appointment.
+     */
     private boolean validAppointment(LocalDateTime start, LocalDateTime end) {
         int appointmentID = -1;
         String userName = User.getUserName();
@@ -836,33 +953,6 @@ public class EditAppointmentScreen implements Initializable {
                     }
                 }
             }
-
-//            DBQuery.setPreparedStatement(connection, selectStatement);
-//            PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
-//
-//
-//            preparedStatement.setTimestamp(1, Timestamp.valueOf(start));
-//            preparedStatement.setTimestamp(2, Timestamp.valueOf(end));
-//            preparedStatement.setTimestamp(3, Timestamp.valueOf(start));
-//            preparedStatement.setTimestamp(4, Timestamp.valueOf(end));
-//            preparedStatement.setString(5, userName);
-//            preparedStatement.setInt(6, appointmentID);
-//            ResultSet resultSet = preparedStatement.executeQuery();
-//
-//            if (resultSet.next()) {
-//                return false;
-//            }
-//            LocalDateTime currentDate = LocalDateTime.now();
-//            String[] parts = currentDate.toString().split("T");
-//            String date = parts[0];
-//            if(startDateTextField.getText().contains(date)) {
-//                LocalDateTime startDateTime = LocalDateTime.parse(date + "T" + startTimeComboBox.getValue());
-//                if(startDateTime.isBefore(currentDate)) {
-//                    return false;
-//
-//                }
-//            }
-
         } catch (SQLException sqe) {
             System.out.println("SQL error while calling validAppointment");
             sqe.printStackTrace();
@@ -873,6 +963,12 @@ public class EditAppointmentScreen implements Initializable {
         return true;
     }
 
+    /**
+     *
+     * @param enteredDate
+     * @throws SQLException
+     * Prints the times for the appointments that are on the selected date to the console in the users local time when called
+     */
     private void printAppointmentTimes(LocalDate enteredDate) throws SQLException {
         String appointmentDate = null;
         LocalDateTime localAppointmentDate = null;
@@ -920,6 +1016,19 @@ public class EditAppointmentScreen implements Initializable {
         }
     }
 
+    /**
+     *
+     * @param valid
+     * @param appointmentID
+     * @param start
+     * @param end
+     * @param customerID
+     * @param contactID
+     * @throws IOException
+     *
+     * -report that tracks when appointments are changed.
+     * -adds a timestamp, the user, and the appointment information to the appointment_changes text file when called
+     */
     private void appointmentChanges(boolean valid, String appointmentID, String start, String end, int customerID, int contactID) throws IOException {
         String fileName = "appointment_changes.txt";
         String userName = User.getUserName();

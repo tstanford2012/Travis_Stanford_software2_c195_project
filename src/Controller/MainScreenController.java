@@ -35,19 +35,45 @@ public class MainScreenController implements Initializable {
 
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     *
+     * -handler for the appointments button
+     * -goes to the appointments screen when called
+     */
     public void appointmentsButtonHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/appointments.fxml");
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * -handler for the customers button
+     * -goes to the customers screen when called
+     */
     public void customersButtonHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/customers.fxml");
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * -handler for the reports button
+     * -goes to the reports screen when called
+     */
     public void reportsButtonHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/reports.fxml");
     }
 
-
+    /**
+     *
+     * @param actionEvent
+     * exits the application after confirmation
+     */
     public void exitButtonHandler(ActionEvent actionEvent) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.initModality(Modality.NONE);
@@ -63,6 +89,15 @@ public class MainScreenController implements Initializable {
             System.out.println("No longer exiting.");
         }
     }
+
+    /**
+     *
+     * @param actionEvent
+     * @param screenName
+     * @throws IOException
+     *
+     * takes a fxml string and goes to the corresponding screen
+     */
     private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
         Stage stage;
         Parent root;

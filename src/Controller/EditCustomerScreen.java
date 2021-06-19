@@ -50,21 +50,34 @@ public class EditCustomerScreen implements Initializable {
 
     Customer customer;
 
-
+    /**
+     *
+     * @param url
+     * @param resourceBundle
+     * -adds the countries to the country combo box
+     * -adds the appropriate states/provinces to the combo box based on the country
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         countryComboBox.getItems().addAll("United States", "United Kingdom", "Canada");
     }
 
+
+    /**
+     *
+     * @param actionEvent
+     * -handler for the country combo box
+     * -adds the states/provinces based on which country is associated with the customer that was selected on the table
+     */
     public void countryComboBoxHandler(ActionEvent actionEvent) {
         String country = countryComboBox.getValue();
         if(country.contains("United States")) {
             stateComboBox.getItems().clear();
-            stateComboBox.getItems().addAll("Alabama", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia",
-                    "Florida", "Georgia", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
+            stateComboBox.getItems().addAll("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia",
+                    "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
                     "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York",
                     "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-                    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming", "Hawaii", "Alaska");
+                    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virgina", "Wisconsin", "Wyoming");
             boroughTextField.setOpacity(0);
             boroughTextField.setPromptText("");
             boroughTextField.setEditable(false);
@@ -87,9 +100,14 @@ public class EditCustomerScreen implements Initializable {
             boroughTextField.setEditable(false);
             boroughLabel.setText("");
         }
-        System.out.println(country);
     }
 
+    /**
+     *
+     * @param mouseEvent
+     * -mouse click handler for the state combo box
+     * -displays an error if a country has not been selected
+     */
     public void stateComboBoxClicked(MouseEvent mouseEvent) {
         String country = countryComboBox.getValue();
         stateComboBox.setOnAction(actionEvent -> {
@@ -104,6 +122,12 @@ public class EditCustomerScreen implements Initializable {
         }
     }
 
+    /**
+     *
+     * @param actionEvent
+     * -handler for the save button
+     * -ensures that all fields have a value then saves to the database
+     */
     public void editCustomerSaveBtnHandler(ActionEvent actionEvent) {
 
         int customerID;
@@ -136,6 +160,8 @@ public class EditCustomerScreen implements Initializable {
 
 
 
+            //Checks all of the fields and displays the appropriate error if a field in empty
+
             if(firstNameTextField.getText().isEmpty() || lastNameTextField.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
@@ -167,10 +193,13 @@ public class EditCustomerScreen implements Initializable {
                     }
                     String customerName = customerFirstName + " " + customerLastName;
 
+                    //calls the validName method and sets isValid to the boolean value returned.
+                    //Used to ensure that the entered name does not conflict with a name already in the database.
                     boolean isValid = validName(customerName);
 
 
                     if(isValid) {
+                        //saves to the database if the customer name is valid
                         Connection connection = DBConnection.getConnection();
                         String updateStatement = "UPDATE customers SET Customer_Name = ?, Address = ?, Postal_Code = ?, Phone = ?, Division_ID = ?, Last_Updated_By = ? where Customer_ID = ?";
                         PreparedStatement preparedStatement = connection.prepareStatement(updateStatement);
@@ -200,6 +229,7 @@ public class EditCustomerScreen implements Initializable {
 
 
 
+                        //goes to the customers screen after saving
                         Stage stage;
                         Parent root;
                         stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -227,6 +257,13 @@ public class EditCustomerScreen implements Initializable {
 
     }
 
+    /**
+     *
+     * @param actionEvent
+     * @throws IOException
+     * -handler for the cancel button
+     * -goes back to the customers screen after confirmation when the button is pressed
+     */
     public void cancelBtnHandler(ActionEvent actionEvent) throws IOException {
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -254,6 +291,11 @@ public class EditCustomerScreen implements Initializable {
 
     }
 
+    /**
+     *
+     * @param customer
+     * sets the values for the fields to the values of the customer that was selected in the table
+     */
     public void setCustomer(Customer customer) {
         this.customer = customer;
         String fullAddress = customer.getCustomerAddress();
@@ -295,6 +337,13 @@ public class EditCustomerScreen implements Initializable {
 
     }
 
+    /**
+     *
+     * @param customerName
+     * @return
+     * @throws SQLException
+     * validation for the customer name. Ensures no two records have the same name.
+     */
     private boolean validName(String customerName) throws SQLException {
         Connection connection = DBConnection.getConnection();
         String selectStatement = "SELECT Customer_Name, Customer_ID from customers";
