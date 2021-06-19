@@ -11,6 +11,13 @@ public class User {
     }
 
     //getters and setters
+
+    /**
+     *
+     * @return
+     *
+     * getters
+     */
     public static int getUserID() {
         return userID;
     }
@@ -19,6 +26,11 @@ public class User {
         return userName;
     }
 
+
+    /**
+     *
+     * setters
+     */
     public void setUserID(int userID) {
         User.userID = userID;
     }

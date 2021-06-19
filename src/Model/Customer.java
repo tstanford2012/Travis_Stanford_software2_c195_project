@@ -18,8 +18,19 @@ public class Customer {
     private ObservableList<Appointments> appointments = FXCollections.observableArrayList();
     public static ObservableList<Customer> customerList = FXCollections.observableArrayList();
 
-
-    //constructor
+    /**
+     *
+     * @param customerID
+     * @param customerName
+     * @param customerAddress
+     * @param stateProvince
+     * @param country
+     * @param postalCode
+     * @param phoneNumber
+     * @param divisionID
+     *
+     * constructor
+     */
     public Customer(int customerID, String customerName, String customerAddress, String stateProvince, String country, String postalCode, String phoneNumber, int divisionID) {
         this.customerID = customerID;
         this.customerName = customerName;
@@ -31,14 +42,28 @@ public class Customer {
         this.divisionID = divisionID;
     }
 
-    //constructor
+    /**
+     *
+     * @param customerID
+     * @param totalWeekAppointments
+     * @param totalMonthAppointments
+     *
+     * constructor
+     */
     public Customer(int customerID, int totalWeekAppointments, int totalMonthAppointments) {
         this.customerID = customerID;
         this.totalWeekAppointments = totalWeekAppointments;
         this.totalMonthAppointments = totalMonthAppointments;
     }
 
-    //getters and setters
+    //getters
+
+    /**
+     *
+     * @return
+     *
+     * getters
+     */
     public static ObservableList<Customer> getCustomerList() {
         return customerList;
     }
@@ -46,48 +71,24 @@ public class Customer {
         return appointments;
     }
 
-    public void setAppointments(ObservableList<Appointments> customerAppointments) {
-        appointments = customerAppointments;
-    }
-
     public int getCustomerID() {
         return customerID;
-    }
-
-    public void setCustomerID(int customerID) {
-        this.customerID = customerID;
     }
 
     public String getCustomerName() {
         return customerName;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
     public String getCustomerAddress() {
         return customerAddress;
-    }
-
-    public void setCustomerAddress(String customerAddress) {
-        this.customerAddress = customerAddress;
     }
 
     public String getPostalCode() {
         return postalCode;
     }
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public String getStateProvince() {
@@ -98,6 +99,45 @@ public class Customer {
         return country;
     }
 
+    public int getDivisionID() {
+        return divisionID;
+    }
+
+    /**
+     *
+     * setters
+     */
+
+    public void setAppointments(ObservableList<Appointments> customerAppointments) {
+        appointments = customerAppointments;
+    }
+
+
+    public void setCustomerID(int customerID) {
+        this.customerID = customerID;
+    }
+
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+
+    public void setCustomerAddress(String customerAddress) {
+        this.customerAddress = customerAddress;
+    }
+
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+
     public void setStateProvince(String stateProvince) {
         this.stateProvince = stateProvince;
     }
@@ -106,9 +146,6 @@ public class Customer {
         this.country = country;
     }
 
-    public int getDivisionID() {
-        return divisionID;
-    }
 
     public void setDivisionID(int divisionID) {
         this.divisionID = divisionID;
