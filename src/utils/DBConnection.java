@@ -27,8 +27,8 @@ public class DBConnection {
 
     /**
      *
-     * @return returns the connection if successful
-     * attempts the connect to the database and prints an error if unsuccessful
+     * @return returns the connection if successful.
+     * Attempts the connect to the database and prints an error if unsuccessful.
      *
      */
     public static Connection startConnection() {
@@ -47,14 +47,14 @@ public class DBConnection {
 
     /**
      *
-     * @return returns the database connection when called
+     * @return returns the database connection when called.
      */
     public static Connection getConnection() {
         return conn;
     }
 
     /**
-     * closes the database connection when called
+     * Closes the database connection when called.
      */
     public static void closeConnection() {
         try {

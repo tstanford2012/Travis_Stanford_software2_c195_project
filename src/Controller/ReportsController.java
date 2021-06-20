@@ -16,10 +16,10 @@ public class ReportsController {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go back to the main screen.
      * @throws IOException
-     * -handler for the back button
-     * -goes back to the main screen when the button is pressed
+     * Handler for the back button.
+     * Goes back to the main screen when the button is pressed.
      */
     public void backButtonHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/mainScreen.fxml");
@@ -27,10 +27,10 @@ public class ReportsController {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the total appointments screen.
      * @throws IOException
-     * -handler for the total appointments button
-     * -goes to the total appointments screen when the button is pressed
+     * Handler for the total appointments button.
+     * Goes to the total appointments screen when the button is pressed.
      */
     public void totalApptButtonHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/totalAppointments.fxml");
@@ -39,10 +39,10 @@ public class ReportsController {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the contact schedule screen.
      * @throws IOException
-     * -handler for the contact schedule button
-     * -goes to the contact schedule screen when the button is pressed
+     * Handler for the contact schedule button.
+     * Goes to the contact schedule screen when the button is pressed.
      */
     public void contactScheduleBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/contactSchedule.fxml");
@@ -50,10 +50,10 @@ public class ReportsController {
 
     /**
      *
-     * @param actionEvent
-     * @param screenName
+     * @param actionEvent takes the action event that is passed to go to the specified screen.
+     * @param screenName Takes a fxml string and goes to the corresponding screen when called.
      * @throws IOException
-     * takes a fxml string and goes to the corresponding screen when called
+     *
      */
     private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
         Stage stage;

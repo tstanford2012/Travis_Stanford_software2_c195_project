@@ -52,7 +52,7 @@ public class TotalAppointmentsController implements Initializable {
      *
      * @param url
      * @param resourceBundle
-     * adds the customer names to the combo box during initialization
+     * Adds the customer names to the combo box during initialization.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -65,28 +65,27 @@ public class TotalAppointmentsController implements Initializable {
 
 
     /**
-     * -handler for the appointment type radio button
-     * -deselects the month radio button when selected
+     * Handler for the appointment type radio button.
+     * Deselects the month radio button when selected.
      *
      */
-    public void appointmentTypeRadBtnHandler(MouseEvent mouseEvent) {
+    public void appointmentTypeRadBtnHandler() {
         monthRadBtn.setSelected(false);
     }
 
     /**
-     *
-     * @param mouseEvent
-     * -handler for the month radio button
-     * -deselects the appointment type radio button when selected
+     * Handler for the month radio button.
+     * Deselects the appointment type radio button when selected.
      */
-    public void monthRadBtnHandler(MouseEvent mouseEvent) {
+    public void monthRadBtnHandler() {
         appointmentTypeRadBtn.setSelected(false);
     }
 
 
     /**
-     * -handler for the back button
-     * -goes back to the reports screen when the button is pressed
+     * @param actionEvent uses the action event to go to back to the reports screen.
+     * Handler for the back button.
+     * Goes back to the reports screen when the button is pressed.
      */
     public void backButtonHandler(ActionEvent actionEvent) throws IOException {
         Stage stage;
@@ -103,13 +102,11 @@ public class TotalAppointmentsController implements Initializable {
     }
 
     /**
-     *
-     * @param actionEvent
      * @throws SQLException
      *
-     * Calculates the number of appointments for the next month or for each type depending on which customer is selected from the combo box
+     * Calculates the number of appointments for the next month or for each type depending on which customer is selected from the combo box.
      */
-    public void calculateBtnHandler(ActionEvent actionEvent) throws SQLException {
+    public void calculateBtnHandler() throws SQLException {
         String customerName = customerComboBox.getValue();
         appointmentList.clear();
 
@@ -185,9 +182,10 @@ public class TotalAppointmentsController implements Initializable {
     /**
      *
      * @param appointmentList
-     * @return
+     * @return returns the amount of appointments for the upcoming month.
      *
-     * uses a filtered list to calculate the amount of appointments for the next month
+     * Uses a filtered list to calculate the amount of appointments for the next month.
+     * Filtered list lambda used to reduce code required to filter appointments this month.
      */
     public int calculateAppointmentsThisMonth(ObservableList<Appointments> appointmentList) {
         LocalDateTime today = LocalDateTime.now();
@@ -207,12 +205,12 @@ public class TotalAppointmentsController implements Initializable {
 
     /**
      *
-     * @param customerID
-     * @param userID
-     * @param customerName
+     * @param customerID takes the customer ID passed to filter the appointment types.
+     * @param userID takes the user ID passed to filter the appointment types.
+     * @param customerName takes the customer name passed to filter the appointment types.
      * @throws SQLException
      *
-     * Calculates the totals for each type of appointment for the selected customer
+     * Calculates the totals for each type of appointment for the selected customer.
      */
     private void calculateAppointmentTypeTotals(int customerID, int userID, String customerName) throws SQLException {
         String debrief = "De-Briefing";
@@ -268,7 +266,7 @@ public class TotalAppointmentsController implements Initializable {
     /**
      *
      * @throws SQLException
-     * pulls the customer names from the database and adds them to the customer combo box
+     * Pulls the customer names from the database and adds them to the customer combo box.
      */
     private void fillCustomerComboBox() throws SQLException {
         String customerName = null;

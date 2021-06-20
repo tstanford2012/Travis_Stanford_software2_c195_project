@@ -1,12 +1,10 @@
 package Model;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 
 /**
- * This class holds the attributes, constructors, getters, and setters for the appointment object
+ * This class holds the attributes, constructors, getters, and setters for the appointment object.
  */
 public class Appointments {
     private int appointmentID;
@@ -37,7 +35,7 @@ public class Appointments {
      * @param userID
      * @param appointmentCustomerName
      *
-     * constructor
+     * Constructor
      */
     public Appointments(int appointmentID, String title, String description, String location, String contact, String type, Timestamp start, Timestamp end, int customerID, int userID, String appointmentCustomerName) {
         this.appointmentID = appointmentID;
@@ -63,7 +61,7 @@ public class Appointments {
      * @param customerID
      * @param appointmentCustomerName
      *
-     * constructor
+     * Constructor
      */
     public Appointments(int appointmentID, String type, String description, ZonedDateTime startZonedDateTime, ZonedDateTime endZoneDateTime, int customerID, String appointmentCustomerName) {
         this.appointmentID = appointmentID;
@@ -83,7 +81,7 @@ public class Appointments {
      * @param customer_id
      * @param user_id
      *
-     * constructor
+     * Constructor
      */
     public Appointments(int appointment_id, Timestamp start, Timestamp end, int customer_id, int user_id) {
         this.appointmentID = appointment_id;
@@ -100,7 +98,7 @@ public class Appointments {
      * @param customerID
      * @param userID
      *
-     * constructor
+     * Constructor
      */
     public Appointments(int appointmentID, String type, int customerID, int userID) {
         this.appointmentID = appointmentID;
@@ -119,7 +117,7 @@ public class Appointments {
      * @param end
      * @param customer_id
      *
-     * constructor
+     * Constructor
      */
     public Appointments(int appointment_id, String title, String type, String description, Timestamp start, Timestamp end, int customer_id) {
         this.appointmentID = appointment_id;
@@ -133,9 +131,7 @@ public class Appointments {
 
     /**
      *
-     * @return
-     *
-     * getters
+     * Getters
      */
     public int getAppointmentID() {
         return appointmentID;
@@ -194,7 +190,7 @@ public class Appointments {
 
     /**
      *
-     * setters
+     * Setters
      */
 
     public void setTitle(String title) {

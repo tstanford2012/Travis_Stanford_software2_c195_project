@@ -59,10 +59,9 @@ public class AddCustomerScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
-     * adds the states/provinces to the combo box depending on which country is selected. Reveals the borough combo box if United kingdom is selected
+     * Adds the states/provinces to the combo box depending on which country is selected. Reveals the borough combo box if United kingdom is selected.
      */
-    public void countryComboBoxHandler(ActionEvent actionEvent) {
+    public void countryComboBoxHandler() {
         String country = countryComboBox.getValue();
         if(country.contains("United States")) {
             stateComboBox.getItems().clear();
@@ -99,12 +98,10 @@ public class AddCustomerScreen implements Initializable {
     //
 
     /**
-     *
-     * @param mouseEvent
-     * -mouse click handler for the state combo box.
-     * -Displays an alert if the country is empty
+     * Mouse click handler for the state combo box.
+     * Displays an alert if the country is empty
      */
-    public void stateComboBoxClicked(MouseEvent mouseEvent) {
+    public void stateComboBoxClicked() {
         String country = countryComboBox.getValue();
         stateComboBox.setOnAction(actionEvent -> {
             int selectedIndex = stateComboBox.getSelectionModel().getSelectedIndex();
@@ -120,19 +117,18 @@ public class AddCustomerScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
-     * handler for the state combo box
+     * Handler for the state combo box.
      */
-    public void stateComboBoxHandler(ActionEvent actionEvent) {
+    public void stateComboBoxHandler() {
 
     }
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the customers screen after the customer is saved to the database.
      * @throws Exception
-     * -handler for the save button
-     * -ensures all fields have values and inserts the record into the database if valid
+     * Handler for the save button.
+     * Ensures all fields have values and inserts the record into the database if valid.
      */
     public void addCustomerSaveBtnHandler(ActionEvent actionEvent) throws Exception {
         int customerID;
@@ -279,9 +275,9 @@ public class AddCustomerScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go back to the customers screen.
      * @throws IOException
-     * handler for the cancel button. Goes  to the customers screen after confirmation.
+     * Handler for the cancel button. Goes  to the customers screen after confirmation.
      */
     public void cancelBtnHandler(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
- * This class has several buttons used to navigate to the main portions of the application
+ * This class has several buttons used to navigate to the main portions of the application.
  */
 public class MainScreenController implements Initializable {
     @FXML
@@ -40,11 +40,11 @@ public class MainScreenController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the appointments screen.
      * @throws IOException
      *
-     * -handler for the appointments button
-     * -goes to the appointments screen when called
+     * Handler for the appointments button.
+     * Goes to the appointments screen when the button is pressed.
      */
     public void appointmentsButtonHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/appointments.fxml");
@@ -52,10 +52,10 @@ public class MainScreenController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the customers screen.
      * @throws IOException
-     * -handler for the customers button
-     * -goes to the customers screen when called
+     * Handler for the customers button.
+     * Goes to the customers screen when the button is pressed.
      */
     public void customersButtonHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/customers.fxml");
@@ -63,21 +63,20 @@ public class MainScreenController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the reports screen.
      * @throws IOException
-     * -handler for the reports button
-     * -goes to the reports screen when called
+     * Handler for the reports button.
+     * Goes to the reports screen when the button is pressed.
      */
     public void reportsButtonHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/reports.fxml");
     }
 
     /**
-     *
-     * @param actionEvent
-     * exits the application after confirmation
+     * Handler for the exit button.
+     * Exits the application after confirmation.
      */
-    public void exitButtonHandler(ActionEvent actionEvent) {
+    public void exitButtonHandler() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.initModality(Modality.NONE);
         alert.setTitle("Exit Confirmation");
@@ -95,11 +94,10 @@ public class MainScreenController implements Initializable {
 
     /**
      *
-     * @param actionEvent
-     * @param screenName
+     * @param actionEvent takes the action event that is passed to go to the specified screen.
+     * @param screenName Takes a fxml string and goes to the corresponding screen.
      * @throws IOException
      *
-     * takes a fxml string and goes to the corresponding screen
      */
     private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
         Stage stage;

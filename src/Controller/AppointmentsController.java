@@ -35,13 +35,9 @@ import java.util.ResourceBundle;
 public class AppointmentsController implements Initializable {
 
     @FXML
-    private Label appointmentsLabel;
-    @FXML
     Label filterByLabel;
     @FXML
     Button backBtn;
-    @FXML
-    Button deleteApptBtn;
     @FXML
     Button editApptBtn;
     @FXML
@@ -100,24 +96,20 @@ public class AppointmentsController implements Initializable {
     }
 
     /**
-     *
-     * @param actionEvent
      * @throws SQLException
      * filters the appointments by week and deselects the month radio button
      */
-    public void weekFilterRadioBtnHandler(ActionEvent actionEvent) throws SQLException {
+    public void weekFilterRadioBtnHandler() throws SQLException {
         isWeek = true;
         monthFilterRadioBtn.setSelected(false);
         displayAppointmentTable();
     }
 
     /**
-     *
-     * @param actionEvent
      * @throws SQLException
      * filters the appointments by month and deselects the week radio button
      */
-    public void monthFilterRadioBtnHandler(ActionEvent actionEvent) throws SQLException {
+    public void monthFilterRadioBtnHandler() throws SQLException {
         isWeek = false;
         weekFilterRadioBtn.setSelected(false);
         displayAppointmentTable();
@@ -126,9 +118,10 @@ public class AppointmentsController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the add appointment screen.
      * @throws IOException
-     * goes to the add appointment screen when the button is pressed
+     * Handler for the add button.
+     * Goes to the add appointment screen when the button is pressed.
      */
     public void addApptBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/addAppointment.fxml");
@@ -136,9 +129,10 @@ public class AppointmentsController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the edit screen.
      * @throws IOException
-     * goes to the edit appointment screen when called as long as an appointment in the table is selected
+     * Handler for the edit button.
+     * Goes to the edit appointment screen when called as long as an appointment in the table is selected.
      */
     public void editApptBtnHandler(ActionEvent actionEvent) throws IOException {
         Appointments appointments = appointmentsTableView.getSelectionModel().getSelectedItem();
@@ -165,12 +159,10 @@ public class AppointmentsController implements Initializable {
     }
 
     /**
-     *
-     * @param actionEvent
      * @throws SQLException
      * handler for the cancel/delete button. Removes the selected appointment from the database after confirmation
      */
-    public void cancelAppointmentBtnHandler(ActionEvent actionEvent) throws SQLException {
+    public void cancelAppointmentBtnHandler() throws SQLException {
 
         Appointments appointments = appointmentsTableView.getSelectionModel().getSelectedItem();
 
@@ -223,18 +215,17 @@ public class AppointmentsController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go back to the main screen.
      * @throws IOException
-     * goes back to the main screen when the back button is pressed
+     * Goes back to the main screen when the back button is pressed.
      */
     public void backBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/mainScreen.fxml");
     }
 
     /**
-     *
      * @throws SQLException
-     * displays the appointment table when called. Only displays appointments for the logged in user.
+     * Displays the appointment table when called. Only displays appointments for the logged in user.
      */
     public void displayAppointmentTable() throws SQLException {
         appointmentsTableView.refresh();
@@ -317,10 +308,10 @@ public class AppointmentsController implements Initializable {
 
     /**
      *
-     * @param actionEvent
-     * @param screenName
+     * @param actionEvent takes the action event that was passed to go to the screen specified in the string.
+     * @param screenName takes the fxml string to specify which screen to go to.
      * @throws IOException
-     * takes the fxml string and goes to the corresponding screen when called
+     * Takes the fxml string and goes to the corresponding screen when called.
      */
     private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
         Stage stage;
@@ -339,8 +330,8 @@ public class AppointmentsController implements Initializable {
     /**
      *
      * @param appointmentList
-     * -filters the appointments and displays the appointments in the next week on the appointment table when called
-     * -filtered list lambda used to filter appointments this week
+     * Filters the appointments and displays the appointments in the next week on the appointment table when called.
+     * Filtered list lambda used to reduce the code required to filter appointments this week.
      */
     public void showAppointmentsThisWeek(ObservableList<Appointments> appointmentList) {
 
@@ -359,10 +350,9 @@ public class AppointmentsController implements Initializable {
     }
 
     /**
-     *
      * @param appointmentList
-     * -filters the appointments and displays the appointments in the next month on the appointment table when called
-     * -filtered list lambda used to filter appointments this month
+     * Filters the appointments and displays the appointments in the next month on the appointment table when called.
+     * Filtered list lambda used to reduce the code required to filter appointments this month.
      */
     public void showAppointmentsThisMonth(ObservableList<Appointments> appointmentList) {
         LocalDate today = LocalDate.now();

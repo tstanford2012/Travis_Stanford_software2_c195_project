@@ -55,7 +55,7 @@ public class ContactScheduleController implements Initializable {
      *
      * @param url
      * @param resourceBundle
-     * calls the fillContactComboBox method to add the names of the contacts to the box
+     * Calls the fillContactComboBox method to add the names of the contacts to the box.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,10 +68,10 @@ public class ContactScheduleController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go back to the reports screen.
      * @throws IOException
-     * -handler for the back button
-     * -goes back to the reports screen when the button is pressed
+     * Handler for the back button.
+     * Goes back to the reports screen when the button is pressed.
      */
     public void backButtonHandler(ActionEvent actionEvent) throws IOException {
         Stage stage;
@@ -88,13 +88,11 @@ public class ContactScheduleController implements Initializable {
     }
 
     /**
-     *
-     * @param actionEvent
      * @throws SQLException
-     * -handler for the view button
-     * -displays the appointments in the table that are associated with the contact that is selected
+     * Handler for the view button.
+     * Displays the appointments in the table that are associated with the contact that is selected.
      */
-    public void contactScheduleButtonHandler(ActionEvent actionEvent) throws SQLException {
+    public void contactScheduleButtonHandler() throws SQLException {
         String contactName = contactComboBox.getValue();
         if(contactName == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -108,9 +106,8 @@ public class ContactScheduleController implements Initializable {
     }
 
     /**
-     *
      * @throws SQLException
-     * selects the contact names from the database and adds them to the combo box when called
+     * Selects the contact names from the database and adds them to the combo box when called.
      */
     private void fillContactComboBox() throws SQLException {
         Connection connection = DBConnection.getConnection();
@@ -128,9 +125,9 @@ public class ContactScheduleController implements Initializable {
 
     /**
      *
-     * @param contactName
+     * @param contactName Takes the contact name that is selected and displays the information in the table.
      * @throws SQLException
-     * takes the contact name that is selected and displays the information in the table
+     *
      */
     private void displayTable(String contactName) throws SQLException {
         contactAppointmentList.clear();

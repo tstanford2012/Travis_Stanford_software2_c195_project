@@ -56,7 +56,7 @@ public class CustomersController implements Initializable {
      *
      * @param url
      * @param resourceBundle
-     * calls the displayCustomerTable method to display the table during initialization
+     * Calls the displayCustomerTable method to display the table during initialization.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -70,7 +70,7 @@ public class CustomersController implements Initializable {
     /**
      *
      * @throws SQLException
-     * gets the information from the database and displays the customer table when called
+     * Gets the information from the database and displays the customer table when called.
      */
     private void displayCustomerTable() throws SQLException {
         customersTableView.refresh();
@@ -142,9 +142,10 @@ public class CustomersController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the add customer screen.
      * @throws IOException
-     * goes to the add customer screen when called
+     * Handler for the add button.
+     * Goes to the add customer screen when called.
      */
     public void addCustomerBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/addCustomer.fxml");
@@ -152,9 +153,10 @@ public class CustomersController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the edit screen.
      * @throws IOException
-     * goes to the edit customer screen when a customer in the table is selected. The information for the customer is carried over to the next screen.
+     * Handler for the edit button.
+     * Goes to the edit customer screen when a customer in the table is selected. The information for the customer is carried over to the next screen.
      */
     public void editCustomerBtnHandler(ActionEvent actionEvent) throws IOException {
         Customer customer = customersTableView.getSelectionModel().getSelectedItem();
@@ -181,13 +183,11 @@ public class CustomersController implements Initializable {
     }
 
     /**
-     *
-     * @param actionEvent
      * @throws SQLException
-     * -handler for the delete button
-     * -deletes a customer and all of the selected customer's appointments after confirmation
+     * Handler for the delete button
+     * Deletes a customer and all of the selected customer's appointments after confirmation
      */
-    public void deleteCustomerBtnHandler(ActionEvent actionEvent) throws SQLException {
+    public void deleteCustomerBtnHandler() throws SQLException {
 
         Customer customer = customersTableView.getSelectionModel().getSelectedItem();
 
@@ -256,10 +256,10 @@ public class CustomersController implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go back to the main screen.
      * @throws IOException
-     * -handler for the back button
-     * -goes back to the main screen when the button is pressed
+     * Handler for the back button.
+     * Goes back to the main screen when the button is pressed.
      */
     public void backBtnHandler(ActionEvent actionEvent) throws IOException {
         nextScreen(actionEvent, "../View/mainScreen.fxml");
@@ -267,10 +267,10 @@ public class CustomersController implements Initializable {
 
     /**
      *
-     * @param actionEvent
-     * @param screenName
+     * @param actionEvent takes the action event that was passed to go to the specified screen.
+     * @param screenName takes the fxml string to specify which screen to go to.
      * @throws IOException
-     * takes the fxml string and goes to the corresponding screen when called
+     * Takes the fxml string and goes to the corresponding screen when called.
      */
     private void nextScreen(ActionEvent actionEvent, String screenName) throws IOException {
         Stage stage;

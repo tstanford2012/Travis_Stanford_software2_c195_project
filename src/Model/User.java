@@ -9,9 +9,7 @@ public class User {
 
     /**
      *
-     * @param userID
-     * @param userName
-     * constructor
+     * Constructor
      */
     public User(int userID, String userName) {
         User.userID = userID;
@@ -22,7 +20,7 @@ public class User {
      *
      * @return
      *
-     * getters
+     * Getters
      */
     public static int getUserID() {
         return userID;
@@ -35,7 +33,7 @@ public class User {
 
     /**
      *
-     * setters
+     * Setters
      */
     public void setUserID(int userID) {
         User.userID = userID;

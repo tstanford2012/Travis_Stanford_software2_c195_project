@@ -4,7 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * This class contains the attributes, constructors, getters, and setters for the customer object
+ * This class contains the attributes, constructors, getters, and setters for the customer object.
  */
 public class Customer {
     private int customerID;
@@ -32,7 +32,7 @@ public class Customer {
      * @param phoneNumber
      * @param divisionID
      *
-     * constructor
+     * Constructor
      */
     public Customer(int customerID, String customerName, String customerAddress, String stateProvince, String country, String postalCode, String phoneNumber, int divisionID) {
         this.customerID = customerID;
@@ -51,7 +51,7 @@ public class Customer {
      * @param totalWeekAppointments
      * @param totalMonthAppointments
      *
-     * constructor
+     * Constructor
      */
     public Customer(int customerID, int totalWeekAppointments, int totalMonthAppointments) {
         this.customerID = customerID;
@@ -65,7 +65,7 @@ public class Customer {
      *
      * @return
      *
-     * getters
+     * Getters
      */
     public static ObservableList<Customer> getCustomerList() {
         return customerList;
@@ -108,7 +108,7 @@ public class Customer {
 
     /**
      *
-     * setters
+     * Setters
      */
 
     public void setAppointments(ObservableList<Appointments> customerAppointments) {

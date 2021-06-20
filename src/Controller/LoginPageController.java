@@ -37,7 +37,7 @@ import java.util.ResourceBundle;
 /**
  * This class checks entered credentials to log into the application.
  * The labels and error messages will be translated into either english or french depending on the users system language.
- * This class also alerts the user of an upcoming appointment if it is scheduled in the next 15 min from the users local time
+ * This class also alerts the user of an upcoming appointment if it is scheduled in the next 15 min from the users local time.
  */
 public class LoginPageController implements Initializable {
     @FXML
@@ -64,8 +64,8 @@ public class LoginPageController implements Initializable {
      *
      * @param url
      * @param rb
-     * -sets the labels on the login page to the system language
-     * -displays the time zone of the user on the login page
+     * Sets the labels on the login page to the system language.
+     * Displays the time zone of the user on the login page.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -93,10 +93,10 @@ public class LoginPageController implements Initializable {
 
     /**
      *
-     * @param actionEvent
-     * -handler for the log in button
-     * -validates the username and password and creates a new User object based on the userID
-     * -goes to the application if the username and password is correct
+     * @param actionEvent uses the action event to go to the main screen after logging in.
+     * Handler for the log in button.
+     * Validates the username and password and creates a new User object based on the userID.
+     * Goes to the application if the username and password is correct.
      */
     public void loginButtonHandler(ActionEvent actionEvent) {
 
@@ -119,7 +119,7 @@ public class LoginPageController implements Initializable {
                     addRemindersToList();
                     appointmentIn15MinAlert();
                     //calls the loginActivity method to add a record to the text file
-                    loginActivity(User.getUserName(), true);
+                    loginActivity(true);
                     System.out.println("Log in successful!");
 
                     Stage stage;
@@ -135,7 +135,7 @@ public class LoginPageController implements Initializable {
                     stage.show();
                 } else {
                     //prints an error label in the users system language if authentication failed
-                    loginActivity(User.getUserName(), false);
+                    loginActivity(false);
                     loginFailLabel.setText(resourceBundle.getString("login_Fail"));
                 }
             }
@@ -148,7 +148,7 @@ public class LoginPageController implements Initializable {
     }
 
     /**
-     * filters the appointments and displays an alert if there is an appointment in the next 15 min of the users local time
+     * Filters the appointments and displays an alert if there is an appointment in the next 15 min of the users local time.
      */
     private void appointmentIn15MinAlert() {
         System.out.println("Starting appointment alert......");
@@ -200,7 +200,7 @@ public class LoginPageController implements Initializable {
     /**
      *
      * @throws SQLException
-     * gets the appointments from the database and adds them to the observable list
+     * Gets the appointments from the database and adds them to the observable list.
      */
     private void addRemindersToList() throws SQLException {
         System.out.println("Username: " + User.getUserName());
@@ -243,12 +243,12 @@ public class LoginPageController implements Initializable {
 
     /**
      *
-     * @param userID
-     * @param password
+     * @param userID takes the user ID to query the database for the correct password.
+     * @param password takes the entered password that is passed to perform the validation.
      * @return
      * @throws SQLException
      *
-     * validates the entered password
+     * Validates the entered password by checking it against the password stored in the database.
      */
     private boolean validatePassword(int userID, String password) throws SQLException {
         Connection connection = DBConnection.getConnection();
@@ -284,11 +284,11 @@ public class LoginPageController implements Initializable {
 
     /**
      *
-     * @param username
-     * @return
+     * @param username takes the username that was entered and gets the User ID.
+     * @return returns the User ID associated with the name.
      * @throws SQLException
      *
-     * gets the userID from the entered username
+     * Gets the userID from the entered username.
      */
     private int getUserID(String username) throws SQLException {
         Connection connection = DBConnection.getConnection();
@@ -320,14 +320,12 @@ public class LoginPageController implements Initializable {
     }
 
     /**
-     *
-     * @param userName
-     * @param successful
+     * @param successful takes the successful boolean to determine which version to write to the file.
      * @throws IOException
      *
-     * adds a log in attempt to the login_activity text file whether the attempt was successful of not
+     * Adds a log in attempt to the login_activity text file whether the attempt was successful of not.
      */
-    private void loginActivity(String userName, boolean successful) throws IOException {
+    private void loginActivity(boolean successful) throws IOException {
         String fileName = "login_activity.txt";
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName, true));
         if(successful) {

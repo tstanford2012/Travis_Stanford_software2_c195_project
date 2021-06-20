@@ -766,8 +766,8 @@ public class AddAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param location
-     * Adds times to the start and end combo boxes depending on which location is selected. The times are all within the EST office hours.
+     * @param location Adds times to the start and end combo boxes depending on which location is selected.
+     * The times are all within the EST office hours.
      */
     public void addLocationTimesToComboBox(String location) {
         startTimeComboBox.getItems().clear();
@@ -846,11 +846,7 @@ public class AddAppointmentScreen implements Initializable {
     }
 
     /**
-     *
-     * @param startTimeComboBox
-     * @param endTimeComboBox
      * onAction for the combo boxes. Removes previous times from the end combo box based on the start time that is selected.
-     *
      * Lambda used to reduce the amount of code necessary for the combo box function.
      */
     public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) {

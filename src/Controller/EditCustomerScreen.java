@@ -57,8 +57,8 @@ public class EditCustomerScreen implements Initializable {
      *
      * @param url
      * @param resourceBundle
-     * -adds the countries to the country combo box
-     * -adds the appropriate states/provinces to the combo box based on the country
+     * Adds the countries to the country combo box.
+     * Adds the appropriate states/provinces to the combo box based on the country.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -67,12 +67,10 @@ public class EditCustomerScreen implements Initializable {
 
 
     /**
-     *
-     * @param actionEvent
-     * -handler for the country combo box
-     * -adds the states/provinces based on which country is associated with the customer that was selected on the table
+     * Handler for the country combo box.
+     * Adds the states/provinces based on which country is associated with the customer that was selected on the table.
      */
-    public void countryComboBoxHandler(ActionEvent actionEvent) {
+    public void countryComboBoxHandler() {
         String country = countryComboBox.getValue();
         if(country.contains("United States")) {
             stateComboBox.getItems().clear();
@@ -106,12 +104,10 @@ public class EditCustomerScreen implements Initializable {
     }
 
     /**
-     *
-     * @param mouseEvent
-     * -mouse click handler for the state combo box
-     * -displays an error if a country has not been selected
+     * Mouse click handler for the state combo box.
+     * Displays an error if a country has not been selected.
      */
-    public void stateComboBoxClicked(MouseEvent mouseEvent) {
+    public void stateComboBoxClicked() {
         String country = countryComboBox.getValue();
         stateComboBox.setOnAction(actionEvent -> {
             int selectedIndex = stateComboBox.getSelectionModel().getSelectedIndex();
@@ -127,9 +123,10 @@ public class EditCustomerScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
-     * -handler for the save button
-     * -ensures that all fields have a value then saves to the database
+     * @param actionEvent uses the action event to go to the customer screen after saving to the database.
+     *
+     * Handler for the save button.
+     * Ensures that all fields have a value and validates the customer name, then saves to the database.
      */
     public void editCustomerSaveBtnHandler(ActionEvent actionEvent) {
 
@@ -262,10 +259,10 @@ public class EditCustomerScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go back to the customer screen without saving.
      * @throws IOException
-     * -handler for the cancel button
-     * -goes back to the customers screen after confirmation when the button is pressed
+     * Handler for the cancel button.
+     * Goes back to the customers screen after confirmation when the button is pressed.
      */
     public void cancelBtnHandler(ActionEvent actionEvent) throws IOException {
 
@@ -295,9 +292,8 @@ public class EditCustomerScreen implements Initializable {
     }
 
     /**
+     * @param customer Sets the values for the fields to the values of the customer that was selected in the table.
      *
-     * @param customer
-     * sets the values for the fields to the values of the customer that was selected in the table
      */
     public void setCustomer(Customer customer) {
         this.customer = customer;
@@ -342,10 +338,10 @@ public class EditCustomerScreen implements Initializable {
 
     /**
      *
-     * @param customerName
-     * @return
+     * @param customerName takes the customer name that is passed to perform the validation.
+     * @return returns either true or false depending if the customer name passes the validation.
      * @throws SQLException
-     * validation for the customer name. Ensures no two records have the same name.
+     * Ensures no two records have the same name.
      */
     private boolean validName(String customerName) throws SQLException {
         Connection connection = DBConnection.getConnection();

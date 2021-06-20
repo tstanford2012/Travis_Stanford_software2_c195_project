@@ -76,7 +76,7 @@ public class EditAppointmentScreen implements Initializable {
      *
      * @param url
      * @param resourceBundle
-     * sets the error labels to be invisible, sets the radio button, and calls several methods to add information to combo boxes during initialization
+     * Sets the error labels to be invisible, sets the radio button, and calls several methods to add information to combo boxes during initialization.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -105,8 +105,8 @@ public class EditAppointmentScreen implements Initializable {
     }
 
     /**
-     * -mouse click handler for the start combo box
-     * -displays the error label if the start combo box is clicked with no date entered
+     * Mouse click handler for the start combo box.
+     * Displays the error label if the start combo box is clicked with no date entered.
      */
     public void startTimesComboBoxClicked() {
         if(startDateTextField.getText().isEmpty()) {
@@ -115,8 +115,8 @@ public class EditAppointmentScreen implements Initializable {
     }
 
     /**
-     * -handler for the start time combo box
-     * -calls the method to remove previous times from the end combo box based on the start time selected
+     * Handler for the start time combo box.
+     * Calls the method to remove previous times from the end combo box based on the start time selected.
      */
     public void startTimeComboBoxHandler() {
         handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
@@ -124,14 +124,14 @@ public class EditAppointmentScreen implements Initializable {
     }
 
     /**
-     * handler for the end time combo box
+     * Handler for the end time combo box.
      */
     public void endTimeComboBoxHandler() {
     }
 
     /**
-     * -mouse click handler for the end times combo box
-     * -prints an error to the console when either the start date or end date text fields are empty
+     * Mouse click handler for the end times combo box.
+     * Prints an error to the console when either the start date or end date text fields are empty.
      */
     public void endTimesComboBoxClicked() {
         if(endDateTextField.getText().isEmpty() || startDateTextField.getText().isEmpty()) {
@@ -143,8 +143,8 @@ public class EditAppointmentScreen implements Initializable {
     }
 
     /**
-     * -handler for the location combo box
-     * -currently does nothing
+     * Handler for the location combo box.
+     * Currently does nothing.
      */
     public void locationComboBoxHandler() {
     }
@@ -152,16 +152,16 @@ public class EditAppointmentScreen implements Initializable {
 
 
     /**
-     * -handler for the customerComboBox
-     * -currently does nothing
+     * Handler for the customerComboBox.
+     * Currently does nothing.
      */
     public void customerComboBoxHandler() {
     }
 
     /**
-     * -handler for the view times button
-     * -verifies that the entered date is valid and not on a weekend
-     * -adds the times to the start and end combo boxes based on the selected location
+     * Handler for the view times button.
+     * Verifies that the entered date is valid and not on a weekend.
+     * Adds the times to the start and end combo boxes based on the selected location.
      */
     public void startTimesButtonHandler() {
         if(startDateTextField.getText().isEmpty()) {
@@ -242,13 +242,13 @@ public class EditAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go to the appointment screen after saving to the database.
      * @throws SQLException
      * @throws IOException
-     * -handler for the save button
-     * -verifies that all fields have values
-     * -converts the selected time to the appropriate time based on the selected location and then to UTC to save to the database
-     * -updates the record in the database with the new information if valid
+     * Handler for the save button.
+     * Verifies that all fields have values.
+     * Converts the selected time to the appropriate time based on the selected location and then to UTC to save to the database.
+     * Updates the record in the database with the new information if valid.
      */
     public void saveButtonHandler(ActionEvent actionEvent) throws SQLException, IOException {
         boolean isValid = false;
@@ -502,10 +502,10 @@ public class EditAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent uses the action event to go back to the appointments screen without saving.
      * @throws IOException
-     * -cancel button handler
-     * -goes back to the appointments screen after confirmation when the button is pressed
+     * Cancel button handler.
+     * Goes back to the appointments screen after confirmation when the button is pressed.
      */
     public void cancelButtonHandler(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -524,16 +524,16 @@ public class EditAppointmentScreen implements Initializable {
     }
 
     /**
-     * -handler for the office location radio button
-     * -deselects the time zone radio button when selected
+     * Handler for the office location radio button.
+     * Deselects the time zone radio button when selected.
      */
     public void officeLocationTimeRadioBtnHandler() {
         timezoneRadioBtn.setSelected(false);
     }
 
     /**
-     * -handler for the time zone radio button
-     * -deselects the office location radio button when selected
+     * Handler for the time zone radio button.
+     * Deselects the office location radio button when selected.
      */
     public void timezoneRadioBtnHandler() {
         officeLocationTimeRadioBtn.setSelected(false);
@@ -542,7 +542,7 @@ public class EditAppointmentScreen implements Initializable {
     /**
      *
      * @param appointments
-     * sets the values for the text fields and combo boxes to be the values from the appointment that was selected on the appointment table
+     * Sets the values for the text fields and combo boxes to be the values from the appointment that was selected on the appointment table.
      */
     public void setAppointment(Appointments appointments) {
         this.appointments = appointments;
@@ -640,7 +640,7 @@ public class EditAppointmentScreen implements Initializable {
     /**
      *
      * @throws SQLException
-     * pulls the contact names from the database and adds them to the combo box
+     * Pulls the contact names from the database and adds them to the combo box.
      */
     private void pullContactNames() throws SQLException {
         Connection connection = DBConnection.getConnection();
@@ -661,7 +661,7 @@ public class EditAppointmentScreen implements Initializable {
     /**
      *
      * @throws SQLException
-     * pulls the customer names from the database and adds them to the combo box
+     * Pulls the customer names from the database and adds them to the combo box.
      */
     public void pullCustomers() throws SQLException {
         Connection connection = DBConnection.getConnection();
@@ -776,9 +776,8 @@ public class EditAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param location
-     * -Adds the start and end times to the combo boxes based on the location that is selected
-     * -all times added are within the EST business hours
+     * @param location Adds the start and end times to the combo boxes based on the location that is selected.
+     * All times added are within the EST business hours
      */
     public void addLocationTimesToComboBox(String location) {
         startTimeComboBox.getItems().clear();
@@ -834,7 +833,7 @@ public class EditAppointmentScreen implements Initializable {
     }
 
     /**
-     * adds the appointment types to the type combo box
+     * Adds the appointment types to the type combo box.
      */
     private void addTypesToComboBox() {
         typeComboBox.getItems().addAll("De-Briefing", "Planning Session", "New Account", "Follow Up");
@@ -842,9 +841,9 @@ public class EditAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param actionEvent
+     * @param actionEvent takes the action event that was passed to go to the appointments screen.
      * @throws IOException
-     * goes back to the appointments screen when called
+     * Goes back to the appointments screen when called.
      */
     private void nextScreen(ActionEvent actionEvent) throws IOException {
         Stage stage;
@@ -861,11 +860,8 @@ public class EditAppointmentScreen implements Initializable {
     }
 
     /**
-     *
-     * @param startTimeComboBox
-     * @param endTimeComboBox
-     * -removes previous times from the end combo box based on the selected start time
-     * -lambda used to reduce the amount of code necessary for the function
+     * Removes previous times from the end combo box based on the selected start time.
+     * Lambda used to reduce the amount of code necessary for the function.
      */
     public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) {
 
@@ -888,11 +884,11 @@ public class EditAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param start
-     * @param end
+     * @param start takes the start time that was passed to perform the validation
+     * @param end takes the end time that was passed to perform the validation
      * @return
-     * -validation for the appointment
-     * -calls the database and checks if the appointment is either during or overlaps an already existing appointment.
+     * Validation for the appointment.
+     * Calls the database and checks if the appointment is either during or overlaps an already existing appointment.
      */
     private boolean validAppointment(LocalDateTime start, LocalDateTime end) {
         int appointmentID = -1;
@@ -970,7 +966,7 @@ public class EditAppointmentScreen implements Initializable {
      *
      * @param enteredDate
      * @throws SQLException
-     * Prints the times for the appointments that are on the selected date to the console in the users local time when called
+     * Prints the times for the appointments that are on the selected date to the console in the users local time when called.
      */
     private void printAppointmentTimes(LocalDate enteredDate) throws SQLException {
         String appointmentDate = null;
@@ -1021,16 +1017,16 @@ public class EditAppointmentScreen implements Initializable {
 
     /**
      *
-     * @param valid
-     * @param appointmentID
-     * @param start
-     * @param end
-     * @param customerID
-     * @param contactID
+     * @param valid takes the valid boolean to determine which version to write to the text file.
+     * @param appointmentID uses the appointment ID to specify the appointment that was changed.
+     * @param start start time of the appointment is written to the file.
+     * @param end end time of the appointment is written to the file.
+     * @param customerID customerID is written to the file.
+     * @param contactID contact ID is written to the file.
      * @throws IOException
      *
-     * -report that tracks when appointments are changed.
-     * -adds a timestamp, the user, and the appointment information to the appointment_changes text file when called
+     * Report that tracks when appointments are changed.
+     * Adds a timestamp, the user, and the appointment information to the appointment_changes text file when called.
      */
     private void appointmentChanges(boolean valid, String appointmentID, String start, String end, int customerID, int contactID) throws IOException {
         String fileName = "appointment_changes.txt";
