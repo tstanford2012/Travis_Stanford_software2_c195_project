@@ -59,7 +59,6 @@ public class Customer {
         this.totalMonthAppointments = totalMonthAppointments;
     }
 
-    //getters
 
     /**
      *

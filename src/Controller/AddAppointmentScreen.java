@@ -478,7 +478,7 @@ public class AddAppointmentScreen implements Initializable {
                     //Displays if validAppointment returns false
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setHeaderText("Could not save appointment!");
-                    alert.setHeaderText("Appointment times conflict with another scheduled appointment or has invalid time.");
+                    alert.setHeaderText("Appointment times conflict with another scheduled appointment or has invalid date/time.");
                     alert.showAndWait();
                 }
             }
@@ -915,10 +915,14 @@ public class AddAppointmentScreen implements Initializable {
             String date = parts[0];
             if(startDateTextField.getText().contains(date)) {
                 LocalDateTime startDateTime = LocalDateTime.parse(date + "T" + startTimeComboBox.getValue());
-                if(startDateTime.isBefore(ChronoLocalDateTime.from(currentDateLocation))) {
+                if(startDateTime.isBefore(ChronoLocalDateTime.from(currentDate))) {
                     return false;
 
                 }
+            }
+            if(start.getDayOfWeek() == DayOfWeek.SATURDAY || start.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                System.out.println("Appointment cannot be on a weekend!");
+                return false;
             }
 
         } catch (SQLException sqe) {

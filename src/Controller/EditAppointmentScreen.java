@@ -472,7 +472,7 @@ public class EditAppointmentScreen implements Initializable {
                     preparedStatement.execute();
                     System.out.println("Record Updated");
                     try {
-                        appointmentChanges(isValid, appointmentIDLabel.getText(), startToDatabase, endToDatabase, customerID, contactID);
+                        appointmentChanges(true, appointmentIDLabel.getText(), startToDatabase, endToDatabase, customerID, contactID);
                     } catch (Exception e) {
                         System.out.println("Error while attempting to record an appointment change");
                     }
@@ -487,7 +487,7 @@ public class EditAppointmentScreen implements Initializable {
                     alert.setHeaderText("Appointment times conflict with another scheduled appointment.");
                     alert.showAndWait();
                     try {
-                        appointmentChanges(isValid, appointmentIDLabel.getText(), null, null, -1, -1);
+                        appointmentChanges(false, appointmentIDLabel.getText(), null, null, -1, -1);
                     } catch (Exception e) {
                         System.out.println("Error while attempting to record an appointment change");
                     }
