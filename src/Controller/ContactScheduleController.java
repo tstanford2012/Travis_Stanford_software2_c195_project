@@ -21,10 +21,11 @@ import utils.DBQuery;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 /**
@@ -151,11 +152,42 @@ public class ContactScheduleController implements Initializable {
 
         preparedStatement.setInt(1, contactID);
         resultSet = preparedStatement.executeQuery();
+        String startTimeFromDatabase = null;
+        String endTimeFromDatabase = null;
+        int appointmentID = -1;
+
+        ZoneId utc = ZoneId.of("UTC");
+        ZoneId userLocale = ZoneId.systemDefault();
+
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
         while (resultSet.next()) {
             contactAppointmentList.add(new Appointments(resultSet.getInt("Appointment_ID"), resultSet.getString("Title"), resultSet.getString("Type"),
                     resultSet.getString("Description"), resultSet.getTimestamp("Start"), resultSet.getTimestamp("End"), resultSet.getInt("Customer_ID")));
+            startTimeFromDatabase = resultSet.getString("Start");
+            endTimeFromDatabase = resultSet.getString("End");
+            appointmentID = resultSet.getInt("Appointment_ID");
+
+            if(startTimeFromDatabase != null && endTimeFromDatabase != null) {
+                LocalDateTime startTimeInUserLocaleLocal = LocalDateTime.parse(startTimeFromDatabase, dateTimeFormatter);
+                LocalDateTime endTimeInUserLocaleLocal = LocalDateTime.parse(endTimeFromDatabase, dateTimeFormatter);
+
+                ZonedDateTime startTimeInUTC = startTimeInUserLocaleLocal.atZone(utc);
+                ZonedDateTime endTimeInUTC = endTimeInUserLocaleLocal.atZone(utc);
+
+                ZonedDateTime startTimeInUserLocale = startTimeInUTC.withZoneSameInstant(userLocale);
+                ZonedDateTime endTimeInUserLocale = endTimeInUTC.withZoneSameInstant(userLocale);
+
+                System.out.println("The appointment with ID # " + appointmentID + " has a start time saved into the database as: " + startTimeInUTC + " and an end time of: " + endTimeInUTC);
+
+                System.out.println("The appointment with ID # " + appointmentID + " has a start time of: " + startTimeInUserLocale + " and an end time of: " + endTimeInUserLocale);
+            }
         }
+
+
+
+
 
 
 

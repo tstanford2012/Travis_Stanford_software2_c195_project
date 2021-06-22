@@ -28,9 +28,7 @@ Directions:
 
 		3.a.3) The cancel button can be used to go back to the appointments screen.
 
-		3.a.4) If adding an appointment normally (not clicking the test appointment button), the times displayed will depend on the location selected. In lieu of adding an alert stating the times are not during business hours, the only times available are during EST business hours. The times displayed will be in the time zone of the location that is selected. A confirmation alert will display upon clicking the save button that displays the time in the User's local time.
-
-		3.a.5) The end date is automatically populated when the check times button is clicked.
+		3.a.4) The end date is automatically populated when the check times button is clicked.
 
 	3.b) The edit appointment screen functionality is very similar to the add appointment screen with some exceptions. There is no test appointment button and the data is prepolulated in the fields from the record that was selected in the table.
 

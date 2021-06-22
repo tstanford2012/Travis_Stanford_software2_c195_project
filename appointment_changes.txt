@@ -188,3 +188,63 @@ End Time: 2021-06-17T11:00-05:00[America/Chicago]
 CustomerID: 3
 ContactID: 3
 ==========================
+2021-06-21T17:01:20.747983100 User: test has altered the appointment with ID: 21
+Info: Payroll 2021
+Updates
+Montreal
+Follow Up
+Start time: 2021-07-05T06:00-05:00[America/Chicago] 
+End Time: 2021-07-05T07:00-05:00[America/Chicago] 
+CustomerID: 4
+ContactID: 3
+==========================
+2021-06-21T17:04:51.991462300 User: test has altered the appointment with ID: 21
+Info: Payroll 2021
+Updates
+Montreal
+Follow Up
+Start time: 2021-07-05T08:00-05:00[America/Chicago] 
+End Time: 2021-07-05T09:00-05:00[America/Chicago] 
+CustomerID: 4
+ContactID: 3
+==========================
+2021-06-22T07:10:57.168417900 User: test has altered the appointment with ID: 22
+Info: Title
+Description
+White Plains
+Planning Session
+Start time: 2021-06-22T08:00-05:00[America/Chicago] 
+End Time: 2021-06-22T09:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 2
+==========================
+2021-06-22T07:25:28.567278800 User: test has altered the appointment with ID: 22
+Info: Title
+Description
+White Plains
+Planning Session
+Start time: 2021-06-22T07:00-05:00[America/Chicago] 
+End Time: 2021-06-22T08:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 2
+==========================
+2021-06-22T07:26:13.264455200 User: test has altered the appointment with ID: 22
+Info: Title
+Description
+White Plains
+Planning Session
+Start time: 2021-06-22T20:00-05:00[America/Chicago] 
+End Time: 2021-06-22T21:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 2
+==========================
+2021-06-22T07:31:06.365141600 User: test has altered the appointment with ID: 22
+Info: Title
+Description
+White Plains
+Planning Session
+Start time: 2021-06-22T20:00-05:00[America/Chicago] 
+End Time: 2021-06-22T21:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 2
+==========================

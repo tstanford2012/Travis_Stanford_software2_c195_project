@@ -63,14 +63,25 @@ public class EditAppointmentScreen implements Initializable {
     RadioButton officeLocationTimeRadioBtn;
     @FXML
     RadioButton timezoneRadioBtn;
+    @FXML
+    Label startTimeLocalLabel;
+    @FXML
+    Label endTimeLocalLabel;
+    @FXML
+    TextField startTimeTextField;
+    @FXML
+    TextField endTimeTextField;
 
     private final ObservableList<String> contactNames = FXCollections.observableArrayList();
     private final ObservableList<String> customerNames = FXCollections.observableArrayList();
     private final ObservableList<String> startTimes = FXCollections.observableArrayList();
     private static final ObservableList<String> endTimes = FXCollections.observableArrayList();
-    private final ZoneId zoneId = ZoneId.systemDefault();
+    private static final ZoneId zoneId = ZoneId.systemDefault();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static DateTimeFormatter localTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     DateTimeFormatter formatterWithMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.s");
+
+
 
     /**
      *
@@ -89,7 +100,8 @@ public class EditAppointmentScreen implements Initializable {
 
 
         //Initial setOnAction for the comboBoxes
-        handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
+        handleComboBoxSelection(startTimeComboBox, endTimeComboBox, startDateTextField, startTimeTextField);
+        //handleComboBoxSelection(endTimeComboBox, endTimeTextField, startDateTextField);
         //calls the method and adds the types of appointments to the combo box
         addTypesToComboBox();
 
@@ -119,7 +131,7 @@ public class EditAppointmentScreen implements Initializable {
      * Calls the method to remove previous times from the end combo box based on the start time selected.
      */
     public void startTimeComboBoxHandler() {
-        handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
+        handleComboBoxSelection(startTimeComboBox, endTimeComboBox, startDateTextField, startTimeTextField);
 
     }
 
@@ -315,19 +327,19 @@ public class EditAppointmentScreen implements Initializable {
             ZonedDateTime fullEndZone;
             String location = locationComboBox.getValue();
 
-            ZonedDateTime selectionTimeLocation;
+            ZonedDateTime selectionTimeLocation = fullStartLocal.atZone(zoneId);
 
 
             //converts the selected time to the location time
-            if(location.contains("Phoenix")) {
-                selectionTimeLocation = fullStartLocal.atZone(phoenixZone);
-            }
-            else if(location.contains("London")) {
-                selectionTimeLocation = fullStartLocal.atZone(londonZone);
-            }
-            else {
-                selectionTimeLocation = fullStartLocal.atZone(easternZone);
-            }
+//            if(location.contains("Phoenix")) {
+//                selectionTimeLocation = fullStartLocal.atZone(phoenixZone);
+//            }
+//            else if(location.contains("London")) {
+//                selectionTimeLocation = fullStartLocal.atZone(londonZone);
+//            }
+//            else {
+//                selectionTimeLocation = fullStartLocal.atZone(easternZone);
+//            }
             ZonedDateTime selectionTimeInLocalTime = selectionTimeLocation.withZoneSameInstant(zoneId);
 
             String selectionTimeInLocalTimeString = selectionTimeInLocalTime.toString();
@@ -360,43 +372,52 @@ public class EditAppointmentScreen implements Initializable {
                     LocalDateTime localStartToDatabase;
                     LocalDateTime localEndToDatabase;
 
+                    fullStartZone = ZonedDateTime.of(fullStartLocal, zoneId);
+                    ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+
+                    fullEndZone = ZonedDateTime.of(fullEndLocal, zoneId);
+                    ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+
+                    localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+                    localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+
                     //converts the time from the location time to UTC based on the location selected
-                    if(locationComboBox.getValue().contains("Phoenix")) {
-                        fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
-                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                        fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
-                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-
-
-
-                    }
-                    //converts the time from the location time to UTC based on the location selected
-                    else if(locationComboBox.getValue().contains("London")) {
-                        fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
-                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                        fullEndZone = ZonedDateTime.of(fullEndLocal, londonZone);
-                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-
-                    }
-                    //converts the time from the location time to UTC based on the location selected
-                    else {
-                        fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
-                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                        fullEndZone = ZonedDateTime.of(fullEndLocal, easternZone);
-                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-                    }
+//                    if(locationComboBox.getValue().contains("Phoenix")) {
+//                        fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
+//                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+//
+//                        fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
+//                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+//
+//                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+//                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+//
+//
+//
+//                    }
+//                    //converts the time from the location time to UTC based on the location selected
+//                    else if(locationComboBox.getValue().contains("London")) {
+//                        fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
+//                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+//
+//                        fullEndZone = ZonedDateTime.of(fullEndLocal, londonZone);
+//                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+//
+//                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+//                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+//
+//                    }
+//                    //converts the time from the location time to UTC based on the location selected
+//                    else {
+//                        fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
+//                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+//
+//                        fullEndZone = ZonedDateTime.of(fullEndLocal, easternZone);
+//                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+//
+//                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+//                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+//                    }
 
 
 
@@ -465,6 +486,8 @@ public class EditAppointmentScreen implements Initializable {
                     preparedStatement.setString(6, endToDatabase);
                     preparedStatement.setString(7, User.getUserName());
                     preparedStatement.setInt(8, customerID);
+
+                    //The userID of the user that is logged in is automatically associated with the appointment when it is saved
                     preparedStatement.setInt(9, User.getUserID());
                     preparedStatement.setInt(10, contactID);
                     preparedStatement.setInt(11, Integer.parseInt(appointmentIDLabel.getText()));
@@ -474,6 +497,7 @@ public class EditAppointmentScreen implements Initializable {
                     try {
                         appointmentChanges(true, appointmentIDLabel.getText(), startToDatabase, endToDatabase, customerID, contactID);
                     } catch (Exception e) {
+                        System.out.println(e.getMessage());
                         System.out.println("Error while attempting to record an appointment change");
                     }
 
@@ -484,14 +508,8 @@ public class EditAppointmentScreen implements Initializable {
                 else {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setHeaderText("Could not save appointment!");
-                    alert.setHeaderText("Appointment times conflict with another scheduled appointment.");
+                    alert.setHeaderText("Appointment times conflict with another scheduled appointment, has invalid date/time, or has a time outside of business hours.");
                     alert.showAndWait();
-                    try {
-                        appointmentChanges(false, appointmentIDLabel.getText(), null, null, -1, -1);
-                    } catch (Exception e) {
-                        System.out.println("Error while attempting to record an appointment change");
-                    }
-
                 }
             }
             else {
@@ -567,28 +585,28 @@ public class EditAppointmentScreen implements Initializable {
         LocalDateTime endLocal = LocalDateTime.parse(end, formatterWithMS);
         ZonedDateTime endZone = endLocal.atZone(zoneId);
 
-        ZonedDateTime startZoneOf;
-        ZonedDateTime endZoneOf;
+        ZonedDateTime startZoneOf = startZone.withZoneSameInstant(zoneId);
+        ZonedDateTime endZoneOf = endZone.withZoneSameInstant(zoneId);
         boolean isLondon = false;
 
-        if(locationComboBox.getValue().contains("Phoenix")) {
-            startZoneOf = startZone.withZoneSameInstant(phoenixZone);
-            endZoneOf = endZone.withZoneSameInstant(phoenixZone);
-        }
-        else if(locationComboBox.getValue().contains("London")) {
-            isLondon = true;
-            startZoneOf = startZone.withZoneSameInstant(londonZone);
-            endZoneOf = endZone.withZoneSameInstant(londonZone);
+//        if(locationComboBox.getValue().contains("Phoenix")) {
+//            startZoneOf = startZone.withZoneSameInstant(phoenixZone);
+//            endZoneOf = endZone.withZoneSameInstant(phoenixZone);
+//        }
+//        else if(locationComboBox.getValue().contains("London")) {
+//            isLondon = true;
+//            startZoneOf = startZone.withZoneSameInstant(londonZone);
+//            endZoneOf = endZone.withZoneSameInstant(londonZone);
+//
+//        }
+//        else {
+//            startZoneOf = startZone.withZoneSameInstant(easternZone);
+//            endZoneOf = endZone.withZoneSameInstant(easternZone);
+//
+//        }
 
-        }
-        else {
-            startZoneOf = startZone.withZoneSameInstant(easternZone);
-            endZoneOf = endZone.withZoneSameInstant(easternZone);
-
-        }
-
-        System.out.println(startZoneOf);
-        System.out.println(endZoneOf);
+//        System.out.println(startZoneOf);
+//        System.out.println(endZoneOf);
         String startZoneString = startZoneOf.toString();
         String endZoneString = endZoneOf.toString();
 
@@ -783,53 +801,59 @@ public class EditAppointmentScreen implements Initializable {
         startTimeComboBox.getItems().clear();
         endTimeComboBox.getItems().clear();
 
-        startTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
-                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
-        endTimeComboBox.getItems().addAll("09:00", "10:00", "11:00", "12:00", "13:00",
-                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
+//        startTimeComboBox.getItems().addAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+//                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00");
+//        endTimeComboBox.getItems().addAll("09:00", "10:00", "11:00", "12:00", "13:00",
+//                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
+
+        startTimeComboBox.getItems().addAll("01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00");
+        endTimeComboBox.getItems().addAll( "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00",
+                "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "23:59");
+
         startTimes.addAll(startTimeComboBox.getItems());
         endTimes.addAll(endTimeComboBox.getItems());
 
-        if(location.contains("Phoenix")) {
-            startTimeComboBox.getItems().add(0, "05:00");
-            startTimeComboBox.getItems().add(1, "06:00");
-            startTimeComboBox.getItems().add(2, "07:00");
-
-            endTimeComboBox.getItems().add(0, "06:00");
-            endTimeComboBox.getItems().add(1, "07:00");
-            endTimeComboBox.getItems().add(2, "08:00");
-
-            startTimes.add(0, "05:00");
-            startTimes.add(1, "06:00");
-            startTimes.add(2, "07:00");
-            //startTimes.addAll("05:00", "06:00", "07:00");
-
-            endTimes.add(0, "06:00");
-            endTimes.add(1, "07:00");
-            endTimes.add(2, "08:00");
-            //endTimes.addAll("06:00", "07:00");
-
-            startTimeComboBox.getItems().removeAll("19:00", "20:00", "21:00", "22:00");
-            endTimeComboBox.getItems().removeAll("20:00", "21:00", "22:00");
-            startTimes.removeAll("19:00", "20:00", "21:00", "22:00");
-            endTimes.removeAll("20:00", "21:00", "22:00");
-        }
-        else if (location.contains("London")) {
-            startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
-            endTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00");
-
-            startTimeComboBox.getItems().add("23:00");
-            endTimeComboBox.getItems().addAll("23:00", "23:59");
-
-            startTimes.add("23:00");
-            endTimes.addAll("23:00", "23:59");
-
-            startTimes.removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
-            endTimes.removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
-        }
-        else {
-            System.out.println("Eastern Times already added");
-        }
+//        if(location.contains("Phoenix")) {
+//            startTimeComboBox.getItems().add(0, "05:00");
+//            startTimeComboBox.getItems().add(1, "06:00");
+//            startTimeComboBox.getItems().add(2, "07:00");
+//
+//            endTimeComboBox.getItems().add(0, "06:00");
+//            endTimeComboBox.getItems().add(1, "07:00");
+//            endTimeComboBox.getItems().add(2, "08:00");
+//
+//            startTimes.add(0, "05:00");
+//            startTimes.add(1, "06:00");
+//            startTimes.add(2, "07:00");
+//            //startTimes.addAll("05:00", "06:00", "07:00");
+//
+//            endTimes.add(0, "06:00");
+//            endTimes.add(1, "07:00");
+//            endTimes.add(2, "08:00");
+//            //endTimes.addAll("06:00", "07:00");
+//
+//            startTimeComboBox.getItems().removeAll("19:00", "20:00", "21:00", "22:00");
+//            endTimeComboBox.getItems().removeAll("20:00", "21:00", "22:00");
+//            startTimes.removeAll("19:00", "20:00", "21:00", "22:00");
+//            endTimes.removeAll("20:00", "21:00", "22:00");
+//        }
+//        else if (location.contains("London")) {
+//            startTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
+//            endTimeComboBox.getItems().removeAll("08:00", "09:00", "10:00", "11:00", "12:00", "13:00");
+//
+//            startTimeComboBox.getItems().add("23:00");
+//            endTimeComboBox.getItems().addAll("23:00", "23:59");
+//
+//            startTimes.add("23:00");
+//            endTimes.addAll("23:00", "23:59");
+//
+//            startTimes.removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
+//            endTimes.removeAll("08:00", "09:00", "10:00", "11:00", "12:00");
+//        }
+//        else {
+//            System.out.println("Eastern Times already added");
+//        }
     }
 
     /**
@@ -863,7 +887,9 @@ public class EditAppointmentScreen implements Initializable {
      * Removes previous times from the end combo box based on the selected start time.
      * Lambda used to reduce the amount of code necessary for the function.
      */
-    public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) {
+    public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox, TextField startDateTextField, TextField startTimeTextField) {
+        ZoneId easternZone = ZoneId.of("America/New_York");
+
 
         //
         startTimeComboBox.setOnAction(e -> {
@@ -878,9 +904,32 @@ public class EditAppointmentScreen implements Initializable {
                 }
                 endTimeComboBox.setValue("");
                 endTimeComboBox.getItems().remove(index);
+
+
+                String startTime = startDateTextField.getText() + " " + selectedStartTimeString;
+
+                LocalDateTime startTimeLocal = LocalDateTime.parse(startTime, localTimeFormatter);
+
+
+                ZonedDateTime startTimeEastern = startTimeLocal.atZone(easternZone);
+
+                ZonedDateTime startTimeDisplay = startTimeEastern.withZoneSameInstant(zoneId);
+
+                String startTimeDisplayString = startTimeDisplay.toString();
+                String[] parts = startTimeDisplayString.split("T");
+                String timePlusZone = parts[1];
+
+                String[] parts1 = timePlusZone.split("-");
+
+                String time = parts1[0] + " " + zoneId;
+
+
+                startTimeTextField.setText(time);
+
             }
         });
     }
+
 
     /**
      *
@@ -896,61 +945,69 @@ public class EditAppointmentScreen implements Initializable {
         int tempAppointmentID = appointments.getAppointmentID();
 
         try {
-            Connection connection = DBConnection.getConnection();
-            String selectAppointmentID = "Select Appointment_ID, Start, End from appointments";
+            if(isBusinessHours(start, end)) {
+                Connection connection = DBConnection.getConnection();
+                String selectAppointmentID = "Select Appointment_ID, Start, End from appointments";
 
-            String selectStatement = "SELECT * FROM appointments WHERE (? BETWEEN Start AND End OR ? BETWEEN Start AND End OR ? < Start AND ? > End) AND " +
-                    "(Created_By = ? AND Appointment_ID != ?)";
+                String selectStatement = "SELECT * FROM appointments WHERE (? BETWEEN Start AND End OR ? BETWEEN Start AND End OR ? < Start AND ? > End) AND " +
+                        "(Created_By = ? AND Appointment_ID != ?)";
 
-            DBQuery.setPreparedStatement(connection, selectAppointmentID);
-            PreparedStatement preparedAppointmentStatement = DBQuery.getPreparedStatement();
+                DBQuery.setPreparedStatement(connection, selectAppointmentID);
+                PreparedStatement preparedAppointmentStatement = DBQuery.getPreparedStatement();
 
-            ResultSet resultSet1 = preparedAppointmentStatement.executeQuery();
-            while (resultSet1.next()) {
-                LocalDateTime tempStart = resultSet1.getTimestamp("Start").toLocalDateTime();
-                LocalDateTime tempEnd = resultSet1.getTimestamp("End").toLocalDateTime();
-                if(resultSet1.getInt("Appointment_ID") == tempAppointmentID) {
-                    if(start.isEqual(tempStart) && end.isEqual(tempEnd)) {
-                        return true;
-                    }
-                    else {
-                        DBQuery.setPreparedStatement(connection, selectStatement);
-                        PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
-
-
-                        preparedStatement.setTimestamp(1, Timestamp.valueOf(start));
-                        preparedStatement.setTimestamp(2, Timestamp.valueOf(end));
-                        preparedStatement.setTimestamp(3, Timestamp.valueOf(start));
-                        preparedStatement.setTimestamp(4, Timestamp.valueOf(end));
-                        preparedStatement.setString(5, userName);
-                        preparedStatement.setInt(6, tempAppointmentID);
-                        ResultSet resultSet = preparedStatement.executeQuery();
-
-                        if (resultSet.next()) {
-                            return false;
-                        }
-                        ZoneId locationZone;
-                        if(locationComboBox.getValue().contains("Phoenix")) {
-                            locationZone = ZoneId.of("America/Phoenix");
-                        }
-                        else if(locationComboBox.getValue().contains("London")) {
-                            locationZone = ZoneId.of("Europe/London");
+                ResultSet resultSet1 = preparedAppointmentStatement.executeQuery();
+                while (resultSet1.next()) {
+                    LocalDateTime tempStart = resultSet1.getTimestamp("Start").toLocalDateTime();
+                    LocalDateTime tempEnd = resultSet1.getTimestamp("End").toLocalDateTime();
+                    if(resultSet1.getInt("Appointment_ID") == tempAppointmentID) {
+                        if(start.isEqual(tempStart) && end.isEqual(tempEnd)) {
+                            return true;
                         }
                         else {
-                            locationZone = ZoneId.of("America/New_York");
-                        }
-                        ZonedDateTime currentDate = LocalDateTime.now().atZone(zoneId);
-                        ZonedDateTime currentDateLocation = currentDate.withZoneSameInstant(locationZone);
-                        String[] parts = currentDateLocation.toString().split("T");
-                        String date = parts[0];
-                        if(startDateTextField.getText().contains(date)) {
-                            LocalDateTime startDateTime = LocalDateTime.parse(date + "T" + startTimeComboBox.getValue());
-                            if(startDateTime.isBefore(ChronoLocalDateTime.from(currentDateLocation))) {
+                            DBQuery.setPreparedStatement(connection, selectStatement);
+                            PreparedStatement preparedStatement = DBQuery.getPreparedStatement();
+
+
+                            preparedStatement.setTimestamp(1, Timestamp.valueOf(start));
+                            preparedStatement.setTimestamp(2, Timestamp.valueOf(end));
+                            preparedStatement.setTimestamp(3, Timestamp.valueOf(start));
+                            preparedStatement.setTimestamp(4, Timestamp.valueOf(end));
+                            preparedStatement.setString(5, userName);
+                            preparedStatement.setInt(6, tempAppointmentID);
+                            ResultSet resultSet = preparedStatement.executeQuery();
+
+                            if (resultSet.next()) {
+                                System.out.println("Time conflicts with another appointment");
                                 return false;
                             }
+                            ZoneId locationZone;
+//                            if(locationComboBox.getValue().contains("Phoenix")) {
+//                                locationZone = ZoneId.of("America/Phoenix");
+//                            }
+//                            else if(locationComboBox.getValue().contains("London")) {
+//                                locationZone = ZoneId.of("Europe/London");
+//                            }
+//                            else {
+//                                locationZone = ZoneId.of("America/New_York");
+//                            }
+//                            ZonedDateTime currentDate = LocalDateTime.now().atZone(zoneId);
+//                            ZonedDateTime currentDateLocation = currentDate.withZoneSameInstant(zoneId);
+//                            String[] parts = currentDateLocation.toString().split("T");
+//                            String date = parts[0];
+//                            if(startDateTextField.getText().contains(date)) {
+//                                LocalDateTime startDateTime = LocalDateTime.parse(date + "T" + startTimeComboBox.getValue());
+//                                if(startDateTime.isBefore(ChronoLocalDateTime.from(currentDateLocation))) {
+//                                    System.out.println("Cannot schedule a time on the current date that has already passed.");
+//                                    return false;
+//                                }
+//                            }
                         }
                     }
                 }
+            }
+            else {
+                System.out.println("Time is not within business hours");
+                return false;
             }
         } catch (SQLException sqe) {
             System.out.println("SQL error while calling validAppointment");
@@ -1053,6 +1110,26 @@ public class EditAppointmentScreen implements Initializable {
         System.out.println("Appointment change activity added to " + fileName);
         bufferedWriter.flush();
         bufferedWriter.close();
+    }
+
+    public static boolean isBusinessHours(LocalDateTime start, LocalDateTime end) {
+        ZoneId easternZone = ZoneId.of("America/New_York");
+
+        ZonedDateTime startWithUserZone = start.atZone(zoneId);
+        ZonedDateTime startWithEasternZone = startWithUserZone.withZoneSameInstant(easternZone);
+
+        ZonedDateTime endWithUserZone = end.atZone(zoneId);
+        ZonedDateTime endWithEasternZone = endWithUserZone.withZoneSameInstant(easternZone);
+
+        if(startWithEasternZone.isBefore(startWithEasternZone.withHour(8)) || startWithEasternZone.isAfter(startWithEasternZone.withHour(22))) {
+            System.out.println("Start time is before 08:00 or after 22:00 Eastern");
+            return false;
+        }
+        else if(endWithEasternZone.isBefore(endWithEasternZone.withHour(8)) || endWithEasternZone.isAfter(endWithEasternZone.withHour(22))) {
+            System.out.println("End time is before 08:00 or after 22:00 Eastern");
+            return false;
+        }
+        return true;
     }
 
 

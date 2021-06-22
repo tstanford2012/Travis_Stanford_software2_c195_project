@@ -119,7 +119,7 @@ public class LoginPageController implements Initializable {
                     addRemindersToList();
                     appointmentIn15MinAlert();
                     //calls the loginActivity method to add a record to the text file
-                    loginActivity(true);
+                    loginActivity(true, tempUsername);
                     System.out.println("Log in successful!");
 
                     Stage stage;
@@ -135,7 +135,7 @@ public class LoginPageController implements Initializable {
                     stage.show();
                 } else {
                     //prints an error label in the users system language if authentication failed
-                    loginActivity(false);
+                    loginActivity(false, tempUsername);
                     loginFailLabel.setText(resourceBundle.getString("login_Fail"));
                 }
             }
@@ -325,14 +325,14 @@ public class LoginPageController implements Initializable {
      *
      * Adds a log in attempt to the login_activity text file whether the attempt was successful of not.
      */
-    private void loginActivity(boolean successful) throws IOException {
+    private void loginActivity(boolean successful, String userName) throws IOException {
         String fileName = "login_activity.txt";
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName, true));
         if(successful) {
-            bufferedWriter.append(String.valueOf(LocalDateTime.now())).append(" ").append(" successful login attempt.\n");
+            bufferedWriter.append(String.valueOf(LocalDateTime.now())).append(" ").append("Username: ").append(userName).append(" successful login attempt.\n");
         }
         else {
-            bufferedWriter.append(String.valueOf(LocalDateTime.now())).append(" ").append(" login fail.\n");
+            bufferedWriter.append(String.valueOf(LocalDateTime.now())).append(" ").append("Username: ").append(userName).append(" login fail.\n");
         }
 
         System.out.println("Login added to " + fileName);
