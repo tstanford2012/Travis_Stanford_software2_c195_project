@@ -89,8 +89,8 @@
             </Label>
             <TextField fx:id="endDateTextField" layoutX="551.0" layoutY="354.0" prefHeight="25.0" prefWidth="166.0" promptText="YYYY-MM-DD" />
             <ComboBox fx:id="endTimeComboBox" layoutX="845.0" layoutY="353.0" onAction="#endTimeComboBoxHandler" onMouseClicked="#endTimesComboBoxClicked" prefHeight="25.0" prefWidth="160.0" />
-            <Label fx:id="startTimeErrorLabel" alignment="CENTER" layoutX="525.0" layoutY="186.0" prefHeight="17.0" prefWidth="480.0" text="Please enter a date and click the Button to view times" textFill="#ed0909" />
-            <Label fx:id="endTimeErrorLabel" alignment="CENTER" layoutX="529.0" layoutY="411.0" prefHeight="17.0" prefWidth="480.0" text="Please enter a date and click the Button to view times" textFill="#ed0909" />
+            <Label fx:id="startTimeErrorLabel" alignment="CENTER" layoutX="525.0" layoutY="217.0" prefHeight="17.0" prefWidth="480.0" text="Please enter a date and click the Button to view times" textFill="#ed0909" />
+            <Label fx:id="endTimeErrorLabel" alignment="CENTER" layoutX="525.0" layoutY="447.0" prefHeight="17.0" prefWidth="480.0" text="Please enter a date and click the Button to view times" textFill="#ed0909" />
             <Button fx:id="saveButton" layoutX="905.0" layoutY="553.0" mnemonicParsing="false" onAction="#saveButtonHandler" prefHeight="35.0" prefWidth="94.0" text="Save">
                <font>
                   <Font name="System Bold" size="12.0" />

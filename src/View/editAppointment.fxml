@@ -116,10 +116,6 @@
                </font>
             </Label>
             <ComboBox fx:id="typeComboBox" layoutX="212.0" layoutY="328.0" prefHeight="25.0" prefWidth="193.0" />
-            <TextField fx:id="startTimeTextField" disable="true" layoutX="845.0" layoutY="164.0" prefHeight="25.0" prefWidth="160.0" />
-            <TextField fx:id="endTimeTextField" disable="true" layoutX="845.0" layoutY="390.0" prefHeight="25.0" prefWidth="160.0" />
-            <Label layoutX="732.0" layoutY="168.0" text="Time in User Locale" />
-            <Label layoutX="732.0" layoutY="394.0" text="Time in User Locale" />
          </children>
       </AnchorPane>
    </children>

@@ -326,16 +326,16 @@ public class AddAppointmentScreen implements Initializable {
 
             String[] selectionSplit2 = split1Time.split("-");
             String selectionTime = selectionSplit2[0];
-            String fullZone = selectionSplit2[1];
+            //String fullZone = selectionSplit2[1];
 
-            String[] selectionSplit3 = fullZone.split("05:00");
-            String zoneOnly = selectionSplit3[1];
+            //String[] selectionSplit3 = fullZone.split("05:00");
+            //String zoneOnly = selectionSplit3[1];
 
 
             //An alert that displays the selected time in the users local time
             Alert timeAlert = new Alert(Alert.AlertType.CONFIRMATION);
             timeAlert.setHeaderText("Are you sure you want this time?");
-            timeAlert.setContentText("The time you selected is " + selectionTime + " " + zoneOnly + " in your local time.");
+            timeAlert.setContentText("The time you selected is " + selectionTime + " in your local time.");
             Optional<ButtonType> result = timeAlert.showAndWait();
 
             if(result.get() == ButtonType.OK) {
@@ -348,7 +348,6 @@ public class AddAppointmentScreen implements Initializable {
 
                     //if the test appointment button is selected, the time will not be converted using the selected location
                     //the users time zone will be used instead
-                    if(testAppointment) {
                         fullStartZone = ZonedDateTime.of(fullStartLocal, zoneId);
                         ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
 
@@ -357,43 +356,42 @@ public class AddAppointmentScreen implements Initializable {
 
                         localStartToDatabase = startTimeToDatabase.toLocalDateTime();
                         localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-                    }
 
                     //changes the time depending on which location is selected and then changes that time to UTC
-                    else if(locationComboBox.getValue().contains("Phoenix")) {
-                        fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
-                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                        fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
-                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-
-
-
-                    }
-                    else if(locationComboBox.getValue().contains("London")) {
-                        fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
-                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                        fullEndZone = ZonedDateTime.of(fullEndLocal, londonZone);
-                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-
-                    }
-                    else {
-                        fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
-                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
-
-                        fullEndZone = ZonedDateTime.of(fullEndLocal, easternZone);
-                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
-
-                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
-                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
-                    }
+//                    else if(locationComboBox.getValue().contains("Phoenix")) {
+//                        fullStartZone = ZonedDateTime.of(fullStartLocal, phoenixZone);
+//                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+//
+//                        fullEndZone = ZonedDateTime.of(fullEndLocal, phoenixZone);
+//                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+//
+//                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+//                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+//
+//
+//
+//                    }
+//                    else if(locationComboBox.getValue().contains("London")) {
+//                        fullStartZone = ZonedDateTime.of(fullStartLocal, londonZone);
+//                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+//
+//                        fullEndZone = ZonedDateTime.of(fullEndLocal, londonZone);
+//                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+//
+//                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+//                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+//
+//                    }
+//                    else {
+//                        fullStartZone = ZonedDateTime.of(fullStartLocal, easternZone);
+//                        ZonedDateTime startTimeToDatabase = fullStartZone.withZoneSameInstant(utc);
+//
+//                        fullEndZone = ZonedDateTime.of(fullEndLocal, easternZone);
+//                        ZonedDateTime endTimeToDatabase = fullEndZone.withZoneSameInstant(utc);
+//
+//                        localStartToDatabase = startTimeToDatabase.toLocalDateTime();
+//                        localEndToDatabase = endTimeToDatabase.toLocalDateTime();
+//                    }
 
                     String[] parts = localStartToDatabase.toString().split("T");
                     String date = parts[0];
@@ -906,9 +904,16 @@ public class AddAppointmentScreen implements Initializable {
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 if (resultSet.next()) {
-                    return false;
+                    if(resultSet.getTimestamp("Start").equals(Timestamp.valueOf(end))) {
+                        return true;
+                    }
+                    else {
+                        System.out.println(resultSet.getInt("Appointment_ID"));
+                        System.out.println("Time conflicts with another appointment");
+                        return false;
+                    }
                 }
-                ZoneId locationZone;
+                //ZoneId locationZone;
 //                if(locationComboBox.getValue().contains("Phoenix")) {
 //                    locationZone = ZoneId.of("America/Phoenix");
 //                }

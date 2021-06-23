@@ -248,3 +248,93 @@ End Time: 2021-06-22T21:00-05:00[America/Chicago]
 CustomerID: 1
 ContactID: 2
 ==========================
+2021-06-22T19:55:50.317232100 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T07:00-05:00[America/Chicago] 
+End Time: 2021-06-23T08:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-22T19:56:02.096163200 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T08:00-05:00[America/Chicago] 
+End Time: 2021-06-23T09:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-22T20:20:20.358064800 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T09:00-05:00[America/Chicago] 
+End Time: 2021-06-23T10:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-22T20:23:56.616800300 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T09:00-05:00[America/Chicago] 
+End Time: 2021-06-23T10:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-22T20:26:13.600271100 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T08:00-05:00[America/Chicago] 
+End Time: 2021-06-23T09:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-22T20:32:54.898681 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T09:00-05:00[America/Chicago] 
+End Time: 2021-06-23T10:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-22T20:34:50.931253500 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T08:00-05:00[America/Chicago] 
+End Time: 2021-06-23T09:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-22T20:35:08.413907300 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T09:00-05:00[America/Chicago] 
+End Time: 2021-06-23T10:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================
+2021-06-22T20:35:22.822417200 User: test has altered the appointment with ID: 27
+Info: App 1
+App 1
+Phoenix
+De-Briefing
+Start time: 2021-06-23T09:00-05:00[America/Chicago] 
+End Time: 2021-06-23T10:00-05:00[America/Chicago] 
+CustomerID: 1
+ContactID: 1
+==========================

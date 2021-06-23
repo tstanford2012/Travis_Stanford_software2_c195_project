@@ -63,14 +63,6 @@ public class EditAppointmentScreen implements Initializable {
     RadioButton officeLocationTimeRadioBtn;
     @FXML
     RadioButton timezoneRadioBtn;
-    @FXML
-    Label startTimeLocalLabel;
-    @FXML
-    Label endTimeLocalLabel;
-    @FXML
-    TextField startTimeTextField;
-    @FXML
-    TextField endTimeTextField;
 
     private final ObservableList<String> contactNames = FXCollections.observableArrayList();
     private final ObservableList<String> customerNames = FXCollections.observableArrayList();
@@ -100,7 +92,7 @@ public class EditAppointmentScreen implements Initializable {
 
 
         //Initial setOnAction for the comboBoxes
-        handleComboBoxSelection(startTimeComboBox, endTimeComboBox, startDateTextField, startTimeTextField);
+        handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
         //handleComboBoxSelection(endTimeComboBox, endTimeTextField, startDateTextField);
         //calls the method and adds the types of appointments to the combo box
         addTypesToComboBox();
@@ -131,7 +123,7 @@ public class EditAppointmentScreen implements Initializable {
      * Calls the method to remove previous times from the end combo box based on the start time selected.
      */
     public void startTimeComboBoxHandler() {
-        handleComboBoxSelection(startTimeComboBox, endTimeComboBox, startDateTextField, startTimeTextField);
+        handleComboBoxSelection(startTimeComboBox, endTimeComboBox);
 
     }
 
@@ -349,17 +341,17 @@ public class EditAppointmentScreen implements Initializable {
 
             String[] selectionSplit2 = split1Time.split("-");
             String selectionTime = selectionSplit2[0];
-            String fullZone = selectionSplit2[1];
+            //String fullZone = selectionSplit2[1];
 
-            String[] selectionSplit3 = fullZone.split("05:00");
-            String zoneOnly = selectionSplit3[1];
+            //String[] selectionSplit3 = fullZone.split("05:00");
+            //String zoneOnly = selectionSplit3[1];
 
 
             //confirmation that the selected time is correct
             //displays in the users local time
             Alert timeAlert = new Alert(Alert.AlertType.CONFIRMATION);
             timeAlert.setHeaderText("Are you sure you want this time?");
-            timeAlert.setContentText("The time you selected is " + selectionTime + " " + zoneOnly + " in your local time.");
+            timeAlert.setContentText("The time you selected is " + selectionTime + " in your local time.");
             Optional<ButtonType> result = timeAlert.showAndWait();
 
 
@@ -887,7 +879,7 @@ public class EditAppointmentScreen implements Initializable {
      * Removes previous times from the end combo box based on the selected start time.
      * Lambda used to reduce the amount of code necessary for the function.
      */
-    public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox, TextField startDateTextField, TextField startTimeTextField) {
+    public static void handleComboBoxSelection(ComboBox<String> startTimeComboBox, ComboBox<String> endTimeComboBox) {
         ZoneId easternZone = ZoneId.of("America/New_York");
 
 
@@ -905,26 +897,6 @@ public class EditAppointmentScreen implements Initializable {
                 endTimeComboBox.setValue("");
                 endTimeComboBox.getItems().remove(index);
 
-
-                String startTime = startDateTextField.getText() + " " + selectedStartTimeString;
-
-                LocalDateTime startTimeLocal = LocalDateTime.parse(startTime, localTimeFormatter);
-
-
-                ZonedDateTime startTimeEastern = startTimeLocal.atZone(easternZone);
-
-                ZonedDateTime startTimeDisplay = startTimeEastern.withZoneSameInstant(zoneId);
-
-                String startTimeDisplayString = startTimeDisplay.toString();
-                String[] parts = startTimeDisplayString.split("T");
-                String timePlusZone = parts[1];
-
-                String[] parts1 = timePlusZone.split("-");
-
-                String time = parts1[0] + " " + zoneId;
-
-
-                startTimeTextField.setText(time);
 
             }
         });
@@ -977,8 +949,15 @@ public class EditAppointmentScreen implements Initializable {
                             ResultSet resultSet = preparedStatement.executeQuery();
 
                             if (resultSet.next()) {
-                                System.out.println("Time conflicts with another appointment");
-                                return false;
+                                if(resultSet.getTimestamp("Start").equals(Timestamp.valueOf(end))) {
+                                    return true;
+                                }
+                                else {
+                                    System.out.println(resultSet.getInt("Appointment_ID"));
+                                    System.out.println("Time conflicts with another appointment");
+                                    return false;
+                                }
+
                             }
                             ZoneId locationZone;
 //                            if(locationComboBox.getValue().contains("Phoenix")) {
